@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Personal_Collection_Manager.Data;
 using System;
+using WebPWrecover.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +17,9 @@ var requireEmailConfirmation = builder.Configuration.GetValue<bool>("Registratio
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = requireEmailConfirmation)
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 
 var app = builder.Build();
 

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using WebPWrecover.Services;
 
 namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
 {
@@ -19,11 +20,16 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IEmailSender _sender;
+        private readonly IEmailSender _emailSender;
 
-        public RegisterConfirmationModel(UserManager<IdentityUser> userManager, IEmailSender sender)
+        public RegisterConfirmationModel(
+            UserManager<IdentityUser> userManager,
+            IEmailSender sender,
+            IEmailSender emailSender)
         {
             _userManager = userManager;
             _sender = sender;
+            _emailSender = emailSender;
         }
 
         /// <summary>
@@ -60,7 +66,7 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
 
             Email = email;
             // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = true;
+            DisplayConfirmAccountLink = false;
             if (DisplayConfirmAccountLink)
             {
                 var userId = await _userManager.GetUserIdAsync(user);
@@ -72,6 +78,12 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
                     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
             }
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("ConConfirmEmail", "User",
+               new { token, email = user.Email },
+               Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirmation email link", confirmationLink);
 
             return Page();
         }
