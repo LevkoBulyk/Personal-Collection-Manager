@@ -4,6 +4,7 @@
 
 using System;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -19,16 +20,13 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
     public class RegisterConfirmationModel : PageModel
     {
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IEmailSender _sender;
         private readonly IEmailSender _emailSender;
 
         public RegisterConfirmationModel(
             UserManager<IdentityUser> userManager,
-            IEmailSender sender,
             IEmailSender emailSender)
         {
             _userManager = userManager;
-            _sender = sender;
             _emailSender = emailSender;
         }
 
@@ -65,25 +63,13 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
             }
 
             Email = email;
-            // Once you add a real email sender, you should remove this code that lets you confirm the account
-            DisplayConfirmAccountLink = false;
-            if (DisplayConfirmAccountLink)
-            {
-                var userId = await _userManager.GetUserIdAsync(user);
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                EmailConfirmationUrl = Url.Page(
-                    "/Account/ConfirmEmail",
-                    pageHandler: null,
-                    values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                    protocol: Request.Scheme);
-            }
-
+            
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             var confirmationLink = Url.Action("ConConfirmEmail", "User",
                new { token, email = user.Email },
                Request.Scheme);
-            await _emailSender.SendEmailAsync(user.Email, "Confirmation email link", confirmationLink);
+            var text = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.";
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", text);
 
             return Page();
         }
