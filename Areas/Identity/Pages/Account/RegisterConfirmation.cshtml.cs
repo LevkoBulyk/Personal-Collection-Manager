@@ -68,7 +68,8 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
             var confirmationLink = Url.Action("ConConfirmEmail", "User",
                new { token, email = user.Email },
                Request.Scheme);
-            var text = $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.";
+            var text = @$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.
+In case, if the link above is not working try this one: {confirmationLink}";
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", text);
 
             return Page();

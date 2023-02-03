@@ -1,0 +1,64 @@
+﻿@model List<CollectionView>;
+
+@{
+    ViewData["Title"] = "My collections";
+}
+
+<div class="text-center">
+
+    <div class="px-4 py-5 my-5 text-center">
+        <div class="row">
+            <h2 class="col">My Collections</h2>
+            <div class="align-items-end col">
+                <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Create">
+                    Create new Collection
+                </a>
+            </div>
+        </div>
+        <div class="album py-5 bg-light">
+            @if (Model.Count > 0)
+            {
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        @foreach (var collection in Model)
+                        {
+                            <div class="col">
+                                <div class="card shadow-sm">
+                                    <a href="~/Collection/Detail/@collection.Id">
+                                        <div class="card shadow-sm" align="center">
+                                            <h4 x="50%" y="50%" fill="#eceeef" dy=".3em">
+                                                @collection.Name
+                                            </h4>
+                                            <img src="@collection.ImageUrl" />
+                                        </div>
+                                    </a>
+                                    <div class="card-body">
+                                        <p class="card-text">@collection.Description</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div class="btn-group">
+                                                <a asp-controller="Collection" asp-action="Detail" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-primary">
+                                                    View
+                                                </a>
+                                                <a asp-controller="Collection" asp-action="Edit" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-secondary">
+                                                    Edit
+                                                </a>
+                                                <a asp-controller="Collection" asp-action="Delete" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-danger">
+                                                    Delete
+                                                </a>
+                                            </div>
+                                            <small class="text-muted">@collection.Topic</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h4 class="text-warning">You don't have collection yet. Create your first one!</h4>
+            }
+        </div>
+    </div>
+</div>

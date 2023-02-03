@@ -12,7 +12,7 @@ using Personal_Collection_Manager.Data;
 namespace Personal_Collection_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230203101636_Initial")]
+    [Migration("20230203111804_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

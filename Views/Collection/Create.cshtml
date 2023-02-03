@@ -1,0 +1,55 @@
+﻿@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+@model CollectionCreate;
+
+@{
+    ViewData["Title"] = "Create collection";
+}
+
+<form method="post" asp-action="Create">
+    <input asp-for="AuthorId" class="visually-hidden" value="@Model.AuthorId" />
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" id="exampleInputEmail1" placeholder="name of the collection">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Topic">Topic</label>
+        <input asp-for="Topic" class="form-control" id="exampleInputEmail1" placeholder="topic">
+        <span asp-validation-for="Topic" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <input asp-for="Description" class="form-control" id="exampleInputEmail1" placeholder="give description of the collection">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageUrl">Image</label>
+        <input asp-for="ImageUrl" class="form-control" id="exampleInputEmail1" placeholder="insert link to image location">
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+    @*<div class="form-group">
+    <label asp-for="Topic">Category</label>
+    <select asp-for="Topic" asp-items="@Html.GetEnumSelectList<Topic>()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"></select>
+    <span asp-validation-for="Topic" class="text-danger"></span>
+    </div>*@
+    <div class="container">
+        <label>Add aditional fields:</label>
+        @for (int i = 0; i < Model.AdditionalFields.Length; i++)
+        {
+            <div class="container">
+                <div class="form-group">
+                    <label asp-for="@Model.AdditionalFields[i].Name">Name</label>
+                    <input asp-for="@Model.AdditionalFields[i].Name" class="form-control" id="exampleInputEmail1" placeholder="name of additional field">
+                    <span asp-validation-for="@Model.AdditionalFields[i].Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="@Model.AdditionalFields[i].Type">Type</label>
+                    <select asp-for="@Model.AdditionalFields[i].Type" asp-items="@Html.GetEnumSelectList<FieldType>()" class="form-control form-select" id="exampleInputEmail1" aria-describedby="emailHelp"></select>
+                    <span asp-validation-for="@Model.AdditionalFields[i].Type" class="text-danger"></span>
+                </div>
+            </div>
+        }
+        <button asp-controller="Collection" asp-action="AddField" class="btn"><i class="bi bi-plus-square"></i></button>
+    </div>
+    <button asp-controller="Collection" asp-action="Create"  class="btn btn-primary">Create Collection</button>
+</form>

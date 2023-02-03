@@ -1,0 +1,76 @@
+﻿@using Personal_Collection_Manager.Data.DataBaseModels;
+@model List<UserView>
+
+@{
+    ViewData["Title"] = "User management";
+}
+
+<div class="text-center">
+    <h3>Users</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                @*<td scope="row">
+                <div class="checkbox">
+                <label class="form-label">
+                <input id="select-all" type="checkbox" class="form-check-input" />
+                </label>
+                </div>
+                </td>*@
+                <td><label class="form-label">User name</label></td>
+                <td><label class="form-label">Email</label></td>
+                <td><label class="form-label">Role</label></td>
+                <td><label class="form-label"></label></td>
+                <td><label class="form-label"></label></td>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null)
+            {
+                @foreach (var user in Model)
+                {
+                    <tr class="table-secondary">
+                        @*<th scope="row">
+                <div class="checkbox">
+                <label class="form-label">
+                <input id="check-box" class="form-check-input" />
+                </label>
+                </div>
+                </th>*@
+                        <td>@user.UserName</td>
+                        <td>@user.Email</td>
+                        <td>@user.Role</td>
+                        <td>
+                            <div class="btn-group">
+                                <a asp-controller="User" asp-action="ChangeRole" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
+                                    Change role
+                                </a>
+                                <a onclick="DeleteUser('@(user.Id)');" class="btn btn-sm btn-outline-danger">
+                                    Delete
+                                </a>
+                            </div>
+                        </td>
+                        <td>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <h4 class="alert-danger">No users were found in DB</h4>
+            }
+        </tbody>
+    </table>
+
+</div>
+
+@section Scripts{
+    <script>
+        function DeleteUser(id) {
+            if (confirm("Are you sure, you want to delete user?")) {
+                window.location.href = "/User/Delete?Id=" + id;
+            }
+        };
+    </script>
+}

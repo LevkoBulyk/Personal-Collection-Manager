@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Personal_Collection_Manager.Data.DataBaseModels;
+using WebPWrecover.Services;
 
 namespace Personal_Collection_Manager.Data
 {
@@ -12,26 +14,28 @@ namespace Personal_Collection_Manager.Data
                 //Roles
                 var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                if (!await roleManager.RoleExistsAsync(UserRoles.User))
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                if (!await roleManager.RoleExistsAsync(UserRole.Admin))
+                    await roleManager.CreateAsync(new IdentityRole(UserRole.Admin));
+                if (!await roleManager.RoleExistsAsync(UserRole.User))
+                    await roleManager.CreateAsync(new IdentityRole(UserRole.User));
 
                 //Users
-                var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-                string adminUserEmail = "test1@gmail.com";
 
+                var userStore = serviceScope.ServiceProvider.GetRequiredService<IUserStore<IdentityUser>>();
+                //var emailStore = serviceScope.ServiceProvider.GetRequiredService<IUserEmailStore<IdentityUser>>();
+                var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+                
+                string adminUserEmail = "test1@gmail.com";
                 var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
                 if (adminUser == null)
                 {
-                    var newAdminUser = new IdentityUser()
-                    {
-                        Email = adminUserEmail,
-                        EmailConfirmed = true,
-                        UserName = "Admin1"
-                    };
-                    await userManager.CreateAsync(newAdminUser, "Testing!123");
-                    await userManager.AddToRoleAsync(newAdminUser, UserRoles.Admin);
+                    var user = Activator.CreateInstance<IdentityUser>();
+                    await userStore.SetUserNameAsync(user, adminUserEmail, CancellationToken.None);
+                    user.Email = adminUserEmail;
+                    user.EmailConfirmed = true;
+                    //await emailStore.SetEmailAsync(user, adminUserEmail, CancellationToken.None);
+                    await userManager.CreateAsync(user, "Testing!123");
+                    await userManager.AddToRoleAsync(user, UserRole.Admin);
                 }
 
                 string appUserEmail = "test2@gmail.com";
@@ -39,14 +43,13 @@ namespace Personal_Collection_Manager.Data
                 var appUser = await userManager.FindByEmailAsync(appUserEmail);
                 if (appUser == null)
                 {
-                    var newAppUser = new IdentityUser()
-                    {
-                        Email = appUserEmail,
-                        EmailConfirmed = true,
-                        UserName = "Admin2"
-                    };
-                    await userManager.CreateAsync(newAppUser, "Testing@!123");
-                    await userManager.AddToRoleAsync(newAppUser, UserRoles.Admin);
+                    var user = Activator.CreateInstance<IdentityUser>();
+                    await userStore.SetUserNameAsync(user, appUserEmail, CancellationToken.None);
+                    user.Email = appUserEmail;
+                    user.EmailConfirmed = true;
+                    //await emailStore.SetEmailAsync(user, appUserEmail, CancellationToken.None);
+                    await userManager.CreateAsync(user, "Testing@!123");
+                    await userManager.AddToRoleAsync(user, UserRole.Admin);
                 }
             }
         }

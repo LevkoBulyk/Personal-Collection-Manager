@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
 {
@@ -116,7 +117,16 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
             {
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    var user = _userManager.Users.First(u => u.Email.Equals(Input.Email));
+                    IdentityUser user;
+                    try
+                    {
+                        user = _userManager.Users.First(u => u.Email.Equals(Input.Email));
+                    }
+                    catch (InvalidOperationException e)
+                    {
+                        ModelState.AddModelError(string.Empty, $"No user with email: \"{Input.Email}\" was found");
+                        return Page();
+                    }
                     if (user != null && !user.EmailConfirmed)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });

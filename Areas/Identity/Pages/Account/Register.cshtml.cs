@@ -123,7 +123,7 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                    await _userManager.AddToRoleAsync(user, UserRole.User);
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
