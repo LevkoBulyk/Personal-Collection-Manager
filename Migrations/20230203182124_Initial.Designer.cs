@@ -12,7 +12,7 @@ using Personal_Collection_Manager.Data;
 namespace Personal_Collection_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230203111804_Initial")]
+    [Migration("20230203182124_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -226,6 +226,35 @@ namespace Personal_Collection_Manager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CollectionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CollectionId");
+
+                    b.ToTable("AdditionalFieldsOfCollections");
+                });
+
             modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Collection", b =>
                 {
                     b.Property<int>("Id")
@@ -267,32 +296,6 @@ namespace Personal_Collection_Manager.Migrations
                     b.ToTable("Collections");
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.CollectionTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("CollectionId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Deleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("TagId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CollectionId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("CollectionsTags");
-                });
-
             modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Comment", b =>
                 {
                     b.Property<int>("Id")
@@ -324,7 +327,7 @@ namespace Personal_Collection_Manager.Migrations
                     b.ToTable("Comments");
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Field", b =>
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.FieldOfItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -332,20 +335,13 @@ namespace Personal_Collection_Manager.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
+                    b.Property<int>("AdditionalFieldOfCollectionId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<int>("FieldId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Type")
+                    b.Property<int>("ItemId")
                         .HasColumnType("int");
 
                     b.Property<string>("Value")
@@ -354,9 +350,11 @@ namespace Personal_Collection_Manager.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FieldId");
+                    b.HasIndex("AdditionalFieldOfCollectionId");
 
-                    b.ToTable("AditionalFields");
+                    b.HasIndex("ItemId");
+
+                    b.ToTable("FieldsOfItems");
                 });
 
             modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Item", b =>
@@ -383,6 +381,32 @@ namespace Personal_Collection_Manager.Migrations
                     b.HasIndex("CollectionId");
 
                     b.ToTable("Items");
+                });
+
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.ItemsTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ItemId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ItemsTags");
                 });
 
             modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Tag", b =>
@@ -457,26 +481,20 @@ namespace Personal_Collection_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Collection", b =>
-                {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.CollectionTag", b =>
+            modelBuilder.Entity("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", b =>
                 {
                     b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Collection", null)
                         .WithMany()
                         .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
 
-                    b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Tag", null)
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Collection", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", null)
                         .WithMany()
-                        .HasForeignKey("TagId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
@@ -496,11 +514,17 @@ namespace Personal_Collection_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.Field", b =>
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.FieldOfItem", b =>
                 {
+                    b.HasOne("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", null)
+                        .WithMany()
+                        .HasForeignKey("AdditionalFieldOfCollectionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Item", null)
                         .WithMany()
-                        .HasForeignKey("FieldId")
+                        .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -511,6 +535,21 @@ namespace Personal_Collection_Manager.Migrations
                         .WithMany()
                         .HasForeignKey("CollectionId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.ItemsTag", b =>
+                {
+                    b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Item", null)
+                        .WithMany()
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Tag", null)
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

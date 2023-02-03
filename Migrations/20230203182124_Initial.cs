@@ -192,29 +192,25 @@ namespace Personal_Collection_Manager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CollectionsTags",
+                name: "AdditionalFieldsOfCollections",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CollectionId = table.Column<int>(type: "int", nullable: false),
-                    TagId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Type = table.Column<int>(type: "int", nullable: false),
                     Deleted = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CollectionsTags", x => x.Id);
+                    table.PrimaryKey("PK_AdditionalFieldsOfCollections", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CollectionsTags_Collections_CollectionId",
+                        name: "FK_AdditionalFieldsOfCollections_Collections_CollectionId",
                         column: x => x.CollectionId,
                         principalTable: "Collections",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CollectionsTags_Tags_TagId",
-                        column: x => x.TagId,
-                        principalTable: "Tags",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -234,30 +230,6 @@ namespace Personal_Collection_Manager.Migrations
                         name: "FK_Items_Collections_CollectionId",
                         column: x => x.CollectionId,
                         principalTable: "Collections",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AditionalFields",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FieldId = table.Column<int>(type: "int", nullable: false),
-                    Type = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Order = table.Column<int>(type: "int", nullable: false),
-                    Deleted = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AditionalFields", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AditionalFields_Items_FieldId",
-                        column: x => x.FieldId,
-                        principalTable: "Items",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -289,10 +261,63 @@ namespace Personal_Collection_Manager.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "FieldsOfItems",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    AdditionalFieldOfCollectionId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FieldsOfItems", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_FieldsOfItems_AdditionalFieldsOfCollections_AdditionalFieldOfCollectionId",
+                        column: x => x.AdditionalFieldOfCollectionId,
+                        principalTable: "AdditionalFieldsOfCollections",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_FieldsOfItems_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ItemsTags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ItemId = table.Column<int>(type: "int", nullable: false),
+                    TagId = table.Column<int>(type: "int", nullable: false),
+                    Deleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ItemsTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ItemsTags_Items_ItemId",
+                        column: x => x.ItemId,
+                        principalTable: "Items",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ItemsTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.CreateIndex(
-                name: "IX_AditionalFields_FieldId",
-                table: "AditionalFields",
-                column: "FieldId");
+                name: "IX_AdditionalFieldsOfCollections_CollectionId",
+                table: "AdditionalFieldsOfCollections",
+                column: "CollectionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -339,16 +364,6 @@ namespace Personal_Collection_Manager.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CollectionsTags_CollectionId",
-                table: "CollectionsTags",
-                column: "CollectionId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CollectionsTags_TagId",
-                table: "CollectionsTags",
-                column: "TagId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Comments_ItemId",
                 table: "Comments",
                 column: "ItemId");
@@ -359,16 +374,33 @@ namespace Personal_Collection_Manager.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FieldsOfItems_AdditionalFieldOfCollectionId",
+                table: "FieldsOfItems",
+                column: "AdditionalFieldOfCollectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FieldsOfItems_ItemId",
+                table: "FieldsOfItems",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Items_CollectionId",
                 table: "Items",
                 column: "CollectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemsTags_ItemId",
+                table: "ItemsTags",
+                column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ItemsTags_TagId",
+                table: "ItemsTags",
+                column: "TagId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "AditionalFields");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -385,19 +417,25 @@ namespace Personal_Collection_Manager.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CollectionsTags");
+                name: "Comments");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "FieldsOfItems");
+
+            migrationBuilder.DropTable(
+                name: "ItemsTags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Tags");
+                name: "AdditionalFieldsOfCollections");
 
             migrationBuilder.DropTable(
                 name: "Items");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "Collections");

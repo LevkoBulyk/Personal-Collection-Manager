@@ -13,11 +13,12 @@ namespace Personal_Collection_Manager.Data
         { }
 
         public DbSet<Tag> Tags { get; set; }
-        public DbSet<Field> AditionalFields { get; set; }
+        public DbSet<FieldOfItem> FieldsOfItems { get; set; }
+        public DbSet<AdditionalFieldOfCollection> AdditionalFieldsOfCollections { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<CollectionTag> CollectionsTags { get; set; }
+        public DbSet<ItemsTag> ItemsTags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -35,10 +36,10 @@ namespace Personal_Collection_Manager.Data
                 .HasForeignKey(item => item.CollectionId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<Field>()
+            builder.Entity<FieldOfItem>()
                 .HasOne<Item>()
                 .WithMany()
-                .HasForeignKey(field => field.FieldId)
+                .HasForeignKey(field => field.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Comment>()
@@ -53,16 +54,28 @@ namespace Personal_Collection_Manager.Data
                 .HasForeignKey(comment => comment.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            builder.Entity<CollectionTag>()
-                .HasOne<Collection>()
+            builder.Entity<ItemsTag>()
+                .HasOne<Item>()
                 .WithMany()
-                .HasForeignKey(ct => ct.CollectionId)
+                .HasForeignKey(ct => ct.ItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            builder.Entity<CollectionTag>()
+            builder.Entity<ItemsTag>()
                 .HasOne<Tag>()
                 .WithMany()
                 .HasForeignKey(ct => ct.TagId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<AdditionalFieldOfCollection>()
+                .HasOne<Collection>()
+                .WithMany()
+                .HasForeignKey(additionalField => additionalField.CollectionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<FieldOfItem>()
+                .HasOne<AdditionalFieldOfCollection>()
+                .WithMany()
+                .HasForeignKey(f => f.AdditionalFieldOfCollectionId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
     }
