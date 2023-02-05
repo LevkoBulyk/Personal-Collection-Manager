@@ -1,13 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Personal_Collection_Manager.Data.DataBaseModels;
 @inject SignInManager<IdentityUser> SignInManager
-@inject UserManager<IdentityUser> UserManager
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a class="nav-link text-dark" asp-controller="Dashboard" asp-action="Index" asp-route-id="@((await UserManager.FindByNameAsync(User.Identity.Name)).Id)" >Dashboard</a>
+            <a class="nav-link text-dark" asp-controller="Dashboard" asp-action="Index" >Dashboard</a>
         </li>
         @if (User.IsInRole(UserRole.Admin))
         {

@@ -1,0 +1,90 @@
+﻿@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+
+@model CollectionView;
+
+@{
+    ViewData["Title"] = "Edit collection";
+}
+
+<form asp-action="Edit">
+    <input class="visually-hidden" asp-for="Id" class="form-control" value="@Model.Id">
+    <input class="visually-hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
+    <div class="form-group">
+        <label asp-for="Name">Name</label>
+        <input asp-for="Name" class="form-control" value="@Model.Name">
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Topic">Topic</label>
+        <input asp-for="Topic" class="form-control" value="@Model.Topic">
+        <span asp-validation-for="Topic" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="Description">Description</label>
+        <input asp-for="Description" class="form-control" value="@Model.Description">
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+    <div class="form-group">
+        <label asp-for="ImageUrl">Image</label>
+        <input asp-for="ImageUrl" class="form-control" value="@Model.ImageUrl">
+        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+    </div>
+    @*<div class="form-group">
+    <label asp-for="Topic">Category</label>
+    <select asp-for="Topic" asp-items="@Html.GetEnumSelectList<Topic>()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"></select>
+    <span asp-validation-for="Topic" class="text-danger"></span>
+    </div>*@
+    <div class="container">
+        <div class="album p-4 m-2 bg-light">
+            <label>Add aditional fields:</label>
+            @for (int i = 0; i < Model.AdditionalFields.Length; i++)
+            {
+                <div class="card m-3 p-4 shadow-sm">
+                    <div class="row">
+                        <div class="col-10">
+                            <input asp-for="@Model.AdditionalFields[i].Id" class="visually-hidden" id="exampleInputEmail1" value="@Model.AdditionalFields[i].Id">
+                            <input asp-for="@Model.AdditionalFields[i].Order" class="visually-hidden" id="exampleInputEmail1" value="@i">
+                            <div class="form-group">
+                                <label asp-for="@Model.AdditionalFields[i].Name">Name</label>
+                                <input asp-for="@Model.AdditionalFields[i].Name" class="form-control" value="@Model.AdditionalFields[i].Name">
+                                <span asp-validation-for="@Model.AdditionalFields[i].Name" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="@Model.AdditionalFields[i].Type">Type</label>
+                                <select asp-for="@Model.AdditionalFields[i].Type" asp-items="@Html.GetEnumSelectList<FieldType>()" class="form-control form-select" value="@Model.AdditionalFields[i].Type"></select>
+                                <span asp-validation-for="@Model.AdditionalFields[i].Type" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-2 btn-group-vertical">
+                            @if (Model.AdditionalFields.Length > 0)
+                            {
+                                if (i != 0)
+                                {
+                                    <button asp-controller="Collection" asp-action="MoveUp" asp-route-number="@i" class="btn btn-outline-secondary btn-square-sm">
+                                        <i class="bi bi-arrow-up-square"></i>
+                                    </button>
+                                }
+                                <button asp-controller="Collection" asp-action="RemoveField" asp-route-number="@i" onclick="ConfirmDeleting('additional field', event);" class="btn btn-outline-danger btn-square-sm">
+                                    <i class="bi bi-x-square"></i>
+                                </button>
+                                <button id="btn_@i" class="visually-hidden" ></button>
+                                if (i != Model.AdditionalFields.Length - 1)
+                                {
+                                    <button asp-controller="Collection" asp-action="MoveDown" asp-route-number="@i" class="btn btn-outline-secondary btn-square-sm">
+                                        <i class="bi bi-arrow-down-square"></i>
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="d-flex flex-row-reverse">
+                <button asp-controller="Collection" asp-action="AddField" class="btn "><i class="bi bi-plus-square"> add field</i></button>
+            </div>
+        </div>
+    </div>
+    <div class="btn-group">
+        <button asp-controller="Collection" asp-action="Edit" class="btn btn-outline-success">Save changes</button>
+    </div>
+</form>

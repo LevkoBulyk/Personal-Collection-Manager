@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.Data;
+using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.Models;
 using System.Drawing;
 
@@ -7,25 +9,16 @@ namespace Personal_Collection_Manager.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ICollectionRepository _collection;
 
-        public DashboardController(ApplicationDbContext context)
+        public DashboardController(ICollectionRepository collection)
         {
-            _context = context;
+            _collection = collection;
         }
 
-        public IActionResult Index(string Id)
+        public async Task<IActionResult> Index()
         {
-            var collections = (from coll in _context.Collections
-                               where coll.UserId.Equals(Id)
-                               select new CollectionView() {
-                                   Id = coll.Id,
-                                   Name = coll.Name,
-                                   Description = coll.Description,
-                                   Topic = coll.Topic,
-                                   ImageUrl = coll.ImageUrl
-                               }).ToList();
-            return View(collections);
+            return View(await _collection.GetCollectionsOf(User));
         }
     }
 }

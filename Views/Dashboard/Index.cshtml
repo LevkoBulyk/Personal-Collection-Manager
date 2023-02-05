@@ -10,7 +10,7 @@
         <div class="row">
             <h2 class="col">My Collections</h2>
             <div class="align-items-end col">
-                <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Create">
+                <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Edit" asp-route-id="null">
                     Create new Collection
                 </a>
             </div>
@@ -42,7 +42,7 @@
                                                 <a asp-controller="Collection" asp-action="Edit" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-secondary">
                                                     Edit
                                                 </a>
-                                                <a asp-controller="Collection" asp-action="Delete" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-danger">
+                                                <a asp-controller="Collection" asp-action="Delete" asp-route-id="@collection.Id" onclick="ConfirmDeleting('collection', event);" class="btn btn-sm btn-outline-danger">
                                                     Delete
                                                 </a>
                                             </div>

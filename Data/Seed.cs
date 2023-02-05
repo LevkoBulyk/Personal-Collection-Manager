@@ -34,7 +34,7 @@ namespace Personal_Collection_Manager.Data
                     user.Email = adminUserEmail;
                     user.EmailConfirmed = true;
                     //await emailStore.SetEmailAsync(user, adminUserEmail, CancellationToken.None);
-                    await userManager.CreateAsync(user, "Testing!123");
+                    await userManager.CreateAsync(user, "Test!123");
                     await userManager.AddToRoleAsync(user, UserRole.Admin);
                 }
 
@@ -48,7 +48,7 @@ namespace Personal_Collection_Manager.Data
                     user.Email = appUserEmail;
                     user.EmailConfirmed = true;
                     //await emailStore.SetEmailAsync(user, appUserEmail, CancellationToken.None);
-                    await userManager.CreateAsync(user, "Testing@!123");
+                    await userManager.CreateAsync(user, "Test!123");
                     await userManager.AddToRoleAsync(user, UserRole.Admin);
                 }
             }

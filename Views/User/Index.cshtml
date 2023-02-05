@@ -46,8 +46,11 @@
                                 <a asp-controller="User" asp-action="ChangeRole" asp-route-id="@user.Id" class="btn btn-sm btn-outline-warning">
                                     Change role
                                 </a>
-                                <a onclick="DeleteUser('@(user.Id)');" class="btn btn-sm btn-outline-danger">
+                                <a asp-controller="User" asp-action="Delete" asp-route-id="@user.Id" onclick="ConfirmDeleting('user', event);" class="btn btn-sm btn-outline-danger">
                                     Delete
+                                </a>
+                                <a asp-controller="User" asp-action="Block" asp-route-id="@user.Id" class="btn btn-sm btn-outline-danger">
+                                    Block/unblock
                                 </a>
                             </div>
                         </td>
@@ -62,15 +65,4 @@
             }
         </tbody>
     </table>
-
 </div>
-
-@section Scripts{
-    <script>
-        function DeleteUser(id) {
-            if (confirm("Are you sure, you want to delete user?")) {
-                window.location.href = "/User/Delete?Id=" + id;
-            }
-        };
-    </script>
-}

@@ -12,7 +12,7 @@ using Personal_Collection_Manager.Data;
 namespace Personal_Collection_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20230203182124_Initial")]
+    [Migration("20230203222636_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -226,7 +226,7 @@ namespace Personal_Collection_Manager.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", b =>
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.AdditionalFieldOfCollection", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -244,6 +244,9 @@ namespace Personal_Collection_Manager.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
@@ -371,7 +374,7 @@ namespace Personal_Collection_Manager.Migrations
                     b.Property<bool>("Deleted")
                         .HasColumnType("bit");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Value")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
@@ -481,7 +484,7 @@ namespace Personal_Collection_Manager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", b =>
+            modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.AdditionalFieldOfCollection", b =>
                 {
                     b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.Collection", null)
                         .WithMany()
@@ -516,7 +519,7 @@ namespace Personal_Collection_Manager.Migrations
 
             modelBuilder.Entity("Personal_Collection_Manager.Data.DataBaseModels.FieldOfItem", b =>
                 {
-                    b.HasOne("Personal_Collection_Manager.Data.AdditionalFieldOfCollection", null)
+                    b.HasOne("Personal_Collection_Manager.Data.DataBaseModels.AdditionalFieldOfCollection", null)
                         .WithMany()
                         .HasForeignKey("AdditionalFieldOfCollectionId")
                         .OnDelete(DeleteBehavior.NoAction)

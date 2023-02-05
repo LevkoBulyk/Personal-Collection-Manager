@@ -58,28 +58,21 @@ namespace Personal_Collection_Manager.Controllers
             if (user == null)
                 return BadRequest();
             var currectUserId = (await _userManager.GetUserAsync(User)).Id;
-            await _userManager.DeleteAsync(user);
             if (Id.Equals(currectUserId))
             {
                 await _signInManager.SignOutAsync();
             }
+            await _userManager.DeleteAsync(user);
             return RedirectToAction("Index");
         }
 
-        public async Task<IActionResult> ConConfirmEmail(string token, string email)
+        public async Task<IActionResult> Block(string id)
         {
-            if (token == null || email == null)
-                return BadRequest();
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return RedirectToAction("Error", "Home", $"No user found by email: {email}");
-            var res = await _userManager.ConfirmEmailAsync(user, token);
-            if (!res.Succeeded)
-            {
-                return RedirectToAction("Error", "Home", $"Failed to verify email: {email}");
-            }
-            await _signInManager.SignInAsync(user, isPersistent: false);
-            return RedirectToAction("Index", "Home");
+                return BadRequest();
+            // TODO: user blocking
+            return RedirectToAction("Index");
         }
     }
 }

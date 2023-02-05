@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Personal_Collection_Manager.Data;
+using Personal_Collection_Manager.IRepository;
+using Personal_Collection_Manager.Repository;
 using System;
 using WebPWrecover.Services;
 
@@ -18,6 +20,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
