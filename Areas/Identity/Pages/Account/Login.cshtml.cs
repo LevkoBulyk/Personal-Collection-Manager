@@ -15,23 +15,28 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Personal_Collection_Manager.Data.DataBaseModels;
+using Personal_Collection_Manager.IRepository;
 
 namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
 {
     public class LoginModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<LoginModel> _logger;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IUserRepository _repository;
 
         public LoginModel(
-            SignInManager<IdentityUser> signInManager,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<LoginModel> logger,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IUserRepository repository)
         {
             _signInManager = signInManager;
             _logger = logger;
             _userManager = userManager;
+            _repository = repository;
         }
 
         /// <summary>
@@ -117,10 +122,10 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
             {
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    IdentityUser user;
+                    ApplicationUser user;
                     try
                     {
-                        user = _userManager.Users.First(u => u.Email.Equals(Input.Email));
+                        user = _userManager.Users.First(u => u.Email.Equals(Input.Email) && !u.Deleted);
                     }
                     catch (InvalidOperationException e)
                     {

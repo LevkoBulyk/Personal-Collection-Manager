@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Personal_Collection_Manager.Data.DataBaseModels;
 using WebPWrecover.Services;
 
 namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
@@ -19,11 +20,11 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterConfirmationModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly IEmailSender _emailSender;
 
         public RegisterConfirmationModel(
-            UserManager<IdentityUser> userManager,
+            UserManager<ApplicationUser> userManager,
             IEmailSender emailSender)
         {
             _userManager = userManager;
@@ -65,10 +66,10 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
             Email = email;
             
             var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            var confirmationLink = Url.Action("ConConfirmEmail", "User",
+            var confirmationLink = Url.Action("ConfirmEmail", "User",
                new { token, email = user.Email },
                Request.Scheme);
-            var text = @$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.
+            var text = @$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(confirmationLink)}'>clicking here</a>.<br/><br/>
 In case, if the link above is not working try this one: {confirmationLink}";
             await _emailSender.SendEmailAsync(user.Email, "Confirm your email", text);
 

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Personal_Collection_Manager.Data;
+using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.Repository;
 using System;
@@ -16,11 +17,13 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 var requireEmailConfirmation = builder.Configuration.GetValue<bool>("RegistrationSettings:RequireEmailConfirmation");
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = requireEmailConfirmation)
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = requireEmailConfirmation)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();

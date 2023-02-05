@@ -1,6 +1,6 @@
-﻿function ConfirmDeleting(name, event) {
+﻿function ConfirmAction(nameOfAction, nameOfObject, event) {
     // TODO: replace with nice-looking window
-    if (!confirm("Are you sure, you want to delete " + name + "?")) {
+    if (!confirm("Are you sure, you want to " + nameOfAction + " " + nameOfObject + "?")) {
         event.preventDefault();
     }
 };

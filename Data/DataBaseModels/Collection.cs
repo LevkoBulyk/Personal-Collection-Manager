@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Personal_Collection_Manager.Data.DataBaseModels
@@ -9,7 +8,7 @@ namespace Personal_Collection_Manager.Data.DataBaseModels
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey(nameof(IdentityUser))]
+        [ForeignKey(nameof(ApplicationUser))]
         public string UserId { get; set; }
 
         [Required]

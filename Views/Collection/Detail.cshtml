@@ -16,7 +16,7 @@
                     <div class="btn-group mt-2">
                         <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
                         <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
-                        <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmDeleting('collection', event);" class="btn btn-outline-danger">Delete</a>
+                        <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-outline-danger">Delete</a>
                     </div>
                 </div>
                 <div class="col-md-6">

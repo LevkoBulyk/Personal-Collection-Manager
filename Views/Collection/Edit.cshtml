@@ -64,7 +64,7 @@
                                         <i class="bi bi-arrow-up-square"></i>
                                     </button>
                                 }
-                                <button asp-controller="Collection" asp-action="RemoveField" asp-route-number="@i" onclick="ConfirmDeleting('additional field', event);" class="btn btn-outline-danger btn-square-sm">
+                                <button asp-controller="Collection" asp-action="RemoveField" asp-route-number="@i" onclick="ConfirmAction('delete', 'additional field', event);" class="btn btn-outline-danger btn-square-sm">
                                     <i class="bi bi-x-square"></i>
                                 </button>
                                 <button id="btn_@i" class="visually-hidden" ></button>

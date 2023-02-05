@@ -12,6 +12,7 @@ namespace Personal_Collection_Manager.Data
             : base(options)
         { }
 
+        public DbSet<ApplicationUser> Users { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<FieldOfItem> FieldsOfItems { get; set; }
         public DbSet<AdditionalFieldOfCollection> AdditionalFieldsOfCollections { get; set; }
@@ -25,7 +26,7 @@ namespace Personal_Collection_Manager.Data
             base.OnModelCreating(builder);
 
             builder.Entity<Collection>()
-                .HasOne<IdentityUser>()
+                .HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(collection => collection.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
@@ -49,7 +50,7 @@ namespace Personal_Collection_Manager.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Comment>()
-                .HasOne<IdentityUser>()
+                .HasOne<ApplicationUser>()
                 .WithMany()
                 .HasForeignKey(comment => comment.UserId)
                 .OnDelete(DeleteBehavior.NoAction);
