@@ -11,7 +11,8 @@
             <div class="row panel-body">
                 <div class="col-md-6">
                     <div class="pro-img-details">
-                        <img src="@Model.ImageUrl" alt="">
+                        <img class="collectionImg" src="@Model.ImageUrl">
+                        <span>@Model.ImageUrl</span>
                     </div>
                     <div class="btn-group mt-2">
                         <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>

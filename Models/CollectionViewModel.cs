@@ -13,7 +13,7 @@ namespace Personal_Collection_Manager.Models
 
         public string? UserId { get; set; }
 
-        public IFormFile Image { get; set; } = null;
+        public IFormFile? Image { get; set; } = null;
 
         [Required]
         public string Name { get; set; }

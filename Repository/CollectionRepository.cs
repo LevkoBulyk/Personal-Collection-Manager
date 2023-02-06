@@ -15,15 +15,18 @@ namespace Personal_Collection_Manager.Repository
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPhotoService _photoService;
+        //private readonly ILogger _logger;
 
         public CollectionRepository(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            IPhotoService photoService)
+            IPhotoService photoService/*,
+            ILogger logger*/)
         {
             _context = context;
             _userManager = userManager;
             _photoService = photoService;
+            //_logger = logger;
         }
 
         public bool CollectionIsInDb(CollectionViewModel collection)
@@ -35,17 +38,17 @@ namespace Personal_Collection_Manager.Repository
             return _context.Collections.Find(collection.Id) != null;
         }
 
-        public async Task<bool> CreateCollecion(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
+        public async Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
             var currentUserId = (await _userManager.GetUserAsync(collectionCreator)).Id;
-            var photoResult = await _photoService.AddPhotoAsync(collection.Image);
+            var photoResult = collection.Image == null ? null : await _photoService.AddPhotoAsync(collection.Image);
             var col = new Collection()
             {
                 UserId = currentUserId,
                 Name = collection.Name,
                 Description = collection.Description,
                 Topic = collection.Topic,
-                ImageUrl = photoResult.Url.ToString()
+                ImageUrl = photoResult == null ? string.Empty : photoResult.Url.ToString()
             };
             _context.Collections.Add(col);
             var res = _context.SaveChanges();
@@ -71,22 +74,23 @@ namespace Personal_Collection_Manager.Repository
         public bool DeleteAdditionalField(int id)
         {
             var field = (from f in _context.AdditionalFieldsOfCollections
-                        where f.Id == id
-                        select f).SingleOrDefault();
+                         where f.Id == id
+                         select f).SingleOrDefault();
             if (field != null)
                 _context.AdditionalFieldsOfCollections.Remove(field);
             return _context.SaveChanges() > 0;
         }
 
-        public bool DeleteCollection(int id)
+        public bool Delete(int id)
         {
             var collection = (from c in _context.Collections
-                             where c.Id == id
-                             select c).SingleOrDefault();
+                              where c.Id == id
+                              select c).SingleOrDefault();
             if (collection != null)
             {
                 _context.Collections.Remove(collection);
-                _photoService.DeletePhoto(collection.ImageUrl);
+                var res = _photoService.DeletePhoto(collection.ImageUrl);
+                Console.WriteLine($"Cloude delete: result: {res.Result}");
                 var fields = (from f in _context.AdditionalFieldsOfCollections
                               where f.CollectionId == id
                               select f).ToList();
@@ -98,25 +102,35 @@ namespace Personal_Collection_Manager.Repository
             return _context.SaveChanges() > 0;
         }
 
-        public bool EditCollecion(CollectionViewModel input)
+        public bool Edit(CollectionViewModel input)
         {
             if (input.Id == null)
             {
                 throw new ArgumentNullException(nameof(input));
             }
-            var colllection = _context.Collections.Find(input.Id);
-            if (colllection == null)
+            var collection = _context.Collections.Find(input.Id);
+            if (collection == null)
             {
                 throw new ArgumentException(nameof(input.Id));
             }
-            _photoService.DeletePhoto(colllection.ImageUrl);
-            var uploadResult = _photoService.AddPhoto(input.Image);
-            colllection.Id = (int)input.Id;
-            colllection.Name = input.Name;
-            colllection.Description = input.Description;
-            colllection.Topic = input.Topic;
-            colllection.ImageUrl = uploadResult.Url.ToString();
-            _context.Collections.Update(colllection);
+            if (collection.ImageUrl.Length > 0)
+            {
+                _photoService.DeletePhoto(collection.ImageUrl);
+            }
+            if (input.Image != null)
+            {
+                var uploadResult = _photoService.AddPhoto(input.Image);
+                collection.Id = (int)input.Id;
+                collection.ImageUrl = uploadResult.Url.ToString();
+            }
+            else
+            {
+                collection.ImageUrl = string.Empty;
+            }
+            collection.Name = input.Name;
+            collection.Description = input.Description;
+            collection.Topic = input.Topic;
+            _context.Collections.Update(collection);
             foreach (var inputField in input.AdditionalFields)
             {
                 var field = _context.AdditionalFieldsOfCollections.Find(inputField.Id);
@@ -124,7 +138,7 @@ namespace Personal_Collection_Manager.Repository
                 {
                     var createField = new AdditionalFieldOfCollection()
                     {
-                        CollectionId = colllection.Id,
+                        CollectionId = collection.Id,
                         Name = inputField.Name,
                         Type = inputField.Type,
                         Order = inputField.Order
@@ -190,7 +204,7 @@ namespace Personal_Collection_Manager.Repository
                 .OrderBy(f => f.Order)
                 .Select(f => new AditionalField()
                 {
-                    Id = f.Id, 
+                    Id = f.Id,
                     Name = f.Name,
                     Type = f.Type,
                     Order = f.Order

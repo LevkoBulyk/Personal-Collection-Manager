@@ -38,6 +38,7 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(CollectionViewModel collection)
         {
+            ModelState.Remove(nameof(collection.ImageUrl));
             if (!ModelState.IsValid)
             {
                 TempData[_error] = "Not all required fields were filled, or some were filled with errors";
@@ -45,7 +46,7 @@ namespace Personal_Collection_Manager.Controllers
             }
             if (collection.Id == null)
             {
-                if (await _collection.CreateCollecion(collection, User))
+                if (await _collection.Create(collection, User))
                 {
                     TempData[_success] = "New collection was successfully created";
                     return RedirectToAction("Index", "Dashboard");
@@ -53,7 +54,7 @@ namespace Personal_Collection_Manager.Controllers
             }
             else
             {
-                if (_collection.EditCollecion(collection))
+                if (_collection.Edit(collection))
                 {
                     TempData[_success] = "Collection was edited and saved";
                     return RedirectToAction("Index", "Dashboard");
@@ -65,7 +66,7 @@ namespace Personal_Collection_Manager.Controllers
 
         public IActionResult Delete(int id)
         {
-            _collection.DeleteCollection(id);
+            _collection.Delete(id);
             TempData[_success] = "Collection was successfully deleted";
             return RedirectToAction("Index", "Dashboard");
         }
