@@ -30,10 +30,10 @@ namespace Personal_Collection_Manager.Controllers
         {
             var users = _repository.GetAllNotDeletedUsers();
             // TODO: swithc to mapper
-            var respond = new List<UserView>();
+            var respond = new List<UserViewModel>();
             foreach (var user in users)
             {
-                respond.Add(new UserView
+                respond.Add(new UserViewModel
                 {
                     Id = user.Id,
                     UserName = user.UserName,

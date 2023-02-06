@@ -1,14 +1,14 @@
 ﻿@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
 
-@model CollectionView;
+@model CollectionViewModel;
 
 @{
     ViewData["Title"] = "Edit collection";
 }
 
-<form asp-action="Edit">
-    <input class="visually-hidden" asp-for="Id" class="form-control" value="@Model.Id">
-    <input class="visually-hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
+<form asp-action="Edit" enctype="multipart/form-data">
+    <input type="hidden" asp-for="Id" class="form-control" value="@Model.Id">
+    <input type="hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
     <div class="form-group">
         <label asp-for="Name">Name</label>
         <input asp-for="Name" class="form-control" value="@Model.Name">
@@ -25,9 +25,9 @@
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="form-group">
-        <label asp-for="ImageUrl">Image</label>
-        <input asp-for="ImageUrl" class="form-control" value="@Model.ImageUrl">
-        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+        <label asp-for="Image">Image</label>
+        <input type="file" asp-for="Image" class="form-control" value="@Model.Image">
+        <span asp-validation-for="Image" class="text-danger"></span>
     </div>
     @*<div class="form-group">
     <label asp-for="Topic">Category</label>
@@ -42,8 +42,8 @@
                 <div class="card m-3 p-4 shadow-sm">
                     <div class="row">
                         <div class="col-10">
-                            <input asp-for="@Model.AdditionalFields[i].Id" class="visually-hidden" id="exampleInputEmail1" value="@Model.AdditionalFields[i].Id">
-                            <input asp-for="@Model.AdditionalFields[i].Order" class="visually-hidden" id="exampleInputEmail1" value="@i">
+                            <input asp-for="@Model.AdditionalFields[i].Id" type="hidden" id="exampleInputEmail1" value="@Model.AdditionalFields[i].Id">
+                            <input asp-for="@Model.AdditionalFields[i].Order" type="hidden" id="exampleInputEmail1" value="@i">
                             <div class="form-group">
                                 <label asp-for="@Model.AdditionalFields[i].Name">Name</label>
                                 <input asp-for="@Model.AdditionalFields[i].Name" class="form-control" value="@Model.AdditionalFields[i].Name">

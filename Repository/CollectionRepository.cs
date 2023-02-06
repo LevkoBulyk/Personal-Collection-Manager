@@ -4,6 +4,7 @@ using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.Data.DataBaseModels.Enum;
 using Personal_Collection_Manager.IRepository;
+using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using System.Security.Claims;
 
@@ -13,16 +14,19 @@ namespace Personal_Collection_Manager.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IPhotoService _photoService;
 
         public CollectionRepository(
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IPhotoService photoService)
         {
             _context = context;
             _userManager = userManager;
+            _photoService = photoService;
         }
 
-        public bool CollectionIsInDb(CollectionView collection)
+        public bool CollectionIsInDb(CollectionViewModel collection)
         {
             if (collection.Id == null)
             {
@@ -31,16 +35,17 @@ namespace Personal_Collection_Manager.Repository
             return _context.Collections.Find(collection.Id) != null;
         }
 
-        public async Task<bool> CreateCollecion(CollectionView collection, ClaimsPrincipal collectionCreator)
+        public async Task<bool> CreateCollecion(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
             var currentUserId = (await _userManager.GetUserAsync(collectionCreator)).Id;
+            var photoResult = await _photoService.AddPhotoAsync(collection.Image);
             var col = new Collection()
             {
                 UserId = currentUserId,
                 Name = collection.Name,
                 Description = collection.Description,
                 Topic = collection.Topic,
-                ImageUrl = collection.ImageUrl
+                ImageUrl = photoResult.Url.ToString()
             };
             _context.Collections.Add(col);
             var res = _context.SaveChanges();
@@ -78,18 +83,22 @@ namespace Personal_Collection_Manager.Repository
             var collection = (from c in _context.Collections
                              where c.Id == id
                              select c).SingleOrDefault();
-            _context.Collections.Remove(collection);
-            var fields = (from f in _context.AdditionalFieldsOfCollections
-                         where f.CollectionId == id
-                         select f).ToList();
-            foreach (var field in fields)
+            if (collection != null)
             {
-                _context.AdditionalFieldsOfCollections.Remove(field);
+                _context.Collections.Remove(collection);
+                _photoService.DeletePhoto(collection.ImageUrl);
+                var fields = (from f in _context.AdditionalFieldsOfCollections
+                              where f.CollectionId == id
+                              select f).ToList();
+                foreach (var field in fields)
+                {
+                    _context.AdditionalFieldsOfCollections.Remove(field);
+                }
             }
             return _context.SaveChanges() > 0;
         }
 
-        public bool EditCollecion(CollectionView input)
+        public bool EditCollecion(CollectionViewModel input)
         {
             if (input.Id == null)
             {
@@ -100,11 +109,13 @@ namespace Personal_Collection_Manager.Repository
             {
                 throw new ArgumentException(nameof(input.Id));
             }
+            _photoService.DeletePhoto(colllection.ImageUrl);
+            var uploadResult = _photoService.AddPhoto(input.Image);
             colllection.Id = (int)input.Id;
             colllection.Name = input.Name;
             colllection.Description = input.Description;
             colllection.Topic = input.Topic;
-            colllection.ImageUrl = input.ImageUrl;
+            colllection.ImageUrl = uploadResult.Url.ToString();
             _context.Collections.Update(colllection);
             foreach (var inputField in input.AdditionalFields)
             {
@@ -131,11 +142,11 @@ namespace Personal_Collection_Manager.Repository
             return _context.SaveChanges() > 0;
         }
 
-        public CollectionView GetCollectionById(int Id)
+        public CollectionViewModel GetCollectionById(int Id)
         {
             var collection = (from c in _context.Collections
                               where c.Id == Id
-                              select new CollectionView()
+                              select new CollectionViewModel()
                               {
                                   Id = c.Id,
                                   UserId = c.UserId,
@@ -158,12 +169,12 @@ namespace Personal_Collection_Manager.Repository
             return collection;
         }
 
-        public CollectionView GetCollectionByIdAsNoTraking(int Id)
+        public CollectionViewModel GetCollectionByIdAsNoTraking(int Id)
         {
             var collection = _context.Collections
                 .AsNoTracking()
                 .Where(c => c.Id == Id)
-                .Select(c => new CollectionView()
+                .Select(c => new CollectionViewModel()
                 {
                     Id = c.Id,
                     UserId = c.UserId,
@@ -189,12 +200,12 @@ namespace Personal_Collection_Manager.Repository
             return collection;
         }
 
-        public async Task<List<CollectionView>> GetCollectionsOf(ClaimsPrincipal user)
+        public async Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user)
         {
             var Id = (await _userManager.GetUserAsync(user)).Id;
             var collections = (from coll in _context.Collections
                                where coll.UserId.Equals(Id)
-                               select new CollectionView()
+                               select new CollectionViewModel()
                                {
                                    Id = coll.Id,
                                    Name = coll.Name,

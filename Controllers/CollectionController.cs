@@ -19,15 +19,6 @@ namespace Personal_Collection_Manager.Controllers
             _collection = collection;
         }
 
-        public IActionResult Edit(int? id)
-        {
-            var collection = id == null ?
-                    new CollectionView() :
-                    _collection.GetCollectionByIdAsNoTraking((int)id);
-            collection.ReturnUrl = Request.Headers["Referer"].ToString();
-            return View(collection);
-        }
-
         public IActionResult Detail(int id)
         {
             var collection = _collection.GetCollectionByIdAsNoTraking(id);
@@ -35,8 +26,17 @@ namespace Personal_Collection_Manager.Controllers
             return View(collection);
         }
 
+        public IActionResult Edit(int? id)
+        {
+            var collection = id == null ?
+                    new CollectionViewModel() :
+                    _collection.GetCollectionByIdAsNoTraking((int)id);
+            collection.ReturnUrl = Request.Headers["Referer"].ToString();
+            return View(collection);
+        }
+
         [HttpPost]
-        public async Task<IActionResult> Edit(CollectionView collection)
+        public async Task<IActionResult> Edit(CollectionViewModel collection)
         {
             if (!ModelState.IsValid)
             {
@@ -71,7 +71,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
-        public IActionResult RemoveField(CollectionView collection, int number)
+        public IActionResult RemoveField(CollectionViewModel collection, int number)
         {
             int? id = collection.AdditionalFields[number].Id;
             if (id != null && !_collection.DeleteAdditionalField((int)id))
@@ -98,7 +98,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost] 
-        public IActionResult AddField(CollectionView collection)
+        public IActionResult AddField(CollectionViewModel collection)
         {
             var count = collection.AdditionalFields.Length;
             if (count > 0)
@@ -119,7 +119,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
-        public IActionResult MoveUp(CollectionView collection, int number) 
+        public IActionResult MoveUp(CollectionViewModel collection, int number) 
         {
             var field = collection.AdditionalFields[number];
             collection.AdditionalFields[number] = collection.AdditionalFields[number - 1];
@@ -128,7 +128,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
-        public IActionResult MoveDown(CollectionView collection, int number)
+        public IActionResult MoveDown(CollectionViewModel collection, int number)
         {
             var field = collection.AdditionalFields[number];
             collection.AdditionalFields[number] = collection.AdditionalFields[number + 1];

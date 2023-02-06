@@ -4,8 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
+using Personal_Collection_Manager.Helpers;
 using Personal_Collection_Manager.IRepository;
+using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Repository;
+using Personal_Collection_Manager.Services;
 using System;
 using WebPWrecover.Services;
 
@@ -22,9 +25,11 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 

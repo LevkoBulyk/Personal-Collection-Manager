@@ -2,9 +2,9 @@
 
 namespace Personal_Collection_Manager.Models
 {
-    public class CollectionView
+    public class CollectionViewModel
     {
-        public CollectionView()
+        public CollectionViewModel()
         {
             AdditionalFields = new AditionalField[0];
         }
@@ -12,6 +12,8 @@ namespace Personal_Collection_Manager.Models
         public int? Id { get; set; }
 
         public string? UserId { get; set; }
+
+        public IFormFile Image { get; set; } = null;
 
         [Required]
         public string Name { get; set; }
