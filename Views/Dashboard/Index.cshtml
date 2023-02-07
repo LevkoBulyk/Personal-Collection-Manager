@@ -29,11 +29,11 @@
                                             <h4 x="50%" y="50%" fill="#eceeef" dy=".3em">
                                                 @collection.Name
                                             </h4>
-                                            <img src="@collection.ImageUrl" />
+                                            <img class="collectionImg" src="@collection.ImageUrl" />
                                         </div>
                                     </a>
                                     <div class="card-body">
-                                        <p class="card-text">@collection.Description</p>
+                                        <div class="card-text text-start">@Html.Raw(collection.Description)</div>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <div class="btn-group">
                                                 <a asp-controller="Collection" asp-action="Detail" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-primary">

@@ -12,7 +12,6 @@
                 <div class="col-md-6">
                     <div class="pro-img-details">
                         <img class="collectionImg" src="@Model.ImageUrl">
-                        <span>@Model.ImageUrl</span>
                     </div>
                     <div class="btn-group mt-2">
                         <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
@@ -22,7 +21,7 @@
                 </div>
                 <div class="col-md-6">
                     <h3 class="pro-d-title">@Model.Name</h3>
-                    <p>@Model.Description</p>
+                    <div>@Html.Raw(Model.Description)</div>
                     <div class="product_meta">
                         <span class="posted_in"> <strong>Topic:</strong> <a rel="tag" href="#">@Model.Topic</a></span>
                     </div>

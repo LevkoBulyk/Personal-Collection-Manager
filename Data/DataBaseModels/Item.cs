@@ -13,7 +13,7 @@ namespace Personal_Collection_Manager.Data.DataBaseModels
 
         [Required]
         [StringLength(100)]
-        public string Value { get; set; }
+        public string Name { get; set; }
 
         public bool Deleted { get; set; } = false;
     }

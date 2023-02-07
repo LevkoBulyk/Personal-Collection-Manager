@@ -53,4 +53,14 @@ footer {
     aspect-ratio: 3/2;
     object-fit: cover;
     object-position: top;
+    background: linear-gradient(to bottom, #f5f5f5, #e5f7fc);
+}
+
+.autosize {
+    resize: none;
+    overflow: hidden;
+}
+
+.form-group{
+    margin: 1em;
 }

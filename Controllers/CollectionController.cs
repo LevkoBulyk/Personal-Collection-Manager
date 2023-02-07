@@ -30,7 +30,7 @@ namespace Personal_Collection_Manager.Controllers
         {
             var collection = id == null ?
                     new CollectionViewModel() :
-                    _collection.GetCollectionByIdAsNoTraking((int)id);
+                    _collection.GetCollectionById((int)id);
             collection.ReturnUrl = Request.Headers["Referer"].ToString();
             return View(collection);
         }
@@ -56,9 +56,13 @@ namespace Personal_Collection_Manager.Controllers
             {
                 if (_collection.Edit(collection))
                 {
-                    TempData[_success] = "Collection was edited and saved";
-                    return RedirectToAction("Index", "Dashboard");
+                    TempData[_success] = "Collection was saved";
+                    if (collection.ReturnUrl != null)
+                    {
+                        return Redirect(collection.ReturnUrl);
+                    }
                 }
+                return RedirectToAction("Index", "Dashboard");
             }
             TempData[_error] = "Failed to save collection to the database";
             return View(collection);
@@ -98,7 +102,7 @@ namespace Personal_Collection_Manager.Controllers
             return View("Edit", collection);
         }
 
-        [HttpPost] 
+        [HttpPost]
         public IActionResult AddField(CollectionViewModel collection)
         {
             var count = collection.AdditionalFields.Length;
@@ -120,7 +124,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
-        public IActionResult MoveUp(CollectionViewModel collection, int number) 
+        public IActionResult MoveUp(CollectionViewModel collection, int number)
         {
             var field = collection.AdditionalFields[number];
             collection.AdditionalFields[number] = collection.AdditionalFields[number - 1];

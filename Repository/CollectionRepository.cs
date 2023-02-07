@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
-using Personal_Collection_Manager.Data.DataBaseModels.Enum;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
@@ -15,17 +14,21 @@ namespace Personal_Collection_Manager.Repository
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPhotoService _photoService;
+        private readonly IMarkdownService _markdown;
+
         //private readonly ILogger _logger;
 
         public CollectionRepository(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
-            IPhotoService photoService/*,
-            ILogger logger*/)
+            IPhotoService photoService,
+            IMarkdownService markdown
+            /*ILogger logger*/)
         {
             _context = context;
             _userManager = userManager;
             _photoService = photoService;
+            _markdown = markdown;
             //_logger = logger;
         }
 
@@ -77,7 +80,10 @@ namespace Personal_Collection_Manager.Repository
                          where f.Id == id
                          select f).SingleOrDefault();
             if (field != null)
-                _context.AdditionalFieldsOfCollections.Remove(field);
+            {
+                field.Deleted = true;
+                _context.AdditionalFieldsOfCollections.Update(field);
+            }
             return _context.SaveChanges() > 0;
         }
 
@@ -88,15 +94,19 @@ namespace Personal_Collection_Manager.Repository
                               select c).SingleOrDefault();
             if (collection != null)
             {
-                _context.Collections.Remove(collection);
-                var res = _photoService.DeletePhoto(collection.ImageUrl);
-                Console.WriteLine($"Cloude delete: result: {res.Result}");
+                collection.Deleted = true;
+                _context.Collections.Update(collection);
+                /*if (!string.IsNullOrEmpty(collection.ImageUrl))
+                {
+                    var res = _photoService.DeletePhoto(collection.ImageUrl);
+                }*/
                 var fields = (from f in _context.AdditionalFieldsOfCollections
                               where f.CollectionId == id
                               select f).ToList();
                 foreach (var field in fields)
                 {
-                    _context.AdditionalFieldsOfCollections.Remove(field);
+                    field.Deleted = true;
+                    _context.AdditionalFieldsOfCollections.Update(field);
                 }
             }
             return _context.SaveChanges() > 0;
@@ -113,19 +123,16 @@ namespace Personal_Collection_Manager.Repository
             {
                 throw new ArgumentException(nameof(input.Id));
             }
-            if (collection.ImageUrl.Length > 0)
+            if (collection.ImageUrl.Length > 0 && string.IsNullOrEmpty(input.ImageUrl))
             {
                 _photoService.DeletePhoto(collection.ImageUrl);
+                collection.ImageUrl = string.Empty;
             }
             if (input.Image != null)
             {
                 var uploadResult = _photoService.AddPhoto(input.Image);
                 collection.Id = (int)input.Id;
                 collection.ImageUrl = uploadResult.Url.ToString();
-            }
-            else
-            {
-                collection.ImageUrl = string.Empty;
             }
             collection.Name = input.Name;
             collection.Description = input.Description;
@@ -159,7 +166,7 @@ namespace Personal_Collection_Manager.Repository
         public CollectionViewModel GetCollectionById(int Id)
         {
             var collection = (from c in _context.Collections
-                              where c.Id == Id
+                              where c.Id == Id && !c.Deleted
                               select new CollectionViewModel()
                               {
                                   Id = c.Id,
@@ -170,7 +177,7 @@ namespace Personal_Collection_Manager.Repository
                                   ImageUrl = c.ImageUrl,
                               }).SingleOrDefault();
             var additionalFields = (from f in _context.AdditionalFieldsOfCollections
-                                    where f.CollectionId == Id
+                                    where f.CollectionId == Id && !f.Deleted
                                     orderby f.Order
                                     select new AditionalField()
                                     {
@@ -187,20 +194,20 @@ namespace Personal_Collection_Manager.Repository
         {
             var collection = _context.Collections
                 .AsNoTracking()
-                .Where(c => c.Id == Id)
+                .Where(c => c.Id == Id && !c.Deleted)
                 .Select(c => new CollectionViewModel()
                 {
                     Id = c.Id,
                     UserId = c.UserId,
                     Name = c.Name,
-                    Description = c.Description,
+                    Description = _markdown.ToHtml(c.Description),
                     Topic = c.Topic,
                     ImageUrl = c.ImageUrl,
                 })
                 .SingleOrDefault();
             var additionalFields = _context.AdditionalFieldsOfCollections
                 .AsNoTracking()
-                .Where(f => f.CollectionId == Id)
+                .Where(f => f.CollectionId == Id && !f.Deleted)
                 .OrderBy(f => f.Order)
                 .Select(f => new AditionalField()
                 {
@@ -218,12 +225,12 @@ namespace Personal_Collection_Manager.Repository
         {
             var Id = (await _userManager.GetUserAsync(user)).Id;
             var collections = (from coll in _context.Collections
-                               where coll.UserId.Equals(Id)
+                               where coll.UserId.Equals(Id) && !coll.Deleted
                                select new CollectionViewModel()
                                {
                                    Id = coll.Id,
                                    Name = coll.Name,
-                                   Description = coll.Description,
+                                   Description = _markdown.ToHtml(coll.Description),
                                    Topic = coll.Topic,
                                    ImageUrl = coll.ImageUrl
                                }).ToList();
