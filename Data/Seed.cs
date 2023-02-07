@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Personal_Collection_Manager.Data.DataBaseModels;
-using WebPWrecover.Services;
 
 namespace Personal_Collection_Manager.Data
 {
@@ -24,7 +22,7 @@ namespace Personal_Collection_Manager.Data
                 var userStore = serviceScope.ServiceProvider.GetRequiredService<IUserStore<ApplicationUser>>();
                 //var emailStore = serviceScope.ServiceProvider.GetRequiredService<IUserEmailStore<ApplicationUser>>();
                 var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                
+
                 string adminUserEmail = "test1@gmail.com";
                 var adminUser = await userManager.FindByEmailAsync(adminUserEmail);
                 if (adminUser == null)
@@ -53,6 +51,28 @@ namespace Personal_Collection_Manager.Data
                     await userManager.CreateAsync(user, "Test!123");
                     await userManager.AddToRoleAsync(user, UserRole.Admin);
                 }
+
+                // Topics
+
+                var context = serviceScope.ServiceProvider.GetService<ApplicationDbContext>();
+
+                context.Database.EnsureCreated();
+
+                List<Topic> topicList = new List<Topic>
+                {
+                    new Topic { Title = "sports" },
+                    new Topic { Title = "coins"},
+                    new Topic {Title="antique"},
+                    new Topic {Title="cans"},
+                    new Topic { Title="Alcohol"},
+                    new Topic{Title="Books"},
+                    new Topic{Title="Vine"},
+                    new Topic{Title="stamp"}
+                    };
+
+                context.Topics.AddRange(topicList);
+
+                context.SaveChanges();
             }
         }
     }

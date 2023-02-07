@@ -5,6 +5,8 @@
     var imageDisplay = document.getElementById("fileDisplayArea");
     var markdownDescription = document.getElementById("descriptionMark");
     var scrollPosition = document.getElementById("scrollPosition");
+    var exampleDataList = document.getElementById("topic");
+    var datalistOptions = document.getElementById("datalistOptions");
     //var htmlDescription = document.getElementById("descriptionInHtml");
 
     document.addEventListener("drop", function (event) {
@@ -58,10 +60,6 @@
         }
     }
 
-    window.addEventListener('scroll', function () {
-        scrollPosition.value = window.pageYOffset;
-    });
-
     window.addEventListener("load", function () {
         if (fileInput.files.length === 0 && imageUrl.value == "") {
             removeImageButton.classList.add("visually-hidden");
@@ -74,6 +72,30 @@
                 "heading-1", "heading-2", "heading-3", "heading", "|",
                 "quote", "code", "|", "side-by-side", "fullscreen", "preview", "guide"],
             status: false
+        });
+    });
+
+    window.addEventListener('scroll', function () {
+        scrollPosition.value = window.pageYOffset;
+    });
+
+    exampleDataList.addEventListener('input', function () {
+        console.log(exampleDataList.value);
+        $.ajax({
+            type: "GET",
+            url: "/Collection/Topics",
+            data: { prefix: exampleDataList.value },
+            success: function (response) {
+                datalistOptions.innerHTML = "";
+                for (var i = 0; i < response.length; i++) {
+                    var option = document.createElement("option");
+                    option.value = response[i];
+                    datalistOptions.appendChild(option);
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
         });
     });
 

@@ -13,7 +13,5 @@ namespace Personal_Collection_Manager.Data.DataBaseModels
 
         [ForeignKey(nameof(Tag))]
         public int TagId { get; set; }
-
-        public bool Deleted { get; set; } = false;
     }
 }

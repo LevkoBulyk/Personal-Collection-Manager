@@ -13,5 +13,6 @@ namespace Personal_Collection_Manager.IRepository
         public bool CollectionIsInDb(CollectionViewModel collection);
         public bool DeleteAdditionalField(int id);
         public bool Delete(int id);
+        public List<string> GetTopicsWithPrefix(string prefix);
     }
 }

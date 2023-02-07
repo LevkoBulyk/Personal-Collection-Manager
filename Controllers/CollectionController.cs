@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.Data.DataBaseModels.Enum;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.Models;
+using Personal_Collection_Manager.Repository.Exceptions;
 
 namespace Personal_Collection_Manager.Controllers
 {
@@ -39,30 +41,39 @@ namespace Personal_Collection_Manager.Controllers
         public async Task<IActionResult> Edit(CollectionViewModel collection)
         {
             ModelState.Remove(nameof(collection.ImageUrl));
+            ModelState.Remove(nameof(collection.ScrollPosition));
             if (!ModelState.IsValid)
             {
                 TempData[_error] = "Not all required fields were filled, or some were filled with errors";
                 return View(collection);
             }
-            if (collection.Id == null)
+            try
             {
-                if (await _collection.Create(collection, User))
+                if (collection.Id == null)
                 {
-                    TempData[_success] = "New collection was successfully created";
+                    if (await _collection.Create(collection, User))
+                    {
+                        TempData[_success] = "New collection was successfully created";
+                        return RedirectToAction("Index", "Dashboard");
+                    }
+                }
+                else
+                {
+                    if (_collection.Edit(collection))
+                    {
+                        TempData[_success] = "Collection was saved";
+                        if (collection.ReturnUrl != null)
+                        {
+                            return Redirect(collection.ReturnUrl);
+                        }
+                    }
                     return RedirectToAction("Index", "Dashboard");
                 }
             }
-            else
+            catch (TopicNotFoundException e)
             {
-                if (_collection.Edit(collection))
-                {
-                    TempData[_success] = "Collection was saved";
-                    if (collection.ReturnUrl != null)
-                    {
-                        return Redirect(collection.ReturnUrl);
-                    }
-                }
-                return RedirectToAction("Index", "Dashboard");
+                TempData[_error] = e.Message;
+                return View(collection);
             }
             TempData[_error] = "Failed to save collection to the database";
             return View(collection);
@@ -139,6 +150,12 @@ namespace Personal_Collection_Manager.Controllers
             collection.AdditionalFields[number] = collection.AdditionalFields[number + 1];
             collection.AdditionalFields[number + 1] = field;
             return View("Edit", collection);
+        }
+
+        public JsonResult Topics(string prefix)
+        {
+            var topics = _collection.GetTopicsWithPrefix(prefix);
+            return Json(topics);
         }
     }
 }

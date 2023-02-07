@@ -20,10 +20,17 @@ namespace Personal_Collection_Manager.Data
         public DbSet<Collection> Collections { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ItemsTag> ItemsTags { get; set; }
+        public DbSet<Topic> Topics { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Collection>()
+                .HasOne<Topic>()
+                .WithMany()
+                .HasForeignKey(collection => collection.TopicId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Collection>()
                 .HasOne<ApplicationUser>()

@@ -5,6 +5,7 @@ using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
+using Personal_Collection_Manager.Repository.Exceptions;
 using System.Security.Claims;
 
 namespace Personal_Collection_Manager.Repository
@@ -45,12 +46,17 @@ namespace Personal_Collection_Manager.Repository
         {
             var currentUserId = (await _userManager.GetUserAsync(collectionCreator)).Id;
             var photoResult = collection.Image == null ? null : await _photoService.AddPhotoAsync(collection.Image);
+            var topic = _context.Topics.FirstOrDefault(t => t.Title.Equals(collection.Topic));
+            if (topic == null)
+            {
+                throw new TopicNotFoundException($"Topic '{collection.Topic}' not found in DB. You must choose topic from the drop-down list");
+            }
             var col = new Collection()
             {
                 UserId = currentUserId,
-                Name = collection.Name,
+                Title = collection.Name,
                 Description = collection.Description,
-                Topic = collection.Topic,
+                TopicId = topic.Id,
                 ImageUrl = photoResult == null ? string.Empty : photoResult.Url.ToString()
             };
             _context.Collections.Add(col);
@@ -65,7 +71,7 @@ namespace Personal_Collection_Manager.Repository
                 additionalFields.Add(new AdditionalFieldOfCollection()
                 {
                     CollectionId = col.Id,
-                    Name = field.Name,
+                    Title = field.Name,
                     Type = field.Type,
                     Order = field.Order
                 });
@@ -118,6 +124,11 @@ namespace Personal_Collection_Manager.Repository
             {
                 throw new ArgumentNullException(nameof(input));
             }
+            var topic = _context.Topics.First(t => t.Title.Equals(input.Topic));
+            if (topic == null)
+            {
+                throw new TopicNotFoundException($"Topic '{input.Topic}' not found in DB. You must choose topic from the drop-down list");
+            }
             var collection = _context.Collections.Find(input.Id);
             if (collection == null)
             {
@@ -134,9 +145,9 @@ namespace Personal_Collection_Manager.Repository
                 collection.Id = (int)input.Id;
                 collection.ImageUrl = uploadResult.Url.ToString();
             }
-            collection.Name = input.Name;
+            collection.Title = input.Name;
             collection.Description = input.Description;
-            collection.Topic = input.Topic;
+            collection.TopicId = topic.Id;
             _context.Collections.Update(collection);
             foreach (var inputField in input.AdditionalFields)
             {
@@ -146,7 +157,7 @@ namespace Personal_Collection_Manager.Repository
                     var createField = new AdditionalFieldOfCollection()
                     {
                         CollectionId = collection.Id,
-                        Name = inputField.Name,
+                        Title = inputField.Name,
                         Type = inputField.Type,
                         Order = inputField.Order
                     };
@@ -154,7 +165,7 @@ namespace Personal_Collection_Manager.Repository
                 }
                 else
                 {
-                    field.Name = inputField.Name;
+                    field.Title = inputField.Name;
                     field.Type = inputField.Type;
                     field.Order = inputField.Order;
                     _context.Update(field);
@@ -167,13 +178,15 @@ namespace Personal_Collection_Manager.Repository
         {
             var collection = (from c in _context.Collections
                               where c.Id == Id && !c.Deleted
+                              join t in _context.Topics
+                              on c.TopicId equals t.Id
                               select new CollectionViewModel()
                               {
                                   Id = c.Id,
                                   UserId = c.UserId,
-                                  Name = c.Name,
+                                  Name = c.Title,
                                   Description = c.Description,
-                                  Topic = c.Topic,
+                                  Topic = t.Title,
                                   ImageUrl = c.ImageUrl,
                               }).SingleOrDefault();
             var additionalFields = (from f in _context.AdditionalFieldsOfCollections
@@ -182,7 +195,7 @@ namespace Personal_Collection_Manager.Repository
                                     select new AditionalField()
                                     {
                                         Id = f.Id,
-                                        Name = f.Name,
+                                        Name = f.Title,
                                         Type = f.Type,
                                         Order = f.Order
                                     }).ToArray();
@@ -195,13 +208,13 @@ namespace Personal_Collection_Manager.Repository
             var collection = _context.Collections
                 .AsNoTracking()
                 .Where(c => c.Id == Id && !c.Deleted)
-                .Select(c => new CollectionViewModel()
+                .Join(_context.Topics, c => c.TopicId, t => t.Id, (c, t) => new CollectionViewModel()
                 {
                     Id = c.Id,
                     UserId = c.UserId,
-                    Name = c.Name,
+                    Name = c.Title,
                     Description = _markdown.ToHtml(c.Description),
-                    Topic = c.Topic,
+                    Topic = t.Title,
                     ImageUrl = c.ImageUrl,
                 })
                 .SingleOrDefault();
@@ -212,7 +225,7 @@ namespace Personal_Collection_Manager.Repository
                 .Select(f => new AditionalField()
                 {
                     Id = f.Id,
-                    Name = f.Name,
+                    Name = f.Title,
                     Type = f.Type,
                     Order = f.Order
                 })
@@ -224,17 +237,36 @@ namespace Personal_Collection_Manager.Repository
         public async Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user)
         {
             var Id = (await _userManager.GetUserAsync(user)).Id;
-            var collections = (from coll in _context.Collections
-                               where coll.UserId.Equals(Id) && !coll.Deleted
+            var collections = (from c in _context.Collections
+                               where c.UserId.Equals(Id) && !c.Deleted
+                               join t in _context.Topics
+                               on c.TopicId equals t.Id
                                select new CollectionViewModel()
                                {
-                                   Id = coll.Id,
-                                   Name = coll.Name,
-                                   Description = _markdown.ToHtml(coll.Description),
-                                   Topic = coll.Topic,
-                                   ImageUrl = coll.ImageUrl
+                                   Id = c.Id,
+                                   Name = c.Title,
+                                   Description = _markdown.ToHtml(c.Description),
+                                   Topic = t.Title,
+                                   ImageUrl = c.ImageUrl
                                }).ToList();
             return collections;
+        }
+
+        public List<string> GetTopicsWithPrefix(string prefix)
+        {
+            List<string> res;
+            if (string.IsNullOrEmpty(prefix))
+            {
+                res = (from t in _context.Topics
+                       select t.Title).Take(10).ToList();
+            }
+            else
+            {
+                res = (from t in _context.Topics
+                           where t.Title.StartsWith(prefix)
+                           select t.Title).Take(10).ToList();
+            }
+            return res;
         }
     }
 }

@@ -11,17 +11,16 @@ namespace Personal_Collection_Manager.Data.DataBaseModels
         [ForeignKey(nameof(ApplicationUser))]
         public string UserId { get; set; }
 
+        [ForeignKey(nameof(Topic))]
+        public int TopicId { get; set; }
+
         [Required]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         [Required]
         [StringLength(500)]
         public string Description { get; set; }
-
-        [Required]
-        [StringLength(50)]
-        public string Topic { get; set; }
 
         public string ImageUrl { get; set; }
 

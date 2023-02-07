@@ -6,11 +6,11 @@
     ViewData["Title"] = "Edit collection";
 }
 
-<form asp-action="Edit" enctype="multipart/form-data" >
+<form asp-action="Edit" enctype="multipart/form-data">
     <input type="hidden" asp-for="Id" class="form-control" value="@Model.Id">
     <input type="hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
     <input type="hidden" asp-for="ReturnUrl" class="form-control" value="@Model.ReturnUrl">
-    <input type="hidden" asp-for="ScrollPosition" id="scrollPosition" name="scrollPosition" >
+    <input type="hidden" asp-for="ScrollPosition" id="scrollPosition" name="scrollPosition">
     <div class="form-group">
         <label asp-for="Name">Name</label>
         <input asp-for="Name" class="form-control" value="@Model.Name">
@@ -18,13 +18,13 @@
     </div>
     <div class="form-group">
         <label asp-for="Topic">Topic</label>
-        <input asp-for="Topic" class="form-control" value="@Model.Topic">
+        <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic" >
+        <datalist id="datalistOptions"></datalist>
         <span asp-validation-for="Topic" class="text-danger"></span>
     </div>
     <div class="form-group">
         <label asp-for="Description">Description</label>
-        <textarea id="descriptionMark" class="form-control autosize" asp-for="Description"  value="@Model.Description"></textarea>
-        @*<input id="descriptionInHtml" asp-for="Description" value="@Model.Description"/>*@
+        <textarea id="descriptionMark" class="form-control autosize" asp-for="Description" value="@Model.Description"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
     <div class="form-group">
@@ -103,7 +103,7 @@
 </form>
 
 @section Scripts{
-    <script src="https://cdn.jsdelivr.net/npm/to-markdown@3.0.4/dist/to-markdown.min.js"></script>
-    <script src="~/js/collection/edit.js"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/to-markdown@3.0.4/dist/to-markdown.min.js"></script>*@
     <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="~/js/collection/edit.js"></script>
 }
