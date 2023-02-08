@@ -1,10 +1,5 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Personal_Collection_Manager.Data;
-using Personal_Collection_Manager.Data.DataBaseModels;
-using Personal_Collection_Manager.Data.DataBaseModels.Enum;
-using Personal_Collection_Manager.IRepository;
+﻿using Microsoft.AspNetCore.Mvc;
+using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using Personal_Collection_Manager.Repository.Exceptions;
 
@@ -14,9 +9,9 @@ namespace Personal_Collection_Manager.Controllers
     {
         private const string _success = "success";
         private const string _error = "error";
-        private readonly ICollectionRepository _collection;
+        private readonly ICollectionService _collection;
 
-        public CollectionController(ICollectionRepository collection)
+        public CollectionController(ICollectionService collection)
         {
             _collection = collection;
         }
@@ -30,10 +25,7 @@ namespace Personal_Collection_Manager.Controllers
 
         public IActionResult Edit(int? id)
         {
-            var collection = id == null ?
-                    new CollectionViewModel() :
-                    _collection.GetCollectionById((int)id);
-            collection.ReturnUrl = Request.Headers["Referer"].ToString();
+            var collection = _collection.GetCollectionViewModel(id);
             return View(collection);
         }
 
@@ -41,7 +33,6 @@ namespace Personal_Collection_Manager.Controllers
         public async Task<IActionResult> Edit(CollectionViewModel collection)
         {
             ModelState.Remove(nameof(collection.ImageUrl));
-            ModelState.Remove(nameof(collection.ScrollPosition));
             if (!ModelState.IsValid)
             {
                 TempData[_error] = "Not all required fields were filled, or some were filled with errors";
@@ -89,66 +80,34 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public IActionResult RemoveField(CollectionViewModel collection, int number)
         {
-            int? id = collection.AdditionalFields[number].Id;
-            if (id != null && !_collection.DeleteAdditionalField((int)id))
-            {
-                TempData[_error] = "Failed to delete additional field. Probably connection to the database was lost";
-                return View("Edit", collection);
-            }
-            var count = collection.AdditionalFields.Length;
-            var fields = collection.AdditionalFields;
-            collection.AdditionalFields = new AditionalField[count - 1];
-            for (int i = 0, j = 0; i < count; i++, j++)
-            {
-                if (i != number)
-                {
-                    collection.AdditionalFields[j] = fields[i];
-                }
-                else
-                {
-                    j--;
-                }
-            }
-            TempData[_success] = "Additional field was successfully deleted";
+            var result = _collection.RemoveField(ref collection, number);
+            if (result.Succeded)
+                TempData[_success] = result.Message;
+            else
+                TempData[_error] = result.Message;
             return View("Edit", collection);
         }
 
         [HttpPost]
         public IActionResult AddField(CollectionViewModel collection)
         {
-            var count = collection.AdditionalFields.Length;
-            if (count > 0)
-            {
-                var fields = collection.AdditionalFields;
-                collection.AdditionalFields = new AditionalField[count + 1];
-                collection.AdditionalFields[count] = new AditionalField();
-                for (int i = 0; i < count; i++)
-                {
-                    collection.AdditionalFields[i] = fields[i];
-                }
-            }
-            else
-            {
-                collection.AdditionalFields = new AditionalField[1] { new AditionalField() };
-            }
+            _collection.AddField(ref collection);
             return View("Edit", collection);
         }
 
         [HttpPost]
         public IActionResult MoveUp(CollectionViewModel collection, int number)
         {
-            var field = collection.AdditionalFields[number];
-            collection.AdditionalFields[number] = collection.AdditionalFields[number - 1];
-            collection.AdditionalFields[number - 1] = field;
+            _collection.MoveUp(ref collection, number);
+            ModelState.Clear();
             return View("Edit", collection);
         }
 
         [HttpPost]
         public IActionResult MoveDown(CollectionViewModel collection, int number)
         {
-            var field = collection.AdditionalFields[number];
-            collection.AdditionalFields[number] = collection.AdditionalFields[number + 1];
-            collection.AdditionalFields[number + 1] = field;
+            _collection.MoveDown(ref collection, number);
+            ModelState.Clear();
             return View("Edit", collection);
         }
 

@@ -4,7 +4,6 @@
     var imageUrl = document.getElementById("inputImageUrl");
     var imageDisplay = document.getElementById("fileDisplayArea");
     var markdownDescription = document.getElementById("descriptionMark");
-    var scrollPosition = document.getElementById("scrollPosition");
     var exampleDataList = document.getElementById("topic");
     var datalistOptions = document.getElementById("datalistOptions");
     //var htmlDescription = document.getElementById("descriptionInHtml");
@@ -65,7 +64,6 @@
             removeImageButton.classList.add("visually-hidden");
         }
         autosize();
-        window.scroll(0, scrollPosition.value);
         var easyMDE = new EasyMDE({
             element: markdownDescription,
             toolbar: ["undo", "redo", "|", "bold", "italic", "link", "|", "ordered-list", "unordered-list", "horizontal-rule", "|",
@@ -73,10 +71,6 @@
                 "quote", "code", "|", "side-by-side", "fullscreen", "preview", "guide"],
             status: false
         });
-    });
-
-    window.addEventListener('scroll', function () {
-        scrollPosition.value = window.pageYOffset;
     });
 
     exampleDataList.addEventListener('input', function () {

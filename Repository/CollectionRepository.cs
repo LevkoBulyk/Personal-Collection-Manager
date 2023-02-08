@@ -16,15 +16,14 @@ namespace Personal_Collection_Manager.Repository
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IPhotoService _photoService;
         private readonly IMarkdownService _markdown;
-
         //private readonly ILogger _logger;
 
         public CollectionRepository(
             ApplicationDbContext context,
             UserManager<ApplicationUser> userManager,
             IPhotoService photoService,
-            IMarkdownService markdown
-            /*ILogger logger*/)
+            IMarkdownService markdown/*,
+            ILogger logger*/)
         {
             _context = context;
             _userManager = userManager;
@@ -53,6 +52,7 @@ namespace Personal_Collection_Manager.Repository
             }
             var col = new Collection()
             {
+                // TODO: use mapper
                 UserId = currentUserId,
                 Title = collection.Name,
                 Description = collection.Description,
@@ -70,6 +70,7 @@ namespace Personal_Collection_Manager.Repository
             {
                 additionalFields.Add(new AdditionalFieldOfCollection()
                 {
+                    // TODO: use mapper
                     CollectionId = col.Id,
                     Title = field.Name,
                     Type = field.Type,
@@ -102,10 +103,6 @@ namespace Personal_Collection_Manager.Repository
             {
                 collection.Deleted = true;
                 _context.Collections.Update(collection);
-                /*if (!string.IsNullOrEmpty(collection.ImageUrl))
-                {
-                    var res = _photoService.DeletePhoto(collection.ImageUrl);
-                }*/
                 var fields = (from f in _context.AdditionalFieldsOfCollections
                               where f.CollectionId == id
                               select f).ToList();
@@ -156,6 +153,7 @@ namespace Personal_Collection_Manager.Repository
                 {
                     var createField = new AdditionalFieldOfCollection()
                     {
+                        // TODO: use mapper
                         CollectionId = collection.Id,
                         Title = inputField.Name,
                         Type = inputField.Type,
@@ -174,14 +172,15 @@ namespace Personal_Collection_Manager.Repository
             return _context.SaveChanges() > 0;
         }
 
-        public CollectionViewModel GetCollectionById(int Id)
+        public CollectionViewModel GetCollectionById(int id)
         {
             var collection = (from c in _context.Collections
-                              where c.Id == Id && !c.Deleted
+                              where c.Id == id && !c.Deleted
                               join t in _context.Topics
                               on c.TopicId equals t.Id
                               select new CollectionViewModel()
                               {
+                                  // TODO: use mapper
                                   Id = c.Id,
                                   UserId = c.UserId,
                                   Name = c.Title,
@@ -190,10 +189,11 @@ namespace Personal_Collection_Manager.Repository
                                   ImageUrl = c.ImageUrl,
                               }).SingleOrDefault();
             var additionalFields = (from f in _context.AdditionalFieldsOfCollections
-                                    where f.CollectionId == Id && !f.Deleted
+                                    where f.CollectionId == id && !f.Deleted
                                     orderby f.Order
                                     select new AditionalField()
                                     {
+                                        // TODO: use mapper
                                         Id = f.Id,
                                         Name = f.Title,
                                         Type = f.Type,
@@ -203,13 +203,14 @@ namespace Personal_Collection_Manager.Repository
             return collection;
         }
 
-        public CollectionViewModel GetCollectionByIdAsNoTraking(int Id)
+        public CollectionViewModel GetCollectionByIdAsNoTraking(int id)
         {
             var collection = _context.Collections
                 .AsNoTracking()
-                .Where(c => c.Id == Id && !c.Deleted)
+                .Where(c => c.Id == id && !c.Deleted)
                 .Join(_context.Topics, c => c.TopicId, t => t.Id, (c, t) => new CollectionViewModel()
                 {
+                    // TODO: use mapper
                     Id = c.Id,
                     UserId = c.UserId,
                     Name = c.Title,
@@ -220,10 +221,11 @@ namespace Personal_Collection_Manager.Repository
                 .SingleOrDefault();
             var additionalFields = _context.AdditionalFieldsOfCollections
                 .AsNoTracking()
-                .Where(f => f.CollectionId == Id && !f.Deleted)
+                .Where(f => f.CollectionId == id && !f.Deleted)
                 .OrderBy(f => f.Order)
                 .Select(f => new AditionalField()
                 {
+                    // TODO: use mapper
                     Id = f.Id,
                     Name = f.Title,
                     Type = f.Type,
@@ -243,6 +245,7 @@ namespace Personal_Collection_Manager.Repository
                                on c.TopicId equals t.Id
                                select new CollectionViewModel()
                                {
+                                   // TODO: use mapper
                                    Id = c.Id,
                                    Name = c.Title,
                                    Description = _markdown.ToHtml(c.Description),

@@ -27,6 +27,7 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
+builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();

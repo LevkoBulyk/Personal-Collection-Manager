@@ -10,7 +10,6 @@
     <input type="hidden" asp-for="Id" class="form-control" value="@Model.Id">
     <input type="hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
     <input type="hidden" asp-for="ReturnUrl" class="form-control" value="@Model.ReturnUrl">
-    <input type="hidden" asp-for="ScrollPosition" id="scrollPosition" name="scrollPosition">
     <div class="form-group">
         <label asp-for="Name">Name</label>
         <input asp-for="Name" class="form-control" value="@Model.Name">
@@ -18,7 +17,7 @@
     </div>
     <div class="form-group">
         <label asp-for="Topic">Topic</label>
-        <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic" >
+        <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic">
         <datalist id="datalistOptions"></datalist>
         <span asp-validation-for="Topic" class="text-danger"></span>
     </div>
@@ -63,8 +62,8 @@
                                 <span asp-validation-for="@Model.AdditionalFields[i].Name" class="text-danger"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="@Model.AdditionalFields[i].Type">Type</label>
-                                <select asp-for="@Model.AdditionalFields[i].Type" asp-items="@Html.GetEnumSelectList<FieldType>()" class="form-control form-select" value="@Model.AdditionalFields[i].Type"></select>
+                                <label asp-for="@Model.AdditionalFields[i].Type">Type:</label>
+                                <select asp-for="@Model.AdditionalFields[i].Type" asp-items="@Html.GetEnumSelectList<FieldType>()" class="form-control form-select"></select>
                                 <span asp-validation-for="@Model.AdditionalFields[i].Type" class="text-danger"></span>
                             </div>
                         </div>

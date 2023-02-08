@@ -30,7 +30,5 @@ namespace Personal_Collection_Manager.Models
 
         public string? ReturnUrl { get; set; }
 
-        public int ScrollPosition { get; set; }
-
     }
 }
