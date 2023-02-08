@@ -7,25 +7,32 @@ namespace Personal_Collection_Manager.Services
 {
     public class CollectionService : ICollectionService
     {
-        private readonly ICollectionRepository _collectionRepository;
+        private readonly ICollectionRepository _collection;
+        private readonly IMarkdownService _markdown;
+        private readonly IPhotoService _photo;
 
-        public CollectionService(ICollectionRepository collection)
+        public CollectionService(
+            ICollectionRepository collection,
+            IMarkdownService markdown,
+            IPhotoService photo)
         {
-            _collectionRepository = collection;
+            _collection = collection;
+            _markdown = markdown;
+            _photo = photo;
         }
 
-        public CollectionViewModel GetCollectionViewModel(int? id)
+        public CollectionViewModel GetCollectionById(int? id)
         {
             var collection = id == null ?
                     new CollectionViewModel() :
-                    _collectionRepository.GetCollectionById((int)id);
+                    _collection.GetCollectionById((int)id);
             return collection;
         }
 
         public (bool Succeded, string Message) RemoveField(ref CollectionViewModel collection, int number)
         {
             int? id = collection.AdditionalFields[number].Id;
-            if (id != null && !_collectionRepository.DeleteAdditionalField((int)id))
+            if (id != null && !_collection.DeleteAdditionalField((int)id))
             {
                 return (
                     Succeded: false,
@@ -93,27 +100,60 @@ namespace Personal_Collection_Manager.Services
 
         public CollectionViewModel GetCollectionByIdAsNoTraking(int id)
         {
-            return _collectionRepository.GetCollectionByIdAsNoTraking(id);
+            var collection = _collection.GetCollectionByIdAsNoTraking(id);
+            collection.Description = _markdown.ToHtml(collection.Description);
+            return collection;
         }
 
-        public Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
+        public async Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
-            return _collectionRepository.Create(collection, collectionCreator);
+            var photoResult = collection.Image == null ? null : await _photo.AddPhotoAsync(collection.Image);
+            collection.ImageUrl = photoResult == null ? string.Empty : photoResult.Url.ToString();
+            return await _collection.Create(collection, collectionCreator);
         }
 
         public bool Edit(CollectionViewModel collection)
         {
-            return _collectionRepository.Edit(collection);
+            if (collection.Id == null)
+            {
+                throw new ArgumentNullException(nameof(collection.Id));
+            }
+            var collectionToModify = GetCollectionByIdAsNoTraking((int)collection.Id);
+            if (collectionToModify == null)
+            {
+                throw new ArgumentException(nameof(collection.Id));
+            }
+            collection.ImageUrl = collection.ImageUrl ?? "";
+            if (collectionToModify.ImageUrl.Length > 0 && collection.ImageUrl.Length == 0)
+            {
+                _photo.DeletePhoto(collectionToModify.ImageUrl);
+            }
+            if (collection.Image != null)
+            {
+                var uploadResult = _photo.AddPhoto(collection.Image);
+                collection.ImageUrl = uploadResult.Url.ToString();
+            }
+            return _collection.Edit(collection);
         }
 
         public bool Delete(int id)
         {
-            return _collectionRepository.Delete(id);
+            return _collection.Delete(id);
         }
 
         public List<string> GetTopicsWithPrefix(string prefix)
         {
-            return _collectionRepository.GetTopicsWithPrefix(prefix);
+            return _collection.GetTopicsWithPrefix(prefix);
+        }
+
+        public async Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user)
+        {
+            var collections = await _collection.GetCollectionsOf(user);
+            foreach (var collection in collections)
+            {
+                collection.Description = _markdown.ToHtml(collection.Description);
+            }
+            return collections;
         }
     }
 }

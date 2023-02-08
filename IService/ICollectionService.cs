@@ -5,7 +5,8 @@ namespace Personal_Collection_Manager.IService
 {
     public interface ICollectionService
     {
-        public CollectionViewModel GetCollectionViewModel(int? id);
+        public Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user);
+        public CollectionViewModel GetCollectionById(int? id);
         public (bool Succeded, string Message) RemoveField(ref CollectionViewModel collection, int number);
         public (bool Succeded, string Message) AddField(ref CollectionViewModel collection);
         public bool MoveDown(ref CollectionViewModel collection, int number);

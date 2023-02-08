@@ -19,13 +19,12 @@ namespace Personal_Collection_Manager.Controllers
         public IActionResult Detail(int id)
         {
             var collection = _collection.GetCollectionByIdAsNoTraking(id);
-            collection.ReturnUrl = Request.Headers["Referer"].ToString();
             return View(collection);
         }
 
         public IActionResult Edit(int? id)
         {
-            var collection = _collection.GetCollectionViewModel(id);
+            var collection = _collection.GetCollectionById(id);
             return View(collection);
         }
 
@@ -53,11 +52,9 @@ namespace Personal_Collection_Manager.Controllers
                     if (_collection.Edit(collection))
                     {
                         TempData[_success] = "Collection was saved";
-                        if (collection.ReturnUrl != null)
-                        {
-                            return Redirect(collection.ReturnUrl);
-                        }
+                        return View("Edit", collection);
                     }
+                    TempData[_error] = "Collection was not saved! Check your input! If it won't help, please contact admin, cause we are having serious problems";
                     return RedirectToAction("Index", "Dashboard");
                 }
             }

@@ -14,21 +14,15 @@ namespace Personal_Collection_Manager.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IPhotoService _photoService;
-        private readonly IMarkdownService _markdown;
         //private readonly ILogger _logger;
 
         public CollectionRepository(
             ApplicationDbContext context,
-            UserManager<ApplicationUser> userManager,
-            IPhotoService photoService,
-            IMarkdownService markdown/*,
+            UserManager<ApplicationUser> userManager/*,
             ILogger logger*/)
         {
             _context = context;
             _userManager = userManager;
-            _photoService = photoService;
-            _markdown = markdown;
             //_logger = logger;
         }
 
@@ -44,7 +38,6 @@ namespace Personal_Collection_Manager.Repository
         public async Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
             var currentUserId = (await _userManager.GetUserAsync(collectionCreator)).Id;
-            var photoResult = collection.Image == null ? null : await _photoService.AddPhotoAsync(collection.Image);
             var topic = _context.Topics.FirstOrDefault(t => t.Title.Equals(collection.Topic));
             if (topic == null)
             {
@@ -57,7 +50,7 @@ namespace Personal_Collection_Manager.Repository
                 Title = collection.Name,
                 Description = collection.Description,
                 TopicId = topic.Id,
-                ImageUrl = photoResult == null ? string.Empty : photoResult.Url.ToString()
+                ImageUrl = collection.ImageUrl
             };
             _context.Collections.Add(col);
             var res = _context.SaveChanges();
@@ -117,10 +110,6 @@ namespace Personal_Collection_Manager.Repository
 
         public bool Edit(CollectionViewModel input)
         {
-            if (input.Id == null)
-            {
-                throw new ArgumentNullException(nameof(input));
-            }
             var topic = _context.Topics.First(t => t.Title.Equals(input.Topic));
             if (topic == null)
             {
@@ -131,19 +120,10 @@ namespace Personal_Collection_Manager.Repository
             {
                 throw new ArgumentException(nameof(input.Id));
             }
-            if (collection.ImageUrl.Length > 0 && string.IsNullOrEmpty(input.ImageUrl))
-            {
-                _photoService.DeletePhoto(collection.ImageUrl);
-                collection.ImageUrl = string.Empty;
-            }
-            if (input.Image != null)
-            {
-                var uploadResult = _photoService.AddPhoto(input.Image);
-                collection.Id = (int)input.Id;
-                collection.ImageUrl = uploadResult.Url.ToString();
-            }
+            collection.Id = (int)input.Id;
             collection.Title = input.Name;
             collection.Description = input.Description;
+            collection.ImageUrl = input.ImageUrl;
             collection.TopicId = topic.Id;
             _context.Collections.Update(collection);
             foreach (var inputField in input.AdditionalFields)
@@ -214,7 +194,7 @@ namespace Personal_Collection_Manager.Repository
                     Id = c.Id,
                     UserId = c.UserId,
                     Name = c.Title,
-                    Description = _markdown.ToHtml(c.Description),
+                    Description = c.Description,
                     Topic = t.Title,
                     ImageUrl = c.ImageUrl,
                 })
@@ -248,7 +228,7 @@ namespace Personal_Collection_Manager.Repository
                                    // TODO: use mapper
                                    Id = c.Id,
                                    Name = c.Title,
-                                   Description = _markdown.ToHtml(c.Description),
+                                   Description = c.Description,
                                    Topic = t.Title,
                                    ImageUrl = c.ImageUrl
                                }).ToList();
@@ -266,8 +246,8 @@ namespace Personal_Collection_Manager.Repository
             else
             {
                 res = (from t in _context.Topics
-                           where t.Title.StartsWith(prefix)
-                           select t.Title).Take(10).ToList();
+                       where t.Title.StartsWith(prefix)
+                       select t.Title).Take(10).ToList();
             }
             return res;
         }

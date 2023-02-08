@@ -28,7 +28,5 @@ namespace Personal_Collection_Manager.Models
 
         public AditionalField[] AdditionalFields { get; set; }
 
-        public string? ReturnUrl { get; set; }
-
     }
 }
