@@ -5,5 +5,6 @@ namespace Personal_Collection_Manager.IRepository
     public interface IItemRepository
     {
         public ItemViewModel GetItemById(int id);
+        public ItemViewModel GetItemByIdAsNoTracking(int id);
     }
 }

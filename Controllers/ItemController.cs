@@ -1,30 +1,22 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Personal_Collection_Manager.IRepository;
-using Personal_Collection_Manager.Models;
+using Personal_Collection_Manager.IService;
 
 namespace Personal_Collection_Manager.Controllers
 {
     public class ItemController : Controller
     {
-        private readonly IItemRepository _itemRepository;
+        private readonly IItemService _itemService;
 
-        public ItemController(IItemRepository itemRepository)
+        public ItemController(IItemService itemService)
         {
-            _itemRepository = itemRepository;
+            _itemService = itemService;
         }
 
-        public IActionResult Edit(int? id)
+        public IActionResult Edit(int? id, int collectionId)
         {
-            ItemViewModel item;
-            if (id == null)
-            {
-                item = new ItemViewModel();
-            }
-            else
-            {
-                
-            }
-            return View();
+            var item = _itemService.GetItemByIdAsNoTracking(id);
+            item.CollectionId = collectionId;
+            return View(item);
         }
     }
 }

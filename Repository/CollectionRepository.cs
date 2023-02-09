@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IRepository;
-using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using Personal_Collection_Manager.Repository.Exceptions;
 using System.Security.Claims;
@@ -167,19 +166,18 @@ namespace Personal_Collection_Manager.Repository
                                   Description = c.Description,
                                   Topic = t.Title,
                                   ImageUrl = c.ImageUrl,
+                                  AdditionalFields = (from f in _context.AdditionalFieldsOfCollections
+                                                      where f.CollectionId == id && !f.Deleted
+                                                      orderby f.Order
+                                                      select new AditionalField()
+                                                      {
+                                                          // TODO: use mapper
+                                                          Id = f.Id,
+                                                          Name = f.Title,
+                                                          Type = f.Type,
+                                                          Order = f.Order
+                                                      }).ToArray()
                               }).SingleOrDefault();
-            var additionalFields = (from f in _context.AdditionalFieldsOfCollections
-                                    where f.CollectionId == id && !f.Deleted
-                                    orderby f.Order
-                                    select new AditionalField()
-                                    {
-                                        // TODO: use mapper
-                                        Id = f.Id,
-                                        Name = f.Title,
-                                        Type = f.Type,
-                                        Order = f.Order
-                                    }).ToArray();
-            collection.AdditionalFields = additionalFields;
             return collection;
         }
 
@@ -197,22 +195,19 @@ namespace Personal_Collection_Manager.Repository
                     Description = c.Description,
                     Topic = t.Title,
                     ImageUrl = c.ImageUrl,
-                })
-                .SingleOrDefault();
-            var additionalFields = _context.AdditionalFieldsOfCollections
-                .AsNoTracking()
-                .Where(f => f.CollectionId == id && !f.Deleted)
-                .OrderBy(f => f.Order)
-                .Select(f => new AditionalField()
-                {
-                    // TODO: use mapper
-                    Id = f.Id,
-                    Name = f.Title,
-                    Type = f.Type,
-                    Order = f.Order
-                })
-                .ToArray();
-            collection.AdditionalFields = additionalFields;
+                    AdditionalFields = _context.AdditionalFieldsOfCollections
+                        .AsNoTracking()
+                        .Where(f => f.CollectionId == id && !f.Deleted)
+                        .OrderBy(f => f.Order)
+                        .Select(f => new AditionalField()
+                        {
+                            // TODO: use mapper
+                            Id = f.Id,
+                            Name = f.Title,
+                            Type = f.Type,
+                            Order = f.Order
+                        }).ToArray()
+                }).SingleOrDefault();
             return collection;
         }
 

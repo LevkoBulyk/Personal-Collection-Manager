@@ -1,24 +1,28 @@
-﻿namespace Personal_Collection_Manager.Models
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+
+namespace Personal_Collection_Manager.Models
 {
     public class ItemViewModel
     {
         public ItemViewModel()
         {
-            Tags = new List<string>();
-            StringFields = new List<string>();
-            TextFields = new List<string>();
-            NumberFields = new List<decimal>();
-            DateTimeFields = new List<DateTime>();
-            BoolFields = new List<bool>();
+            Tags = new string[0];
+            Fields = new ItemField[0];
         }
 
         public int? Id { get; set; }
-        public string Name { get; set; }
-        public List<string> Tags { get; set; }
-        public List<string> StringFields { get; set; }
-        public List<string> TextFields { get; set; }
-        public List<decimal> NumberFields { get; set; }
-        public List<DateTime> DateTimeFields { get; set; }
-        public List<bool> BoolFields { get; set; }
+
+        [Required]
+        public int CollectionId { get; set; }
+
+        [DisplayName("Title")]
+        public string Title { get; set; }
+
+        [DisplayName("Tags")]
+        public string[] Tags { get; set; }
+
+        [DisplayName("Fields")]
+        public ItemField[] Fields { get; set; }
     }
 }

@@ -27,9 +27,11 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddScoped<SignInManager<ApplicationUser>, CustomSignInManager>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
-builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IItemRepository, ItemRepository>();
 
+builder.Services.AddScoped<ICollectionService, CollectionService>();
+builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));

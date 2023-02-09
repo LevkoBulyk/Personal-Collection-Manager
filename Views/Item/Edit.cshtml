@@ -1,0 +1,42 @@
+﻿@using Personal_Collection_Manager.Models;
+@model ItemViewModel
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input id="itemId" asp-for="Id" class="form-control" type="hidden" />
+        <input id="collectionId" asp-for="CollectionId" class="form-control" type="hidden" />
+        <div class="form-group">
+            <label asp-for="Title" class="control-label"></label>
+            <input id="title" asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Tags" class="control-label"></label>
+            <div id="tagsPlace">
+                @for (int i = 0; i < Model.Tags.Length; i++)
+                {
+                    <input class="tags" asp-for="Tags[i]" class="form-control" />
+                }
+            </div>
+            <button id="addTag" class="btn btn-outline-secondary"><i class="bi bi-plus-square"> add tag</i></button>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </div>
+</div>
+
+<div>
+    <a asp-controller="Collection" asp-action="Detail" asp-route-id="@Model.CollectionId">Back to Collection</a>
+</div>
+
+@section Scripts {
+    <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+    <script src="~/js/item/edit.js"></script>
+}
