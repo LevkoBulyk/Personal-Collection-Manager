@@ -1,4 +1,5 @@
 ﻿using Personal_Collection_Manager.Models;
+using System.Security.Claims;
 
 namespace Personal_Collection_Manager.IRepository
 {
@@ -6,5 +7,8 @@ namespace Personal_Collection_Manager.IRepository
     {
         public ItemViewModel GetItemById(int id);
         public ItemViewModel GetItemByIdAsNoTracking(int id);
+        public ItemViewModel GetItemWithAdditionalFieldsOfCollection(int collectionId);
+        public Task<bool> Create(ItemViewModel item);
+        public bool Edit(ItemViewModel item);
     }
 }

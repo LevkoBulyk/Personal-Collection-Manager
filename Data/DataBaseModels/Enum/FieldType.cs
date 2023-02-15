@@ -2,7 +2,7 @@
 {
     public enum FieldType
     {
-        Numder,
+        Number,
         String,
         MultyLineString,
         DateTime,

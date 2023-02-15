@@ -41,24 +41,6 @@
         imageUrl.value = "";
     });
 
-    function autosize() {
-        var text = $('.autosize');
-
-        text.each(function () {
-            $(this).attr('rows', 1);
-            resize($(this));
-        });
-
-        text.on('input', function () {
-            resize($(this));
-        });
-
-        function resize($text) {
-            $text.css('height', 'auto');
-            $text.css('height', $text[0].scrollHeight + 'px');
-        }
-    }
-
     window.addEventListener("load", function () {
         if (fileInput.files.length === 0 && imageUrl.value == "") {
             removeImageButton.classList.add("visually-hidden");
@@ -93,4 +75,21 @@
         });
     });
 
+    function autosize() {
+        var text = $('.autosize');
+
+        text.each(function () {
+            $(this).attr('rows', 1);
+            resize($(this));
+        });
+
+        text.on('input', function () {
+            resize($(this));
+        });
+
+        function resize($text) {
+            $text.css('height', 'auto');
+            $text.css('height', $text[0].scrollHeight + 'px');
+        }
+    };
 })();

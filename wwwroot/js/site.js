@@ -3,7 +3,7 @@
     if (!confirm("Are you sure, you want to " + nameOfAction + " " + nameOfObject + "?")) {
         event.preventDefault();
     }
-};
+}
 
 (function () {
     window.setTimeout(function () {

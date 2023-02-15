@@ -16,7 +16,7 @@
     </div>
     <div class="form-group">
         <label asp-for="Topic">Topic</label>
-        <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic">
+        <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic" autocomplete="off">
         <datalist id="datalistOptions"></datalist>
         <span asp-validation-for="Topic" class="text-danger"></span>
     </div>
