@@ -1,0 +1,78 @@
+﻿@using Personal_Collection_Manager.Models;
+@model ItemViewModel
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container bootdey">
+    <div class="col-md-12">
+        <section class="panel">
+            <div class="row panel-body">
+                <div class="col-md-3">
+                    <h4 class="pro-d-title">@Model.Title</h4>
+                    <div class="m-2">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <p>@tag</p>
+                        }
+                    </div>
+                    <div class="">
+                        like/dislike
+                    </div>
+                </div>
+                <div class="col-md-9">
+                    <div class="album p-4 m-2 bg-light">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <td><label class="form-label">Additional information:</label></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Fields.Length; i++)
+                                {
+                                    <tr class="table-secondary">
+
+                                        <td>@Model.Fields[i].Title</td>
+                                        <td>@Model.Fields[i].Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="album p-4 m-2 bg-light">
+            <form>
+                <div class="form-group">
+                    <label class="control-label">Comment:</label>
+                    <textarea class="form-control autosize" placeholder="write you comment"></textarea>
+                    <span class="text-danger"></span>
+                </div>
+            </form>
+        </div>
+        @*<div class="m-2">
+        <h4 class="pro-d-title">Items:</h4>
+        <table class="table">
+        <thead>
+        <tr>
+        <td><label class="form-label">Title</label></td>
+        @for (int i = 0; i < Model.AdditionalFields.Length; i++)
+        {
+        <td><label class="form-label">@Model.AdditionalFields[i].Name</label></td>
+        }
+        <td><label class="form-label"></label></td>
+        </tr>
+        </thead>
+        <tbody id="bodyOfItemsTable">
+        </tbody>
+        </table>
+        <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">Add item</a>
+        </div>
+        *@
+    </div>
+</div>

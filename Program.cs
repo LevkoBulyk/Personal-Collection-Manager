@@ -29,6 +29,8 @@ builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.AddScoped<ICollectionRepository, CollectionRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IFieldOfItemRepository, FieldOfItemRepository>();
 
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IItemService, ItemService>();

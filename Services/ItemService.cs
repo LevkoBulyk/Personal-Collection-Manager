@@ -45,42 +45,28 @@ namespace Personal_Collection_Manager.Services
         {
             if (item.Id == null)
             {
-                throw new ArgumentNullException("Item id can not be null");
+                throw new ArgumentNullException("Item id can not be 'null'");
             }
             return await _repository.Edit(item);
         }
 
-        public ItemViewModel GetItemById(int? id, int? collectionId)
+        public async Task<ItemViewModel> GetItemByIdAsNoTracking(int? id, int? collectionId)
         {
             ItemViewModel item;
             if (id == null)
             {
-                item = _repository.GetItemWithAdditionalFieldsOfCollection((int)collectionId);
+                item = await _repository.GetItemWithAdditionalFieldsOfCollection((int)collectionId);
             }
             else
             {
-                item = _repository.GetItemById((int)id);
-            }
-            return item;
-        }
-
-        public ItemViewModel GetItemByIdAsNoTracking(int? id, int? collectionId)
-        {
-            ItemViewModel item;
-            if (id == null)
-            {
-                item = _repository.GetItemWithAdditionalFieldsOfCollection((int)collectionId);
-            }
-            else
-            {
-                item = _repository.GetItemByIdAsNoTracking((int)id);
+                item = await _repository.GetItemByIdAsNoTracking((int)id);
             }
             return item;
         }
 
         public Task<List<ItemListViewModel>> GetItemsForCollection(int collectionId)
         {
-            return _repository.GetGetItemsForCollection((int)collectionId);
+            return _repository.GetItemsOfCollection((int)collectionId);
         }
     }
 }

@@ -16,9 +16,9 @@ namespace Personal_Collection_Manager.Controllers
             _itemService = itemService;
         }
 
-        public IActionResult Edit(int? id, int collectionId)
+        public async Task<IActionResult> Edit(int? id, int collectionId)
         {
-            var item = _itemService.GetItemByIdAsNoTracking(id, collectionId);
+            var item = await _itemService.GetItemByIdAsNoTracking(id, collectionId);
             return View(item);
         }
 
@@ -44,14 +44,12 @@ namespace Personal_Collection_Manager.Controllers
                 TempData[_error] = "Not all required fields were filled, or some were filled with errors";
                 return View(item);
             }
-            /*try
-            {*/
             if (item.Id == null)
             {
                 if (await _itemService.Create(item))
                 {
                     TempData[_success] = "New item was successfully created";
-                    return RedirectToAction("Detail", "Collection", new { id = item.CollectionId });
+                    return RedirectToAction("Details", "Collection", new { id = item.CollectionId });
 
                 }
             }
@@ -60,16 +58,17 @@ namespace Personal_Collection_Manager.Controllers
                 if (await _itemService.Edit(item))
                 {
                     TempData[_success] = "Item was saved";
-                    return RedirectToAction("Detail", "Collection", new { id = item.CollectionId });
+                    return RedirectToAction("Details", "Collection", new { id = item.CollectionId });
                 }
             }
-            /*}
-            catch (TopicNotFoundException e)
-            {
-                TempData[_error] = e.Message;
-                return View(item);
-            }*/
             TempData[_error] = "Item was not saved! Check your input! If it won't help, please contact admin, cause we are having serious problems";
+            return View(item);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(int id)
+        {
+            var item = await _itemService.GetItemByIdAsNoTracking(id, null);
             return View(item);
         }
     }

@@ -37,6 +37,7 @@
                         <div class="row">
                             <div class="col-10">
                                 <div class="form-group">
+                                    <input type="hidden" asp-for="@Model.Fields[i].Id" />
                                     <input type="hidden" asp-for="@Model.Fields[i].Title" />
                                     <input type="hidden" asp-for="@Model.Fields[i].Type" />
                                     <input type="hidden" asp-for="@Model.Fields[i].Order" />
@@ -82,13 +83,9 @@
                 }
             </div>
             <div class="form-group">
-                <a asp-controller="Collection" asp-action="Detail" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">Back to Collection</a>
+                <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">Back to Collection</a>
                 <button asp-controller="Item" asp-action="Edit" formmethod="post" class="btn btn-outline-success">Save changes</button>
             </div>
         </div>
     </div>
 </form>
-
-@section Scripts {
-    <script src="~/js/item/edit.js"></script>
-}

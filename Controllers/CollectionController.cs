@@ -16,7 +16,7 @@ namespace Personal_Collection_Manager.Controllers
             _collection = collection;
         }
 
-        public IActionResult Detail(int id)
+        public IActionResult Details(int id)
         {
             var collection = _collection.GetCollectionByIdAsNoTraking(id);
             return View(collection);
