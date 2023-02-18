@@ -22,12 +22,18 @@ namespace Personal_Collection_Manager.Controllers
             return View(item);
         }
 
-        [HttpPost]
         public IActionResult AddTag(ItemViewModel item)
         {
             _itemService.AddTag(ref item);
             return View("Edit", item);
         }
+
+        public async Task<IActionResult> GetItemsList(int collectionId)
+        {
+            var items = await _itemService.GetItemsForCollection(collectionId);
+            return PartialView("_ItemListPartial", items);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Edit(ItemViewModel item)
@@ -51,7 +57,7 @@ namespace Personal_Collection_Manager.Controllers
             }
             else
             {
-                if (_itemService.Edit(item))
+                if (await _itemService.Edit(item))
                 {
                     TempData[_success] = "Item was saved";
                     return RedirectToAction("Detail", "Collection", new { id = item.CollectionId });

@@ -16,7 +16,7 @@ namespace Personal_Collection_Manager.Models
         public IFormFile? Image { get; set; } = null;
 
         [Required]
-        public string Name { get; set; }
+        public string Title { get; set; }
 
         [Required]
         public string Description { get; set; }

@@ -9,6 +9,7 @@ namespace Personal_Collection_Manager.IRepository
         public ItemViewModel GetItemByIdAsNoTracking(int id);
         public ItemViewModel GetItemWithAdditionalFieldsOfCollection(int collectionId);
         public Task<bool> Create(ItemViewModel item);
-        public bool Edit(ItemViewModel item);
+        public Task<bool> Edit(ItemViewModel item);
+        public Task<List<ItemListViewModel>> GetGetItemsForCollection(int collectionId);
     }
 }

@@ -4,6 +4,7 @@ using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.Models;
+using System.Linq;
 
 namespace Personal_Collection_Manager.Repository
 {
@@ -48,19 +49,19 @@ namespace Personal_Collection_Manager.Repository
                                     on tagItem.TagId equals tag.Id
                                     where tagItem.ItemId == id
                                     select tag.Value).ToArray(),
-                            Fields = (_context.FieldsOfItems
-                                .Where(field => field.ItemId == id)
-                                .Join(_context.AdditionalFieldsOfCollections,
-                                    field => field.AdditionalFieldOfCollectionId,
-                                    collField => collField.Id,
-                                    (field, collField) => new ItemField
-                                    {
-                                        Order = collField.Order,
-                                        Title = collField.Title,
-                                        Value = field.Value,
-                                        Type = collField.Type,
-                                        AdditionalFieldOfCollectionId = collField.Id
-                                    })).ToArray()
+                            Fields = (from foi in _context.FieldsOfItems
+                                      where foi.ItemId == id
+                                      join afoc in _context.AdditionalFieldsOfCollections
+                                      on foi.AdditionalFieldOfCollectionId equals afoc.Id
+                                      where !afoc.Deleted
+                                      select new ItemField
+                                      {
+                                          Order = afoc.Order,
+                                          Title = afoc.Title,
+                                          Value = foi.Value,
+                                          Type = afoc.Type,
+                                          AdditionalFieldOfCollectionId = afoc.Id
+                                      }).ToArray()
                         }).SingleOrDefault();
             return item;
         }
@@ -78,18 +79,22 @@ namespace Personal_Collection_Manager.Repository
                         .Where(tagItem => tagItem.ItemId == id)
                         .Join(_context.Tags, tagItem => tagItem.TagId, tag => tag.Id, (tagItem, tag) => tag.Value)
                         .AsNoTracking().ToArray(),
-                    Fields = _context.FieldsOfItems
-                        .Join(_context.AdditionalFieldsOfCollections,
-                            field => field.AdditionalFieldOfCollectionId,
-                            collField => collField.Id,
-                            (field, collField) => new ItemField()
-                            {
-                                Order = collField.Order,
-                                Title = collField.Title,
-                                Value = field.Value,
-                                Type = collField.Type,
-                                AdditionalFieldOfCollectionId = collField.Id
-                            }).AsNoTracking().ToArray()
+                    Fields = (_context.AdditionalFieldsOfCollections
+                .Where(afoc => afoc.CollectionId == i.CollectionId && !afoc.Deleted)
+                .GroupJoin(_context.FieldsOfItems.Where(foi => foi.ItemId == i.Id),
+                    afoc => afoc.Id,
+                    foi => foi.AdditionalFieldOfCollectionId,
+                    (afoc, fois) => new { AdditionalFieldOfCollection = afoc, FieldsOfItems = fois })
+                .SelectMany(x => x.FieldsOfItems.DefaultIfEmpty(),
+                    (afoc, foi) => new ItemField()
+                    {
+                        Order = afoc.AdditionalFieldOfCollection.Order,
+                        Title = afoc.AdditionalFieldOfCollection.Title,
+                        Value = foi != null ? foi.Value : "",
+                        Type = afoc.AdditionalFieldOfCollection.Type,
+                        AdditionalFieldOfCollectionId = foi != null ? foi.AdditionalFieldOfCollectionId : 0
+                    })
+                .OrderBy(x => x.Order)).ToArray()
                 }).AsNoTracking().SingleOrDefault();
             return item;
         }
@@ -107,6 +112,30 @@ namespace Personal_Collection_Manager.Repository
             {
                 return false;
             }
+            var tags = new List<Tag>();
+            foreach (var tag in item.Tags)
+            {
+                if (!string.IsNullOrEmpty(tag))
+                {
+                    tags.Add(new Tag()
+                    {
+                        Value = tag
+                    });
+                }
+            }
+            await _context.Tags.AddRangeAsync(tags);
+            res += await _context.SaveChangesAsync();
+            var itemTags = new List<ItemsTag>();
+            foreach (var tag in tags)
+            {
+                itemTags.Add(new ItemsTag()
+                {
+                    ItemId = itemToAdd.Id,
+                    TagId = tag.Id
+                });
+            }
+            await _context.ItemsTags.AddRangeAsync(itemTags);
+            res += await _context.SaveChangesAsync();
             var fields = new List<FieldOfItem>();
             foreach (var field in item.Fields)
             {
@@ -122,9 +151,91 @@ namespace Personal_Collection_Manager.Repository
             return res > 0;
         }
 
-        public bool Edit(ItemViewModel item)
+        public async Task<bool> Edit(ItemViewModel item)
         {
-            throw new NotImplementedException();
+            var itemToEdit = await _context.Items.FindAsync(item.Id);
+            itemToEdit.Title = item.Title;
+            _context.Items.Update(itemToEdit);
+            var res = _context.SaveChanges();
+            var tagsToRemove = (from tag in _context.Tags
+                                join itemTag in _context.ItemsTags
+                                on tag.Id equals itemTag.TagId
+                                where itemTag.ItemId == item.Id
+                                select tag).ToList();
+            _context.Tags.RemoveRange(tagsToRemove);
+            var itemTagsToRemove = (from itemTag in _context.ItemsTags
+                                    where itemTag.ItemId == item.Id
+                                    select itemTag).ToList();
+            _context.ItemsTags.RemoveRange(itemTagsToRemove);
+            await _context.SaveChangesAsync();
+
+            var tags = new List<Tag>();
+            foreach (var tag in item.Tags)
+            {
+                if (!string.IsNullOrEmpty(tag))
+                {
+                    tags.Add(new Tag()
+                    {
+                        Value = tag
+                    });
+                }
+            }
+            await _context.Tags.AddRangeAsync(tags);
+            res += await _context.SaveChangesAsync();
+            var itemTags = new List<ItemsTag>();
+            foreach (var tag in tags)
+            {
+                itemTags.Add(new ItemsTag()
+                {
+                    ItemId = itemToEdit.Id,
+                    TagId = tag.Id
+                });
+            }
+            await _context.ItemsTags.AddRangeAsync(itemTags);
+            res += await _context.SaveChangesAsync();
+
+            var fieldsToUpdate = (from field in _context.FieldsOfItems
+                                  where field.ItemId == item.Id
+                                  join afoc in _context.AdditionalFieldsOfCollections
+                                  on field.AdditionalFieldOfCollectionId equals afoc.Id
+                                  where !afoc.Deleted
+                                  orderby afoc.Order
+                                  select field).ToArray();
+            for (int i = 0; i < item.Fields.Length; i++)
+            {
+                fieldsToUpdate[i].Value = item.Fields[i].Value;
+            }
+            _context.FieldsOfItems.UpdateRange(fieldsToUpdate);
+
+            res += await _context.SaveChangesAsync();
+            return res > 0;
+        }
+
+        public async Task<List<ItemListViewModel>> GetGetItemsForCollection(int collectionId)
+        {
+            return await (_context.Items
+                .Where(item => item.CollectionId == collectionId)
+                .OrderByDescending(item => item.Id)
+                .Select(item => new ItemListViewModel()
+                {
+                    Id = item.Id,
+                    Title = item.Title,
+                    Values = (_context.AdditionalFieldsOfCollections
+                        .Where(afoc => afoc.CollectionId == collectionId && !afoc.Deleted)
+                        .GroupJoin(_context.FieldsOfItems
+                                .Where(foi => foi.ItemId == item.Id),
+                            afoc => afoc.Id,
+                            foi => foi.AdditionalFieldOfCollectionId,
+                            (afoc, fois) => new { AdditionalFieldOfCollection = afoc, FieldsOfItems = fois })
+                        .SelectMany(x => x.FieldsOfItems.DefaultIfEmpty(),
+                            (afoc, foi) => new
+                            {
+                                Value = foi != null ? foi.Value : "",
+                                Order = afoc.AdditionalFieldOfCollection.Order
+                            })
+                        .OrderBy(x => x.Order)
+                        .Select(x => x.Value)).ToList()
+                }).AsNoTracking().ToListAsync());
         }
     }
 }

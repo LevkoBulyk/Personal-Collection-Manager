@@ -36,14 +36,18 @@ namespace Personal_Collection_Manager.Services
                 );
         }
 
-        public Task<bool> Create(ItemViewModel item)
+        public async Task<bool> Create(ItemViewModel item)
         {
-            return _repository.Create(item);
+            return await _repository.Create(item);
         }
 
-        public bool Edit(ItemViewModel item)
+        public async Task<bool> Edit(ItemViewModel item)
         {
-            throw new NotImplementedException();
+            if (item.Id == null)
+            {
+                throw new ArgumentNullException("Item id can not be null");
+            }
+            return await _repository.Edit(item);
         }
 
         public ItemViewModel GetItemById(int? id, int? collectionId)
@@ -72,6 +76,11 @@ namespace Personal_Collection_Manager.Services
                 item = _repository.GetItemByIdAsNoTracking((int)id);
             }
             return item;
+        }
+
+        public Task<List<ItemListViewModel>> GetItemsForCollection(int collectionId)
+        {
+            return _repository.GetGetItemsForCollection((int)collectionId);
         }
     }
 }

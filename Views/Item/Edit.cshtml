@@ -58,6 +58,13 @@
                                             break;
                                         case FieldType.Bool:
                                             <div class="form-check form-check-inline">
+                                                @{
+                                                    bool result;
+                                                    if (!bool.TryParse(Model.Fields[i].Value, out result))
+                                                    {
+                                                        Model.Fields[i].Value = "false";
+                                                    }
+                                                }
                                                 <input type="checkbox" asp-for="@Model.Fields[i].Value" class="form-control form-check-input" data-val="@Model.Fields[i].Value">
                                                 <label>@Model.Fields[i].Title</label>
                                             </div>

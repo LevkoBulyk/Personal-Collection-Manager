@@ -79,7 +79,10 @@ namespace Personal_Collection_Manager.Controllers
         {
             var result = _collection.RemoveField(ref collection, number);
             if (result.Succeded)
+            {
                 TempData[_success] = result.Message;
+                ModelState.Clear();
+            }
             else
                 TempData[_error] = result.Message;
             return View("Edit", collection);
@@ -89,6 +92,7 @@ namespace Personal_Collection_Manager.Controllers
         public IActionResult AddField(CollectionViewModel collection)
         {
             _collection.AddField(ref collection);
+            ModelState.Clear();
             return View("Edit", collection);
         }
 

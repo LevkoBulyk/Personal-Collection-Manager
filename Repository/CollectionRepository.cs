@@ -46,7 +46,7 @@ namespace Personal_Collection_Manager.Repository
             {
                 // TODO: use mapper
                 UserId = currentUserId,
-                Title = collection.Name,
+                Title = collection.Title,
                 Description = collection.Description,
                 TopicId = topic.Id,
                 ImageUrl = collection.ImageUrl
@@ -120,7 +120,7 @@ namespace Personal_Collection_Manager.Repository
                 throw new ArgumentException(nameof(input.Id));
             }
             collection.Id = (int)input.Id;
-            collection.Title = input.Name;
+            collection.Title = input.Title;
             collection.Description = input.Description;
             collection.ImageUrl = input.ImageUrl;
             collection.TopicId = topic.Id;
@@ -162,7 +162,7 @@ namespace Personal_Collection_Manager.Repository
                                   // TODO: use mapper
                                   Id = c.Id,
                                   UserId = c.UserId,
-                                  Name = c.Title,
+                                  Title = c.Title,
                                   Description = c.Description,
                                   Topic = t.Title,
                                   ImageUrl = c.ImageUrl,
@@ -191,7 +191,7 @@ namespace Personal_Collection_Manager.Repository
                     // TODO: use mapper
                     Id = c.Id,
                     UserId = c.UserId,
-                    Name = c.Title,
+                    Title = c.Title,
                     Description = c.Description,
                     Topic = t.Title,
                     ImageUrl = c.ImageUrl,
@@ -222,7 +222,7 @@ namespace Personal_Collection_Manager.Repository
                                {
                                    // TODO: use mapper
                                    Id = c.Id,
-                                   Name = c.Title,
+                                   Title = c.Title,
                                    Description = c.Description,
                                    Topic = t.Title,
                                    ImageUrl = c.ImageUrl
