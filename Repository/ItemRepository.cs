@@ -8,6 +8,7 @@ namespace Personal_Collection_Manager.Repository
 {
     public class ItemRepository : IItemRepository
     {
+        private const int pageSize = 10;
         private readonly ApplicationDbContext _dbContext;
         private readonly ITagRepository _tagRepository;
         private readonly IFieldOfItemRepository _fieldOfItemRepository;
@@ -56,7 +57,7 @@ namespace Personal_Collection_Manager.Repository
             return item;
         }
 
-        public async Task<bool> Create(ItemViewModel item)
+        public async Task<int> Create(ItemViewModel item)
         {
             var itemToAdd = new Item()
             {
@@ -65,16 +66,12 @@ namespace Personal_Collection_Manager.Repository
             };
             await _dbContext.Items.AddAsync(itemToAdd);
             var res = _dbContext.SaveChanges();
-            if (res <= 0)
-            {
-                return false;
-            }
-            await _tagRepository.AddTagsToItem((int)itemToAdd.Id, item.Tags.ToList());
-            await _fieldOfItemRepository.CreateFieldsForItem(itemToAdd.Id, item.Fields);
-            return res > 0;
+            res += await _tagRepository.AddTagsToItem((int)itemToAdd.Id, item.Tags.ToList());
+            res += await _fieldOfItemRepository.CreateFieldsForItem(itemToAdd.Id, item.Fields);
+            return res;
         }
 
-        public async Task<bool> Edit(ItemViewModel item)
+        public async Task<int> Edit(ItemViewModel item)
         {
             var itemToEdit = await _dbContext.Items.FindAsync(item.Id);
             itemToEdit.Title = item.Title;
@@ -83,19 +80,19 @@ namespace Personal_Collection_Manager.Repository
             res += await _tagRepository.RemoveTagsOfItem(itemToEdit.Id);
             res += await _tagRepository.AddTagsToItem(itemToEdit.Id, item.Tags.ToList());
             res += await _fieldOfItemRepository.UpdateFieldsForItem((int)item.Id, item.Fields);
-            return res > 0;
+            return res;
         }
 
-        public async Task<List<ItemListViewModel>> GetItemsOfCollection(int collectionId)
+        public async Task<List<ItemListViewModel>> GetAllItemsOfCollection(int collectionId)
         {
-            return await (_dbContext.Items
-                .Where(item => item.CollectionId == collectionId)
+            return await _dbContext.Items
+                .Where(item => item.CollectionId == collectionId && !item.Deleted)
                 .OrderByDescending(item => item.Id)
                 .Select(item => new ItemListViewModel()
                 {
                     Id = item.Id,
                     Title = item.Title,
-                    Values = (_dbContext.AdditionalFieldsOfCollections
+                    Values = _dbContext.AdditionalFieldsOfCollections
                         .Where(afoc => afoc.CollectionId == collectionId && !afoc.Deleted)
                         .GroupJoin(_dbContext.FieldsOfItems
                                 .Where(foi => foi.ItemId == item.Id),
@@ -109,8 +106,49 @@ namespace Personal_Collection_Manager.Repository
                                 Order = afoc.AdditionalFieldOfCollection.Order
                             })
                         .OrderBy(x => x.Order)
-                        .Select(x => x.Value)).ToList()
-                }).AsNoTracking().ToListAsync());
+                        .Select(x => x.Value).ToList()
+                }).AsNoTracking().ToListAsync();
+        }
+
+        public async Task<int> Delete(int id)
+        {
+            var itemToDelete = await (from item in _dbContext.Items
+                                      where item.Id == id
+                                      select item).SingleOrDefaultAsync();
+            if (itemToDelete != null)
+            {
+                itemToDelete.Deleted = true;
+                _dbContext.Items.Update(itemToDelete);
+            }
+            return await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<List<ItemListViewModel>> GetItemsOfCollection(int collectionId, int page)
+        {
+            return await _dbContext.Items
+                .Where(item => item.CollectionId == collectionId && !item.Deleted)
+                .OrderByDescending(item => item.Id)
+                .Select(item => new ItemListViewModel()
+                {
+                    Id = item.Id,
+                    Title = item.Title,
+                    Values = _dbContext.AdditionalFieldsOfCollections
+                        .Where(afoc => afoc.CollectionId == collectionId && !afoc.Deleted)
+                        .GroupJoin(_dbContext.FieldsOfItems
+                                .Where(foi => foi.ItemId == item.Id),
+                            afoc => afoc.Id,
+                            foi => foi.AdditionalFieldOfCollectionId,
+                            (afoc, fois) => new { AdditionalFieldOfCollection = afoc, FieldsOfItems = fois })
+                        .SelectMany(x => x.FieldsOfItems.DefaultIfEmpty(),
+                            (afoc, foi) => new
+                            {
+                                Value = foi != null ? foi.Value : "",
+                                Order = afoc.AdditionalFieldOfCollection.Order
+                            })
+                        .OrderBy(x => x.Order)
+                        .Select(x => x.Value).ToList()
+                }).Skip(pageSize * (page - 1)).Take(pageSize)
+                .AsNoTracking().ToListAsync();
         }
     }
 }

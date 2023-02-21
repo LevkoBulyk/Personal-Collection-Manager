@@ -19,7 +19,14 @@
                         }
                     </div>
                     <div class="">
-                        like/dislike
+                        <div class="btn-group">
+                            <button class="btn btn-outline-success">
+                                <i class="bi bi-hand-thumbs-up"></i>
+                            </button>
+                            <button class="btn btn-outline-danger">
+                                <i class="bi bi-hand-thumbs-down"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -45,34 +52,22 @@
                 </div>
             </div>
         </section>
-
         <div class="album p-4 m-2 bg-light">
-            <form>
-                <div class="form-group">
-                    <label class="control-label">Comment:</label>
-                    <textarea class="form-control autosize" placeholder="write you comment"></textarea>
+            <div class="row me-2">
+                <input id="itemId" type="hidden" value="@Model.Id" />
+                <div class="form-group col-12">
+                    <textarea id="commentText" class="form-control autosize" placeholder="Write your comment"></textarea>
                     <span class="text-danger"></span>
                 </div>
-            </form>
+                <div class="col-12 d-flex justify-content-end">
+                    <button id="sendCommentBtn" class="btn btn-outline-primary disabled">Comment</button>
+                </div>
+            </div>
+            <div id="comments"></div>
         </div>
-        @*<div class="m-2">
-        <h4 class="pro-d-title">Items:</h4>
-        <table class="table">
-        <thead>
-        <tr>
-        <td><label class="form-label">Title</label></td>
-        @for (int i = 0; i < Model.AdditionalFields.Length; i++)
-        {
-        <td><label class="form-label">@Model.AdditionalFields[i].Name</label></td>
-        }
-        <td><label class="form-label"></label></td>
-        </tr>
-        </thead>
-        <tbody id="bodyOfItemsTable">
-        </tbody>
-        </table>
-        <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">Add item</a>
-        </div>
-        *@
     </div>
 </div>
+
+@section Scripts{
+    <script src="~/js/item/details.js"></script>
+}

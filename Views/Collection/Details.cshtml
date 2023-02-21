@@ -69,6 +69,8 @@
                         <td><label class="form-label"></label></td>
                     </tr>
                 </thead>
+                <input id="modelId" type="hidden" value="@Model.Id" />
+                <input id="pageNumber" type="hidden" value="0" />
                 <tbody id="bodyOfItemsTable">
                 </tbody>
             </table>
@@ -77,13 +79,5 @@
 </div>
 
 @section scripts {
-    <script>
-        function loadItemTable() {
-            $("#bodyOfItemsTable").load('/Item/GetItemsList?collectionId=' + @Model.Id);
-        }
-
-        $(document).ready(function () {
-            loadItemTable();
-        });
-    </script>
+    <script src="~/js/collection/details.js"></script>
 }

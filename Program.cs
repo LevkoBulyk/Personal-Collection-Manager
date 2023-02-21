@@ -31,8 +31,10 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IFieldOfItemRepository, FieldOfItemRepository>();
+builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 
 builder.Services.AddScoped<ICollectionService, CollectionService>();
+builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
 

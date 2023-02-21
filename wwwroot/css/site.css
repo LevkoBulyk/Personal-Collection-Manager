@@ -61,6 +61,10 @@ footer {
     overflow: hidden;
 }
 
-.form-group{
+.form-group {
     margin: 1em;
+}
+
+.multiline-div {
+    white-space: pre-wrap;
 }

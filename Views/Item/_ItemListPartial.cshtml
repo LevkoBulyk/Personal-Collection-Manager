@@ -7,7 +7,18 @@
         @foreach (var value in item.Values)
         {
             <td>
-                <div style="white-space: pre-wrap;">@value</div>
+                @switch (value)
+                {
+                    case "true":
+                        <div class="multiline-div"><i class="bi bi-check2"></i></div>
+                        break;
+                    case "false":
+                        <div class="multiline-div"><i class="bi bi-x-lg"></i></div>
+                        break;
+                    default:
+                        <div class="multiline-div">@value</div>
+                        break;
+                }
             </td>
         }
         <td>
@@ -18,7 +29,7 @@
                 <a asp-controller="Item" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                     View
                 </a>
-                <a asp-controller="Item" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">
+                <a asp-controller="Item" asp-action="Delete" asp-route-id="@item.Id" onclick="ConfirmAction('delete', 'item', event);" class="btn btn-sm btn-outline-danger">
                     Delete
                 </a>
             </div>

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
-using Personal_Collection_Manager.Repository.Exceptions;
 
 namespace Personal_Collection_Manager.Controllers
 {
@@ -28,9 +27,10 @@ namespace Personal_Collection_Manager.Controllers
             return View("Edit", item);
         }
 
-        public async Task<IActionResult> GetItemsList(int collectionId)
+        [HttpGet]
+        public async Task<IActionResult> GetItemsList(int collectionId, int pageNumber)
         {
-            var items = await _itemService.GetItemsForCollection(collectionId);
+            var items = await _itemService.GetItemsForCollection(collectionId, pageNumber);
             return PartialView("_ItemListPartial", items);
         }
 
@@ -70,6 +70,17 @@ namespace Personal_Collection_Manager.Controllers
         {
             var item = await _itemService.GetItemByIdAsNoTracking(id, null);
             return View(item);
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            int collectionId = (await _itemService.GetItemByIdAsNoTracking(id, null)).CollectionId;
+            await _itemService.Delete(id);
+            if (collectionId != null)
+            {
+                return RedirectToAction("Details", "Collection", new { id = collectionId });
+            }
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }
