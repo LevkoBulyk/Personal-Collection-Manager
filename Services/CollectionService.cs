@@ -155,5 +155,20 @@ namespace Personal_Collection_Manager.Services
             }
             return collections;
         }
+
+        public async Task<List<CollectionViewModel>> GetCollectionsOf(string userId)
+        {
+            var collections = await _collection.GetCollectionsOf(userId);
+            foreach (var collection in collections)
+            {
+                collection.Description = _markdown.ToHtml(collection.Description);
+            }
+            return collections;
+        }
+
+        public Task<List<CollectionViewModel>> GetCollections(int pageNumber, int countPerPage)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

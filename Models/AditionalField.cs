@@ -6,9 +6,11 @@ namespace Personal_Collection_Manager.Models
     public class AditionalField
     {
         public int? Id { get; set; }
-        
+
         [Required]
         public FieldType Type { get; set; }
+
+        public int QuantityOfItems { get; set; }
 
         [Required]
         public string Name { get; set; }

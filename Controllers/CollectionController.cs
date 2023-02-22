@@ -9,22 +9,32 @@ namespace Personal_Collection_Manager.Controllers
     {
         private const string _success = "success";
         private const string _error = "error";
-        private readonly ICollectionService _collection;
+        private readonly ICollectionService _collectionService;
 
-        public CollectionController(ICollectionService collection)
+        public CollectionController(ICollectionService collectionService)
         {
-            _collection = collection;
+            _collectionService = collectionService;
+        }
+
+        public IActionResult All(string? userId, int pageNumber)
+        {
+            if (userId == null)
+            {
+                var collections = _collectionService.GetCollections(pageNumber);
+                return View();
+            }
+            return RedirectToAction("Index", "Dashboard", new { userId = userId });
         }
 
         public IActionResult Details(int id)
         {
-            var collection = _collection.GetCollectionByIdAsNoTraking(id);
+            var collection = _collectionService.GetCollectionByIdAsNoTraking(id);
             return View(collection);
         }
 
         public IActionResult Edit(int? id)
         {
-            var collection = _collection.GetCollectionById(id);
+            var collection = _collectionService.GetCollectionById(id);
             return View(collection);
         }
 
@@ -41,7 +51,7 @@ namespace Personal_Collection_Manager.Controllers
             {
                 if (collection.Id == null)
                 {
-                    if (await _collection.Create(collection, User))
+                    if (await _collectionService.Create(collection, User))
                     {
                         TempData[_success] = "New collection was successfully created";
                         return RedirectToAction("Index", "Dashboard");
@@ -49,7 +59,7 @@ namespace Personal_Collection_Manager.Controllers
                 }
                 else
                 {
-                    if (_collection.Edit(collection))
+                    if (_collectionService.Edit(collection))
                     {
                         TempData[_success] = "Collection was saved";
                         return View("Edit", collection);
@@ -69,7 +79,7 @@ namespace Personal_Collection_Manager.Controllers
 
         public IActionResult Delete(int id)
         {
-            _collection.Delete(id);
+            _collectionService.Delete(id);
             TempData[_success] = "Collection was successfully deleted";
             return RedirectToAction("Index", "Dashboard");
         }
@@ -77,7 +87,7 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public IActionResult RemoveField(CollectionViewModel collection, int number)
         {
-            var result = _collection.RemoveField(ref collection, number);
+            var result = _collectionService.RemoveField(ref collection, number);
             if (result.Succeded)
             {
                 TempData[_success] = result.Message;
@@ -91,7 +101,7 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public IActionResult AddField(CollectionViewModel collection)
         {
-            _collection.AddField(ref collection);
+            _collectionService.AddField(ref collection);
             ModelState.Clear();
             return View("Edit", collection);
         }
@@ -99,7 +109,7 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public IActionResult MoveUp(CollectionViewModel collection, int number)
         {
-            _collection.MoveUp(ref collection, number);
+            _collectionService.MoveUp(ref collection, number);
             ModelState.Clear();
             return View("Edit", collection);
         }
@@ -107,14 +117,14 @@ namespace Personal_Collection_Manager.Controllers
         [HttpPost]
         public IActionResult MoveDown(CollectionViewModel collection, int number)
         {
-            _collection.MoveDown(ref collection, number);
+            _collectionService.MoveDown(ref collection, number);
             ModelState.Clear();
             return View("Edit", collection);
         }
 
         public JsonResult Topics(string prefix)
         {
-            var topics = _collection.GetTopicsWithPrefix(prefix);
+            var topics = _collectionService.GetTopicsWithPrefix(prefix);
             return Json(topics);
         }
     }

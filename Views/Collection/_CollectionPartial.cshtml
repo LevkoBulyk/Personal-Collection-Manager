@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Personal_Collection_Manager.Data.DataBaseModels;
+@inject UserManager<ApplicationUser> _userManager;
+@model CollectionViewModel;
+
+@{
+    var user = await _userManager.GetUserAsync(User);
+    string userId = user.Id;
+    bool userIsAdmin = await _userManager.IsInRoleAsync(user, UserRole.Admin);
+}
+
+<div class="col">
+    <div class="card shadow-sm">
+        <a href="~/Collection/Details/@Model.Id">
+            <div class="card shadow-sm" align="center">
+                <h4 x="50%" y="50%" fill="#eceeef" dy=".3em">
+                    @Model.Title
+                </h4>
+                <img class="collectionImg" src="@Model.ImageUrl" />
+            </div>
+        </a>
+        <div class="card-body">
+            @*<div class="card-text text-start">@Html.Raw(Model.Description)</div>*@
+            @if (!Model.UserId.Equals(userId))
+            {
+                <p class="text-muted">
+                    <span>Author: </span>
+                    <a asp-controller="Dashboard" asp-action="Index" asp-route-userId="@Model.UserId">@Model.UserName</a>
+                </p>
+            }
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                    <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+                        View
+                    </a>
+                    @if (Model.UserId.Equals(userId) || userIsAdmin)
+                    {
+                        <a asp-controller="Collection" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
+                            Edit
+                        </a>
+                        <a asp-controller="Collection" asp-action="Delete" asp-route-id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-sm btn-outline-danger">
+                            Delete
+                        </a>
+                    }
+                </div>
+                <small class="text-muted">@Model.Topic</small>
+            </div>
+        </div>
+    </div>
+</div>

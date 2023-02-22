@@ -43,7 +43,7 @@
                                     <tr class="table-secondary">
 
                                         <td>@Model.Fields[i].Title</td>
-                                        <td>@Model.Fields[i].Value</td>
+                                        <td class="multiline-div">@Model.Fields[i].Value</td>
                                     </tr>
                                 }
                             </tbody>
@@ -52,6 +52,7 @@
                 </div>
             </div>
         </section>
+        <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">Show collection</a>
         <div class="album p-4 m-2 bg-light">
             <div class="row me-2">
                 <input id="itemId" type="hidden" value="@Model.Id" />

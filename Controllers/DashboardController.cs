@@ -1,20 +1,34 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IService;
 
 namespace Personal_Collection_Manager.Controllers
 {
     public class DashboardController : Controller
     {
-        private readonly ICollectionService _collection;
+        private readonly ICollectionService _collectionService;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public DashboardController(ICollectionService collection)
+        public DashboardController(
+            ICollectionService collectionService,
+            UserManager<ApplicationUser> userManager)
         {
-            _collection = collection;
+            _collectionService = collectionService;
+            _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string? userId)
         {
-            return View(await _collection.GetCollectionsOf(User));
+            if (userId == null)
+            {
+                return View(
+                    (await _collectionService.GetCollectionsOf(User),
+                    (await _userManager.GetUserAsync(User)).Id)
+                    );
+            }
+            return View((await _collectionService.GetCollectionsOf(userId), userId));
         }
     }
 }

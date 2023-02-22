@@ -106,7 +106,10 @@ namespace Personal_Collection_Manager.Repository
                                 Order = afoc.AdditionalFieldOfCollection.Order
                             })
                         .OrderBy(x => x.Order)
-                        .Select(x => x.Value).ToList()
+                        .Select(x => x.Value).ToList(),
+                    UserId = _dbContext.Collections
+                        .Where(collection => collection.Id == collectionId)
+                        .Single().UserId
                 }).AsNoTracking().ToListAsync();
         }
 
@@ -146,7 +149,10 @@ namespace Personal_Collection_Manager.Repository
                                 Order = afoc.AdditionalFieldOfCollection.Order
                             })
                         .OrderBy(x => x.Order)
-                        .Select(x => x.Value).ToList()
+                        .Select(x => x.Value).ToList(),
+                    UserId = _dbContext.Collections
+                        .Where(collection => collection.Id == collectionId)
+                        .Single().UserId
                 }).Skip(pageSize * (page - 1)).Take(pageSize)
                 .AsNoTracking().ToListAsync();
         }

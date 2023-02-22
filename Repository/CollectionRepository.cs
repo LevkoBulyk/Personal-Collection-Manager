@@ -11,7 +11,7 @@ namespace Personal_Collection_Manager.Repository
 {
     public class CollectionRepository : ICollectionRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
         private readonly UserManager<ApplicationUser> _userManager;
         //private readonly ILogger _logger;
 
@@ -20,7 +20,7 @@ namespace Personal_Collection_Manager.Repository
             UserManager<ApplicationUser> userManager/*,
             ILogger logger*/)
         {
-            _context = context;
+            _dbContext = context;
             _userManager = userManager;
             //_logger = logger;
         }
@@ -31,13 +31,13 @@ namespace Personal_Collection_Manager.Repository
             {
                 return false;
             }
-            return _context.Collections.Find(collection.Id) != null;
+            return _dbContext.Collections.Find(collection.Id) != null;
         }
 
         public async Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
             var currentUserId = (await _userManager.GetUserAsync(collectionCreator)).Id;
-            var topic = _context.Topics.FirstOrDefault(t => t.Title.Equals(collection.Topic));
+            var topic = _dbContext.Topics.FirstOrDefault(t => t.Title.Equals(collection.Topic));
             if (topic == null)
             {
                 throw new TopicNotFoundException($"Topic '{collection.Topic}' not found in DB. You must choose topic from the drop-down list");
@@ -51,8 +51,8 @@ namespace Personal_Collection_Manager.Repository
                 TopicId = topic.Id,
                 ImageUrl = collection.ImageUrl
             };
-            _context.Collections.Add(col);
-            var res = _context.SaveChanges();
+            _dbContext.Collections.Add(col);
+            var res = _dbContext.SaveChanges();
             if (res <= 0)
             {
                 return false;
@@ -69,52 +69,52 @@ namespace Personal_Collection_Manager.Repository
                     Order = field.Order
                 });
             }
-            _context.AdditionalFieldsOfCollections.AddRange(additionalFields);
-            return (res + _context.SaveChanges()) > 0;
+            _dbContext.AdditionalFieldsOfCollections.AddRange(additionalFields);
+            return (res + _dbContext.SaveChanges()) > 0;
         }
 
         public bool DeleteAdditionalField(int id)
         {
-            var field = (from f in _context.AdditionalFieldsOfCollections
+            var field = (from f in _dbContext.AdditionalFieldsOfCollections
                          where f.Id == id
                          select f).SingleOrDefault();
             if (field != null)
             {
                 field.Deleted = true;
-                _context.AdditionalFieldsOfCollections.Update(field);
+                _dbContext.AdditionalFieldsOfCollections.Update(field);
             }
-            return _context.SaveChanges() > 0;
+            return _dbContext.SaveChanges() > 0;
         }
 
         public bool Delete(int id)
         {
-            var collection = (from c in _context.Collections
+            var collection = (from c in _dbContext.Collections
                               where c.Id == id
                               select c).SingleOrDefault();
             if (collection != null)
             {
                 collection.Deleted = true;
-                _context.Collections.Update(collection);
-                var fields = (from f in _context.AdditionalFieldsOfCollections
+                _dbContext.Collections.Update(collection);
+                var fields = (from f in _dbContext.AdditionalFieldsOfCollections
                               where f.CollectionId == id
                               select f).ToList();
                 foreach (var field in fields)
                 {
                     field.Deleted = true;
-                    _context.AdditionalFieldsOfCollections.Update(field);
+                    _dbContext.AdditionalFieldsOfCollections.Update(field);
                 }
             }
-            return _context.SaveChanges() > 0;
+            return _dbContext.SaveChanges() > 0;
         }
 
         public bool Edit(CollectionViewModel input)
         {
-            var topic = _context.Topics.First(t => t.Title.Equals(input.Topic));
+            var topic = _dbContext.Topics.First(t => t.Title.Equals(input.Topic));
             if (topic == null)
             {
                 throw new TopicNotFoundException($"Topic '{input.Topic}' not found in DB. You must choose topic from the drop-down list");
             }
-            var collection = _context.Collections.Find(input.Id);
+            var collection = _dbContext.Collections.Find(input.Id);
             if (collection == null)
             {
                 throw new ArgumentException(nameof(input.Id));
@@ -124,10 +124,10 @@ namespace Personal_Collection_Manager.Repository
             collection.Description = input.Description;
             collection.ImageUrl = input.ImageUrl;
             collection.TopicId = topic.Id;
-            _context.Collections.Update(collection);
+            _dbContext.Collections.Update(collection);
             foreach (var inputField in input.AdditionalFields)
             {
-                var field = _context.AdditionalFieldsOfCollections.Find(inputField.Id);
+                var field = _dbContext.AdditionalFieldsOfCollections.Find(inputField.Id);
                 if (field == null)
                 {
                     var createField = new AdditionalFieldOfCollection()
@@ -138,24 +138,24 @@ namespace Personal_Collection_Manager.Repository
                         Type = inputField.Type,
                         Order = inputField.Order
                     };
-                    _context.Add(createField);
+                    _dbContext.Add(createField);
                 }
                 else
                 {
                     field.Title = inputField.Name;
                     field.Type = inputField.Type;
                     field.Order = inputField.Order;
-                    _context.Update(field);
+                    _dbContext.Update(field);
                 }
             }
-            return _context.SaveChanges() > 0;
+            return _dbContext.SaveChanges() > 0;
         }
 
         public CollectionViewModel GetCollectionById(int id)
         {
-            var collection = (from c in _context.Collections
+            var collection = (from c in _dbContext.Collections
                               where c.Id == id && !c.Deleted
-                              join t in _context.Topics
+                              join t in _dbContext.Topics
                               on c.TopicId equals t.Id
                               select new CollectionViewModel()
                               {
@@ -166,7 +166,7 @@ namespace Personal_Collection_Manager.Repository
                                   Description = c.Description,
                                   Topic = t.Title,
                                   ImageUrl = c.ImageUrl,
-                                  AdditionalFields = (from f in _context.AdditionalFieldsOfCollections
+                                  AdditionalFields = (from f in _dbContext.AdditionalFieldsOfCollections
                                                       where f.CollectionId == id && !f.Deleted
                                                       orderby f.Order
                                                       select new AditionalField()
@@ -175,6 +175,9 @@ namespace Personal_Collection_Manager.Repository
                                                           Id = f.Id,
                                                           Name = f.Title,
                                                           Type = f.Type,
+                                                          QuantityOfItems = _dbContext.FieldsOfItems
+                                                            .Where(field => field.AdditionalFieldOfCollectionId == f.Id && !field.Deleted)
+                                                            .Count(),
                                                           Order = f.Order
                                                       }).ToArray()
                               }).SingleOrDefault();
@@ -183,19 +186,23 @@ namespace Personal_Collection_Manager.Repository
 
         public CollectionViewModel GetCollectionByIdAsNoTraking(int id)
         {
-            var collection = _context.Collections
+            var collection = _dbContext.Collections
                 .AsNoTracking()
                 .Where(c => c.Id == id && !c.Deleted)
-                .Join(_context.Topics, c => c.TopicId, t => t.Id, (c, t) => new CollectionViewModel()
+                .Join(_dbContext.Topics, c => c.TopicId, t => t.Id, (c, t) => new CollectionViewModel()
                 {
                     // TODO: use mapper
                     Id = c.Id,
                     UserId = c.UserId,
+                    UserName = (from user in _dbContext.Users
+                                where user.Id.Equals(c.UserId)
+                                select user)
+                                .Single().UserName,
                     Title = c.Title,
                     Description = c.Description,
                     Topic = t.Title,
                     ImageUrl = c.ImageUrl,
-                    AdditionalFields = _context.AdditionalFieldsOfCollections
+                    AdditionalFields = _dbContext.AdditionalFieldsOfCollections
                         .AsNoTracking()
                         .Where(f => f.CollectionId == id && !f.Deleted)
                         .OrderBy(f => f.Order)
@@ -205,23 +212,37 @@ namespace Personal_Collection_Manager.Repository
                             Id = f.Id,
                             Name = f.Title,
                             Type = f.Type,
+                            QuantityOfItems = _dbContext.FieldsOfItems
+                                .Where(field => field.AdditionalFieldOfCollectionId == f.Id && !field.Deleted)
+                                .Count(),
                             Order = f.Order
                         }).ToArray()
                 }).SingleOrDefault();
             return collection;
         }
 
+
         public async Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user)
         {
-            var Id = (await _userManager.GetUserAsync(user)).Id;
-            var collections = (from c in _context.Collections
-                               where c.UserId.Equals(Id) && !c.Deleted
-                               join t in _context.Topics
+            var userId = (await _userManager.GetUserAsync(user)).Id;
+            return await GetCollectionsOf(userId);
+        }
+
+        public async Task<List<CollectionViewModel>> GetCollectionsOf(string userId)
+        {
+            var collections = (from c in _dbContext.Collections
+                               where c.UserId.Equals(userId) && !c.Deleted
+                               join t in _dbContext.Topics
                                on c.TopicId equals t.Id
                                select new CollectionViewModel()
                                {
                                    // TODO: use mapper
                                    Id = c.Id,
+                                   UserId = c.UserId,
+                                   UserName = (from user in _dbContext.Users
+                                               where user.Id.Equals(c.UserId)
+                                               select user)
+                                               .Single().UserName,
                                    Title = c.Title,
                                    Description = c.Description,
                                    Topic = t.Title,
@@ -235,16 +256,39 @@ namespace Personal_Collection_Manager.Repository
             List<string> res;
             if (string.IsNullOrEmpty(prefix))
             {
-                res = (from t in _context.Topics
+                res = (from t in _dbContext.Topics
                        select t.Title).Take(10).ToList();
             }
             else
             {
-                res = (from t in _context.Topics
+                res = (from t in _dbContext.Topics
                        where t.Title.StartsWith(prefix)
                        select t.Title).Take(10).ToList();
             }
             return res;
+        }
+
+        public async Task<List<CollectionViewModel>> GetCollections(int pageNumber, int countPerPage)
+        {
+            return await _dbContext.Collections
+                .OrderByDescending(c => c.Id)
+                .Select(c => new CollectionViewModel()
+                {
+                    Id = c.Id,
+                    UserId = c.UserId,
+                    UserName = _dbContext.Users
+                        .Where(u => u.Id.Equals(c.UserId))
+                        .Single().UserName,
+                    Title = c.Title,
+                    Description = c.Description,
+                    Topic = _dbContext.Topics
+                        .Where(t => t.Id == c.TopicId)
+                        .Single().Title,
+                    ImageUrl = c.ImageUrl
+                })
+                .Skip(countPerPage * (pageNumber - 1))
+                .Take(countPerPage).ToListAsync();
+
         }
     }
 }

@@ -1,4 +1,11 @@
-﻿@model List<ItemListViewModel>
+﻿@using Microsoft.AspNetCore.Identity;
+@using Personal_Collection_Manager.Data.DataBaseModels;
+@inject UserManager<ApplicationUser> _userManager;
+@model List<ItemListViewModel>
+
+@{
+    string userId = (await _userManager.GetUserAsync(User)).Id;
+}
 
 @foreach (var item in Model)
 {
@@ -23,15 +30,18 @@
         }
         <td>
             <div class="btn-group">
-                <a asp-controller="Item" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
-                    Edit
-                </a>
                 <a asp-controller="Item" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                     View
                 </a>
-                <a asp-controller="Item" asp-action="Delete" asp-route-id="@item.Id" onclick="ConfirmAction('delete', 'item', event);" class="btn btn-sm btn-outline-danger">
-                    Delete
-                </a>
+                @if (item.UserId.Equals(userId))
+                {
+                    <a asp-controller="Item" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
+                        Edit
+                    </a>
+                    <a asp-controller="Item" asp-action="Delete" asp-route-id="@item.Id" onclick="ConfirmAction('delete', 'item', event);" class="btn btn-sm btn-outline-danger">
+                        Delete
+                    </a>
+                }
             </div>
         </td>
     </tr>

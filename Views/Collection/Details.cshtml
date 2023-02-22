@@ -1,8 +1,11 @@
-﻿@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+﻿@using Microsoft.AspNetCore.Identity;
+@using Personal_Collection_Manager.Data.DataBaseModels;
+@inject UserManager<ApplicationUser> _userManager;
 @model CollectionViewModel;
 
 @{
-    ViewData["Title"] = "Create collection";
+    string userId = (await _userManager.GetUserAsync(User)).Id;
+    ViewData["Title"] = "View collection";
 }
 
 <div class="container bootdey">
@@ -14,38 +17,35 @@
                         <img class="collectionImg" src="@Model.ImageUrl">
                     </div>
                     <div class="btn-group mt-3 mb-4">
-                        <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
-                        <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
-                        <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-outline-danger">Delete</a>
+                        @if (Model.UserId.Equals(userId))
+                        {
+                            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
+                            <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
+                            <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-outline-danger">Delete</a>
+                        }
                     </div>
                 </div>
                 <div class="col-md-6">
                     <h3 class="pro-d-title">@Model.Title</h3>
-                    <div>@Html.Raw(Model.Description)</div>
-                    <div class="product_meta">
-                        <span class="posted_in"> <strong>Topic:</strong> <a rel="tag" href="#">@Model.Topic</a></span>
-                    </div>
-                    @*<div class="album p-4 m-2 bg-light">
-                    <label>Aditional fields:</label>
-                    <table class="table">
-                    <thead>
-                    <tr>
-                    <td><label class="form-label">Name</label></td>
-                    <td><label class="form-label">Type</label></td>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    @for (int i = 0; i < Model.AdditionalFields.Length; i++)
+                    @if (!Model.UserId.Equals(userId))
                     {
-                    <tr class="table-secondary">
-
-                    <td>@Model.AdditionalFields[i].Name</td>
-                    <td>@Model.AdditionalFields[i].Type</td>
-                    </tr>
+                        <div class="product_meta">
+                            <span class="posted_in">
+                                <strong>Author:</strong>
+                                <a asp-action="Index" asp-controller="Dashboard" asp-route-userId="@Model.UserId">@Model.UserName</a>
+                            </span>
+                        </div>
                     }
-                    </tbody>
-                    </table>
-                    </div>*@
+                    <div class="product_meta">
+                        <span class="posted_in">
+                            <strong>Topic:</strong>
+                            <a rel="tag" href="#">@Model.Topic</a>
+                        </span>
+                    </div>
+                    <div class="product_meta mt-2">
+                        <span class="posted_in"> <strong>Description:</strong> </span>
+                        <div>@Html.Raw(Model.Description)</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -53,9 +53,12 @@
             <div class="row">
                 <h4 class="pro-d-title col">Items:</h4>
                 <div class="d-flex justify-content-end mb-2 col">
-                    <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">
-                        <i class="bi bi-plus-square"> add item</i>
-                    </a>
+                    @if (Model.UserId.Equals(userId))
+                    {
+                        <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">
+                            <i class="bi bi-plus-square"> add item</i>
+                        </a>
+                    }
                 </div>
             </div>
             <table class="table">

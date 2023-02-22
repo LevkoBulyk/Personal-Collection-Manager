@@ -11,13 +11,6 @@
     <table class="table">
         <thead>
             <tr>
-                @*<td scope="row">
-                <div class="checkbox">
-                <label class="form-label">
-                <input id="select-all" type="checkbox" class="form-check-input" />
-                </label>
-                </div>
-                </td>*@
                 <td><label class="form-label">User name</label></td>
                 <td><label class="form-label">Email</label></td>
                 <td><label class="form-label">Role</label></td>
@@ -32,18 +25,14 @@
                 @foreach (var user in Model)
                 {
                     <tr class="table-secondary">
-                        @*<th scope="row">
-                <div class="checkbox">
-                <label class="form-label">
-                <input id="check-box" class="form-check-input" />
-                </label>
-                </div>
-                </th>*@
                         <td>@user.UserName</td>
                         <td>@user.Email</td>
                         <td>@user.Role</td>
                         <td>@user.Blocked</td>
                         <td>
+                            <a asp-controller="Collection" asp-action="All" asp-route-userId="@user.Id" class="btn btn-sm btn-light">
+                                Collections
+                            </a>
                             <div class="btn-group">
                                 <a asp-controller="User" asp-action="ChangeRole" asp-route-id="@user.Id" class="btn btn-sm btn-light">
                                     Change role
@@ -52,7 +41,7 @@
                                     Delete
                                 </a>
                                 <a asp-controller="User" asp-action="Block" asp-route-id="@user.Id" onclick="ConfirmAction(@(user.Blocked?"'unblock'":"'block'"), 'user @user.UserName', event);" class="btn btn-sm btn-warning">
-                                    @(user.Blocked?"Unblock":"Block")
+                                    @(user.Blocked ? "Unblock" : "Block")
                                 </a>
                             </div>
                         </td>

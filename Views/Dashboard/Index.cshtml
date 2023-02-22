@@ -1,56 +1,43 @@
-﻿@model List<CollectionViewModel>;
+﻿@using Microsoft.AspNetCore.Identity;
+@using Personal_Collection_Manager.Data.DataBaseModels;
+@inject UserManager<ApplicationUser> _userManager;
+@model (List<CollectionViewModel> Collections, string UserId);
 
 @{
     ViewData["Title"] = "My collections";
+    string userId = (await _userManager.GetUserAsync(User)).Id;
+    string ownerEmail = _userManager.Users.First(u => u.Id == Model.UserId).Email;
 }
 
 <div class="text-center">
 
     <div class="px-4 py-5 my-5 text-center">
         <div class="row">
+            @if (Model.UserId.Equals(userId))
+                {
             <h2 class="col">My Collections</h2>
+                }
+                else
+            {
+            <h2 class="col">Collections of @ownerEmail</h2>
+            }
             <div class="align-items-end col">
-                <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Edit" asp-route-id="null">
-                    Create new Collection
-                </a>
+                @if (Model.UserId.Equals(userId))
+                {
+                    <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Edit" asp-route-id="null">
+                        Create new Collection
+                    </a>
+                }
             </div>
         </div>
         <div class="album py-5 bg-light">
-            @if (Model.Count > 0)
+            @if (Model.Collections.Count > 0)
             {
                 <div class="container">
                     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                        @foreach (var collection in Model)
+                        @foreach (var collection in Model.Collections)
                         {
-                            <div class="col">
-                                <div class="card shadow-sm">
-                                    <a href="~/Collection/Details/@collection.Id">
-                                        <div class="card shadow-sm" align="center">
-                                            <h4 x="50%" y="50%" fill="#eceeef" dy=".3em">
-                                                @collection.Title
-                                            </h4>
-                                            <img class="collectionImg" src="@collection.ImageUrl" />
-                                        </div>
-                                    </a>
-                                    <div class="card-body">
-                                        <div class="card-text text-start">@Html.Raw(collection.Description)</div>
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="btn-group">
-                                                <a asp-controller="Collection" asp-action="Details" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-primary">
-                                                    View
-                                                </a>
-                                                <a asp-controller="Collection" asp-action="Edit" asp-route-id="@collection.Id" class="btn btn-sm btn-outline-secondary">
-                                                    Edit
-                                                </a>
-                                                <a asp-controller="Collection" asp-action="Delete" asp-route-id="@collection.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-sm btn-outline-danger">
-                                                    Delete
-                                                </a>
-                                            </div>
-                                            <small class="text-muted">@collection.Topic</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            @await Html.PartialAsync("~/Views/Collection/_CollectionPartial.cshtml", collection)
                         }
                     </div>
                 </div>

@@ -50,6 +50,7 @@
                         <div class="col-10">
                             <input asp-for="@Model.AdditionalFields[i].Id" type="hidden" id="exampleInputEmail1" value="@Model.AdditionalFields[i].Id">
                             <input asp-for="@Model.AdditionalFields[i].Order" type="hidden" id="exampleInputEmail1" value="@i">
+                            <input asp-for="@Model.AdditionalFields[i].QuantityOfItems" type="hidden" value="@Model.AdditionalFields[i].QuantityOfItems">
                             <div class="form-group">
                                 <label asp-for="@Model.AdditionalFields[i].Name">Name</label>
                                 <input asp-for="@Model.AdditionalFields[i].Name" class="form-control" value="@Model.AdditionalFields[i].Name">
@@ -57,7 +58,14 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="@Model.AdditionalFields[i].Type">Type:</label>
-                                <select asp-for="@Model.AdditionalFields[i].Type" asp-items="@Html.GetEnumSelectList<FieldType>()" class="form-control form-select"></select>
+                                @if (Model.AdditionalFields[i].QuantityOfItems > 0)
+                                {
+                                    <input asp-for="@Model.AdditionalFields[i].Type" type="hidden" value="@Model.AdditionalFields[i].Type">
+                                }
+                                <select asp-for="@Model.AdditionalFields[i].Type"
+                                    asp-items="@Html.GetEnumSelectList<FieldType>()"
+                                    disabled="@(Model.AdditionalFields[i].QuantityOfItems > 0)"
+                                    class="form-control form-select"></select>
                                 <span asp-validation-for="@Model.AdditionalFields[i].Type" class="text-danger"></span>
                             </div>
                         </div>
