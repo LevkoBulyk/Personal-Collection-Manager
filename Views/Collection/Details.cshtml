@@ -1,10 +1,9 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Personal_Collection_Manager.Data.DataBaseModels;
-@inject UserManager<ApplicationUser> _userManager;
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
 @model CollectionViewModel;
 
 @{
-    string userId = (await _userManager.GetUserAsync(User)).Id;
     ViewData["Title"] = "View collection";
 }
 
@@ -17,7 +16,7 @@
                         <img class="collectionImg" src="@Model.ImageUrl">
                     </div>
                     <div class="btn-group mt-3 mb-4">
-                        @if (Model.UserId.Equals(userId))
+                        @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                         {
                             <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
                             <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
@@ -27,7 +26,7 @@
                 </div>
                 <div class="col-md-6">
                     <h3 class="pro-d-title">@Model.Title</h3>
-                    @if (!Model.UserId.Equals(userId))
+                    @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                     {
                         <div class="product_meta">
                             <span class="posted_in">
@@ -53,7 +52,7 @@
             <div class="row">
                 <h4 class="pro-d-title col">Items:</h4>
                 <div class="d-flex justify-content-end mb-2 col">
-                    @if (Model.UserId.Equals(userId))
+                    @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                     {
                         <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">
                             <i class="bi bi-plus-square"> add item</i>

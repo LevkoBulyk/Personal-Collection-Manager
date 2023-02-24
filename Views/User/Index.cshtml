@@ -1,59 +1,69 @@
-﻿@using Personal_Collection_Manager.Data.DataBaseModels;
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
+@using Personal_Collection_Manager.Data.DataBaseModels;
 @model List<UserViewModel>
 
 @{
     ViewData["Title"] = "User management";
 }
 
-<div class="text-center">
-    <h3>Users</h3>
+@if (await CurrentUser.IsSignedInAdmin(User))
+{
+    <div class="text-center">
+        <h3>Users</h3>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <td><label class="form-label">User name</label></td>
-                <td><label class="form-label">Email</label></td>
-                <td><label class="form-label">Role</label></td>
-                <td><label class="form-label">Blocked</label></td>
-                <td><label class="form-label"></label></td>
-                <td><label class="form-label"></label></td>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null)
-            {
-                @foreach (var user in Model)
+        <table class="table">
+            <thead>
+                <tr>
+                    <td><label class="form-label">User name</label></td>
+                    <td><label class="form-label">Email</label></td>
+                    <td><label class="form-label">Role</label></td>
+                    <td><label class="form-label">Blocked</label></td>
+                    <td><label class="form-label"></label></td>
+                    <td><label class="form-label"></label></td>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null)
                 {
-                    <tr class="table-secondary">
-                        <td>@user.UserName</td>
-                        <td>@user.Email</td>
-                        <td>@user.Role</td>
-                        <td>@user.Blocked</td>
-                        <td>
-                            <a asp-controller="Collection" asp-action="All" asp-route-userId="@user.Id" class="btn btn-sm btn-light">
-                                Collections
-                            </a>
-                            <div class="btn-group">
-                                <a asp-controller="User" asp-action="ChangeRole" asp-route-id="@user.Id" class="btn btn-sm btn-light">
-                                    Change role
+                    @foreach (var user in Model)
+                    {
+                        <tr class="table-secondary">
+                            <td>@user.UserName</td>
+                            <td>@user.Email</td>
+                            <td>@user.Role</td>
+                            <td>@user.Blocked</td>
+                            <td>
+                                <a asp-controller="Collection" asp-action="All" asp-route-userId="@user.Id" class="btn btn-sm btn-light">
+                                    Collections
                                 </a>
-                                <a asp-controller="User" asp-action="Delete" asp-route-id="@user.Id" onclick="ConfirmAction('delete', 'user @user.UserName', event);" class="btn btn-sm btn-danger">
-                                    Delete
-                                </a>
-                                <a asp-controller="User" asp-action="Block" asp-route-id="@user.Id" onclick="ConfirmAction(@(user.Blocked?"'unblock'":"'block'"), 'user @user.UserName', event);" class="btn btn-sm btn-warning">
-                                    @(user.Blocked ? "Unblock" : "Block")
-                                </a>
-                            </div>
-                        </td>
-                        <td>
-                        </td>
-                    </tr>
+                                <div class="btn-group">
+                                    <a asp-controller="User" asp-action="ChangeRole" asp-route-id="@user.Id" class="btn btn-sm btn-light">
+                                        Change role
+                                    </a>
+                                    <a asp-controller="User" asp-action="Delete" asp-route-id="@user.Id" onclick="ConfirmAction('delete', 'user @user.UserName', event);" class="btn btn-sm btn-danger">
+                                        Delete
+                                    </a>
+                                    <a asp-controller="User" asp-action="Block" asp-route-id="@user.Id" onclick="ConfirmAction(@(user.Blocked?"'unblock'":"'block'"), 'user @user.UserName', event);" class="btn btn-sm btn-warning">
+                                        @(user.Blocked ? "Unblock" : "Block")
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                    }
                 }
-            }
-            else
-            {
-                <h4 class="alert-danger">No users were found in DB</h4>
-            }
-        </tbody>
-    </table>
-</div>
+                else
+                {
+                    <h4 class="alert-danger">No users were found in DB</h4>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    @Html.Partial("_ForbidenAccessPartial", ("area", "access"))
+}

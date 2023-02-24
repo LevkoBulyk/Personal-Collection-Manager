@@ -6,11 +6,15 @@ namespace Personal_Collection_Manager.Services
 {
     public class ItemService : IItemService
     {
-        private readonly IItemRepository _repository;
+        private readonly IItemRepository _itemRepository;
+        private readonly IUserRepository _userRepository;
 
-        public ItemService(IItemRepository repository)
+        public ItemService(
+            IItemRepository ItemRepository,
+            IUserRepository userRepository)
         {
-            _repository = repository;
+            _itemRepository = ItemRepository;
+            _userRepository = userRepository;
         }
 
         public (bool Succeded, string Message) AddTag(ref ItemViewModel item)
@@ -38,12 +42,12 @@ namespace Personal_Collection_Manager.Services
 
         public async Task<bool> Create(ItemViewModel item)
         {
-            return (await _repository.Create(item)) > 0;
+            return (await _itemRepository.Create(item)) > 0;
         }
 
         public async Task<bool> Delete(int id)
         {
-            return (await _repository.Delete(id)) > 0;
+            return (await _itemRepository.Delete(id)) > 0;
         }
 
         public async Task<bool> Edit(ItemViewModel item)
@@ -52,7 +56,7 @@ namespace Personal_Collection_Manager.Services
             {
                 throw new ArgumentNullException("Item id can not be 'null'");
             }
-            return (await _repository.Edit(item)) > 0;
+            return (await _itemRepository.Edit(item)) > 0;
         }
 
         public async Task<ItemViewModel> GetItemByIdAsNoTracking(int? id, int? collectionId)
@@ -60,23 +64,26 @@ namespace Personal_Collection_Manager.Services
             ItemViewModel item;
             if (id == null)
             {
-                item = await _repository.GetItemWithAdditionalFieldsOfCollection((int)collectionId);
+                item = await _itemRepository.GetItemWithAdditionalFieldsOfCollection((int)collectionId);
             }
             else
             {
-                item = await _repository.GetItemByIdAsNoTracking((int)id);
+                item = await _itemRepository.GetItemByIdAsNoTracking((int)id);
             }
+            var author = await _userRepository.GetAuthorOfCollection(item.CollectionId);
+            item.AuthorId = author.Id;
+            item.AuthorEmail = author.Email;
             return item;
         }
 
         public Task<List<ItemListViewModel>> GetAllItemsForCollection(int collectionId)
         {
-            return _repository.GetAllItemsOfCollection(collectionId);
+            return _itemRepository.GetAllItemsOfCollection(collectionId);
         }
 
         public Task<List<ItemListViewModel>> GetItemsForCollection(int collectionId, int page)
         {
-            return _repository.GetItemsOfCollection(collectionId, page);
+            return _itemRepository.GetItemsOfCollection(collectionId, page);
         }
     }
 }

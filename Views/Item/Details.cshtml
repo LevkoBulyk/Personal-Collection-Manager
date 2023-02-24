@@ -1,4 +1,6 @@
-﻿@using Personal_Collection_Manager.Models;
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
 @model ItemViewModel
 
 @{
@@ -12,21 +14,11 @@
             <div class="row panel-body">
                 <div class="col-md-3">
                     <h4 class="pro-d-title">@Model.Title</h4>
-                    <div class="m-2">
+                    <div class="m-5">
                         @foreach (var tag in Model.Tags)
                         {
                             <p>@tag</p>
                         }
-                    </div>
-                    <div class="">
-                        <div class="btn-group">
-                            <button class="btn btn-outline-success">
-                                <i class="bi bi-hand-thumbs-up"></i>
-                            </button>
-                            <button class="btn btn-outline-danger">
-                                <i class="bi bi-hand-thumbs-down"></i>
-                            </button>
-                        </div>
                     </div>
                 </div>
                 <div class="col-md-9">
@@ -52,7 +44,34 @@
                 </div>
             </div>
         </section>
-        <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">Show collection</a>
+        <div class="row mt-3 mb-3">
+            @if (await CurrentUser.IsSignedIn(User))
+            {
+                <div class="col">
+                    <div class="btn-group">
+                        <button class="btn btn-outline-success">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                        </button>
+                        <button class="btn btn-outline-danger">
+                            <i class="bi bi-hand-thumbs-down"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+            <div class="d-flex justify-content-end mb-2 col">
+                <div class="btn-group">
+                    <a class="btn btn-outline-primary col" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">
+                        Show collection
+                    </a>
+                    @if (await CurrentUser.HasEmail(Model.AuthorEmail, User))
+                    {
+                        <a class="btn btn-outline-secondary col" asp-controller="Item" asp-action="Edit" asp-route-id="@Model.Id">
+                            Edit
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
         <div class="album p-4 m-2 bg-light">
             <div class="row me-2">
                 <input id="itemId" type="hidden" value="@Model.Id" />

@@ -1,11 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Identity;
 @using Personal_Collection_Manager.Data.DataBaseModels;
-@inject UserManager<ApplicationUser> _userManager;
+@inject UserManager<ApplicationUser> _userManager
+
+@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
 @model (List<CollectionViewModel> Collections, string UserId);
 
 @{
     ViewData["Title"] = "My collections";
-    string userId = (await _userManager.GetUserAsync(User)).Id;
     string ownerEmail = _userManager.Users.First(u => u.Id == Model.UserId).Email;
 }
 
@@ -13,16 +16,16 @@
 
     <div class="px-4 py-5 my-5 text-center">
         <div class="row">
-            @if (Model.UserId.Equals(userId))
-                {
-            <h2 class="col">My Collections</h2>
-                }
-                else
+            @if (await CurrentUser.HasId(Model.UserId, User))
             {
-            <h2 class="col">Collections of @ownerEmail</h2>
+                <h2 class="col">My Collections</h2>
+            }
+            else
+            {
+                <h2 class="col">Collections of @ownerEmail</h2>
             }
             <div class="align-items-end col">
-                @if (Model.UserId.Equals(userId))
+                @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                 {
                     <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Edit" asp-route-id="null">
                         Create new Collection

@@ -36,7 +36,7 @@ namespace Personal_Collection_Manager.Repository
                     Order = af.Order,
                     Title = af.Title,
                     Type = af.Type,
-                    AdditionalFieldOfCollectionId = af.Id
+                    AdditionalFieldOfCollectionId = af.Id,
                 })).AsNoTracking().ToArray()
             };
         }
@@ -49,7 +49,7 @@ namespace Personal_Collection_Manager.Repository
                 {
                     Id = i.Id,
                     CollectionId = i.CollectionId,
-                    Title = i.Title
+                    Title = i.Title, 
                 }).AsNoTracking().SingleOrDefault();
             item.Fields = await _fieldOfItemRepository.GetFieldsOfItemAsNoTraking(id);
             item.Tags = (from tag in (await _tagRepository.GetTagsOfItem(id))

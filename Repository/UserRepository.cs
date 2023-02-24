@@ -8,30 +8,30 @@ namespace Personal_Collection_Manager.Repository
 {
     public class UserRepository : IUserRepository
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ApplicationDbContext _dbContext;
 
-        public UserRepository(ApplicationDbContext context)
+        public UserRepository(ApplicationDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
         void IUserRepository.ReverceBlocked(string id)
         {
-            var user = _context.Users.Find(id);
+            var user = _dbContext.Users.Find(id);
             user.Blocked = !user.Blocked;
-            _context.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public bool Delete(string id)
         {
-            var userToDelete = _context.Users.FirstOrDefault(u => u.Id.Equals(id));
+            var userToDelete = _dbContext.Users.FirstOrDefault(u => u.Id.Equals(id));
             userToDelete.Deleted = true;
-            return _context.SaveChanges() > 0;
+            return _dbContext.SaveChanges() > 0;
         }
 
         public List<ApplicationUser> GetAllNotDeletedUsers()
         {
-            var users = (from u in _context.Users
+            var users = (from u in _dbContext.Users
                          where !u.Deleted
                          select u).ToList();
             return users;
@@ -39,21 +39,24 @@ namespace Personal_Collection_Manager.Repository
 
         public List<ApplicationUser> GetAllDeletedUsers(ClaimsPrincipal user)
         {
-            if (!user.IsInRole(UserRole.Admin))
-            {
-                throw new UnauthorizedAccessException();
-            }
-            var users = (from u in _context.Users
-                        where u.Deleted
-                        select u).ToList();
+            var users = (from u in _dbContext.Users
+                         where u.Deleted
+                         select u).ToList();
             return users;
         }
 
         public bool Restore(string id)
         {
-            var userToDelete = _context.Users.FirstOrDefault(u => u.Id.Equals(id));
+            var userToDelete = _dbContext.Users.FirstOrDefault(u => u.Id.Equals(id));
             userToDelete.Deleted = false;
-            return _context.SaveChanges() > 0;
+            return _dbContext.SaveChanges() > 0;
+        }
+
+        public async Task<(string Id, string Email)> GetAuthorOfCollection(int collectionId)
+        {
+            var id = (await _dbContext.Collections.FindAsync(collectionId)).UserId;
+            var email = (await _dbContext.Users.FindAsync(id)).Email;
+            return (id, email);
         }
     }
 }

@@ -1,11 +1,7 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Personal_Collection_Manager.Data.DataBaseModels;
-@inject UserManager<ApplicationUser> _userManager;
-@model List<ItemListViewModel>
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
 
-@{
-    string userId = (await _userManager.GetUserAsync(User)).Id;
-}
+@model List<ItemListViewModel>
 
 @foreach (var item in Model)
 {
@@ -33,7 +29,7 @@
                 <a asp-controller="Item" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">
                     View
                 </a>
-                @if (item.UserId.Equals(userId))
+                @if (await CurrentUser.HasIdOrIsAdmin(item.UserId, User))
                 {
                     <a asp-controller="Item" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">
                         Edit

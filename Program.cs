@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.Helpers;
@@ -9,7 +8,6 @@ using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Repository;
 using Personal_Collection_Manager.Services;
-using System;
 using WebPWrecover.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,11 +30,14 @@ builder.Services.AddScoped<IItemRepository, ItemRepository>();
 builder.Services.AddScoped<ITagRepository, TagRepository>();
 builder.Services.AddScoped<IFieldOfItemRepository, FieldOfItemRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
+builder.Services.AddScoped<ICurrentUserHelper, CurrentUserHelper>();
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddControllersWithViews();

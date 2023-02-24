@@ -17,6 +17,6 @@ namespace Personal_Collection_Manager.Data.DataBaseModels
         [Required]
         public string Text { get; set; }
 
-        public bool Deleted { get; set; } = false;
+        // public bool Deleted { get; set; } = false;
     }
 }

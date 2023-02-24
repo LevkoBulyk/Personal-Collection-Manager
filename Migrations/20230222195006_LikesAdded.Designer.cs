@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Personal_Collection_Manager.Data;
 
@@ -11,9 +12,10 @@ using Personal_Collection_Manager.Data;
 namespace Personal_Collection_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230222195006_LikesAdded")]
+    partial class LikesAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -424,7 +426,7 @@ namespace Personal_Collection_Manager.Migrations
 
                     b.HasIndex("ItemId");
 
-                    b.HasIndex("UserId", "ItemId")
+                    b.HasIndex("UserId", "ItemId", "ThumbUp")
                         .IsUnique();
 
                     b.ToTable("Likes");

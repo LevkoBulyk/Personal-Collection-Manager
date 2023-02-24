@@ -1,91 +1,100 @@
-﻿@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
+@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
 @using Personal_Collection_Manager.Models;
 @model ItemViewModel
 
 @{
     ViewData["Title"] = "Edit";
-    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<form>
-    <div class="row">
-        <div class="col-md-12">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input id="itemId" asp-for="Id" class="form-control" type="hidden" />
-            <input id="collectionId" asp-for="CollectionId" class="form-control" type="hidden" />
-            <div class="form-group">
-                <label asp-for="Title" class="control-label"></label>
-                <input id="title" asp-for="Title" class="form-control" />
-                <span asp-validation-for="Title" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Tags" class="control-label"></label>
-                <div id="tagsPlace">
-                    @for (int i = 0; i < Model.Tags.Length; i++)
-                    {
-                        <input class="tags" asp-for="Tags[i]" class="form-control" />
-                    }
+@if (await CurrentUser.HasIdOrIsAdmin(Model.AuthorId, User))
+{
+    <form>
+        <div class="row">
+            <div class="col-md-12">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input id="itemId" asp-for="Id" class="form-control" type="hidden" />
+                <input id="collectionId" asp-for="CollectionId" class="form-control" type="hidden" />
+                <div class="form-group">
+                    <label asp-for="Title" class="control-label"></label>
+                    <input id="title" asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
-                <button asp-controller="Item" asp-action="AddTag" class="btn btn-outline-secondary"><i class="bi bi-plus-square"> add tag</i></button>
-            </div>
+                <div class="form-group">
+                    <label asp-for="Tags" class="control-label"></label>
+                    <div id="tagsPlace">
+                        @for (int i = 0; i < Model.Tags.Length; i++)
+                        {
+                            <input class="tags" asp-for="Tags[i]" class="form-control" />
+                        }
+                    </div>
+                    <button asp-controller="Item" asp-action="AddTag" class="btn btn-outline-secondary"><i class="bi bi-plus-square"> add tag</i></button>
+                </div>
 
-            <div class="album p-4 m-2 bg-light">
-                <label>Additional fields:</label>
-                @for (int i = 0; i < Model.Fields.Length; i++)
-                {
-                    <div class="card m-3 p-4 shadow-sm">
-                        <div class="row">
-                            <div class="col-10">
-                                <div class="form-group">
-                                    <input type="hidden" asp-for="@Model.Fields[i].Id" />
-                                    <input type="hidden" asp-for="@Model.Fields[i].Title" />
-                                    <input type="hidden" asp-for="@Model.Fields[i].Type" />
-                                    <input type="hidden" asp-for="@Model.Fields[i].Order" />
-                                    <input type="hidden" asp-for="@Model.Fields[i].AdditionalFieldOfCollectionId" />
-                                    @if (Model.Fields[i].Type != FieldType.Bool)
-                                    {
-                                        <label>@Model.Fields[i].Title</label>
-                                    }
-                                    @switch (Model.Fields[i].Type)
-                                    {
-                                        case FieldType.Number:
-                                            <input type="number" step="0.001" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
-                                            break;
-                                        case FieldType.MultyLineString:
-                                            <textarea class="form-control autosize" asp-for="Fields[i].Value" value="@Model.Fields[i].Value"></textarea>
-                                            break;
-                                        case FieldType.DateTime:
-                                            <input type="datetime-local" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
-                                            break;
-                                        case FieldType.Bool:
-                                            <div class="form-check form-check-inline">
-                                                @{
-                                                    bool result;
-                                                    if (!bool.TryParse(Model.Fields[i].Value, out result))
-                                                    {
-                                                        Model.Fields[i].Value = "false";
+                <div class="album p-4 m-2 bg-light">
+                    <label>Additional fields:</label>
+                    @for (int i = 0; i < Model.Fields.Length; i++)
+                    {
+                        <div class="card m-3 p-4 shadow-sm">
+                            <div class="row">
+                                <div class="col-10">
+                                    <div class="form-group">
+                                        <input type="hidden" asp-for="@Model.Fields[i].Id" />
+                                        <input type="hidden" asp-for="@Model.Fields[i].Title" />
+                                        <input type="hidden" asp-for="@Model.Fields[i].Type" />
+                                        <input type="hidden" asp-for="@Model.Fields[i].Order" />
+                                        <input type="hidden" asp-for="@Model.Fields[i].AdditionalFieldOfCollectionId" />
+                                        @if (Model.Fields[i].Type != FieldType.Bool)
+                                        {
+                                            <label>@Model.Fields[i].Title</label>
+                                        }
+                                        @switch (Model.Fields[i].Type)
+                                        {
+                                            case FieldType.Number:
+                                                <input type="number" step="0.001" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
+                                                break;
+                                            case FieldType.MultyLineString:
+                                                <textarea class="form-control autosize" asp-for="Fields[i].Value" value="@Model.Fields[i].Value"></textarea>
+                                                break;
+                                            case FieldType.DateTime:
+                                                <input type="datetime-local" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
+                                                break;
+                                            case FieldType.Bool:
+                                                <div class="form-check form-check-inline">
+                                                    @{
+                                                        bool result;
+                                                        if (!bool.TryParse(Model.Fields[i].Value, out result))
+                                                        {
+                                                            Model.Fields[i].Value = "false";
+                                                        }
                                                     }
-                                                }
-                                                <input type="checkbox" asp-for="@Model.Fields[i].Value" class="form-control form-check-input" data-val="@Model.Fields[i].Value">
-                                                <label>@Model.Fields[i].Title</label>
-                                            </div>
-                                            break;
-                                        case FieldType.String:
-                                        default:
-                                            <input asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
-                                            break;
-                                    }
-                                    <span asp-validation-for="@Model.Fields[i].Value" class="text-danger"></span>
+                                                    <input type="checkbox" asp-for="@Model.Fields[i].Value" class="form-control form-check-input" data-val="@Model.Fields[i].Value">
+                                                    <label>@Model.Fields[i].Title</label>
+                                                </div>
+                                                break;
+                                            case FieldType.String:
+                                            default:
+                                                <input asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
+                                                break;
+                                        }
+                                        <span asp-validation-for="@Model.Fields[i].Value" class="text-danger"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
-            <div class="form-group">
-                <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">Back to Collection</a>
-                <button asp-controller="Item" asp-action="Edit" formmethod="post" class="btn btn-outline-success">Save changes</button>
+                    }
+                </div>
+                <div class="form-group">
+                    <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">Back to Collection</a>
+                    <button asp-controller="Item" asp-action="Edit" formmethod="post" class="btn btn-outline-success">Save changes</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+}
+else
+{
+    @Html.Partial("_ForbidenAccessPartial", ("item", "edit"))
+}

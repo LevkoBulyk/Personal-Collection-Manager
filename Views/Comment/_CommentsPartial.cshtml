@@ -1,23 +1,16 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Personal_Collection_Manager.Data.DataBaseModels;
-@inject UserManager<ApplicationUser> _userManager;
-@model List<CommentViewModel>
-@{
-    var email = _userManager.GetUserAsync(User).Result.Email;
-}
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
 
-<script>
-    
-</script>
+@model List<CommentViewModel>
 
 @foreach (var comment in Model)
 {
-    <div class="alert alert-light m-3@(email.Equals(comment.AuthorEmail)?" col-9 ms-auto" : " col-9")">
+    <div class="alert alert-light m-3@(await CurrentUser.HasEmail(comment.AuthorEmail, User) ? " col-9 ms-auto" : " col-9")">
         <div class="row col-12">
             <div class="col-9 multiline-div pe-4">@comment.Text</div>
             <div class="col d-flex flex-column float-end">
                 <div>@comment.AuthorEmail</div>
-                @if (email.Equals(comment.AuthorEmail))
+                @if (await CurrentUser.HasEmailOrIsAdmin(comment.AuthorEmail, User))
                 {
                     <div class="btn-group">
                         <button onclick="editComment(@comment.Id);" class="btn btn-outline-primary">

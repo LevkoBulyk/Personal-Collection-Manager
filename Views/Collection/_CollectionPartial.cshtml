@@ -1,13 +1,7 @@
-﻿@using Microsoft.AspNetCore.Identity;
-@using Personal_Collection_Manager.Data.DataBaseModels;
-@inject UserManager<ApplicationUser> _userManager;
-@model CollectionViewModel;
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
 
-@{
-    var user = await _userManager.GetUserAsync(User);
-    string userId = user.Id;
-    bool userIsAdmin = await _userManager.IsInRoleAsync(user, UserRole.Admin);
-}
+@model CollectionViewModel;
 
 <div class="col">
     <div class="card shadow-sm">
@@ -21,7 +15,7 @@
         </a>
         <div class="card-body">
             @*<div class="card-text text-start">@Html.Raw(Model.Description)</div>*@
-            @if (!Model.UserId.Equals(userId))
+            @if (await CurrentUser.HasId(Model.UserId, User))
             {
                 <p class="text-muted">
                     <span>Author: </span>
@@ -33,7 +27,7 @@
                     <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
                         View
                     </a>
-                    @if (Model.UserId.Equals(userId) || userIsAdmin)
+                    @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                     {
                         <a asp-controller="Collection" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
                             Edit

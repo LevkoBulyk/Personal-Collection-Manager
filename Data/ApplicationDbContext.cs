@@ -21,10 +21,29 @@ namespace Personal_Collection_Manager.Data
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ItemsTag> ItemsTags { get; set; }
         public DbSet<Topic> Topics { get; set; }
+        public DbSet<Like> Likes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<Like>()
+                .HasIndex(l => new { l.UserId, l.ItemId })
+                .IsUnique();
+
+            builder.Entity<Like>().HasNoKey();
+
+            builder.Entity<Like>()
+                .HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(like => like.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Like>()
+                .HasOne<Item>()
+                .WithMany()
+                .HasForeignKey(like => like.ItemId)
+                .OnDelete(DeleteBehavior.NoAction);
 
             builder.Entity<Collection>()
                 .HasOne<Topic>()
