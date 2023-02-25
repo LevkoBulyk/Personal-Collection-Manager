@@ -42,15 +42,10 @@ namespace Personal_Collection_Manager.Repository
 
         public async Task<int> EditComment(CommentViewModel comment)
         {
-            /*var author = await _dbContext.Users.FirstOrDefaultAsync(user => user.Email.Equals(comment.AuthorEmail));
-            if (author == null) throw new ArgumentNullException(nameof(author));*/
             var commentToEdit = await _dbContext.Comments
                 .Where(c => c.Id == comment.Id)
                 .SingleOrDefaultAsync();
             if (commentToEdit == null) throw new ArgumentNullException(nameof(commentToEdit));
-            /*if (author.Id.Equals(commentToEdit.UserId))
-            {
-            }*/
             commentToEdit.Text = comment.Text;
             _dbContext.Comments.Update(commentToEdit);
             return await _dbContext.SaveChangesAsync();

@@ -1,4 +1,6 @@
-﻿using Personal_Collection_Manager.IRepository;
+﻿using CloudinaryDotNet;
+using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 
@@ -8,13 +10,16 @@ namespace Personal_Collection_Manager.Services
     {
         private readonly IItemRepository _itemRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IMarkdownService _markdownService;
 
         public ItemService(
             IItemRepository ItemRepository,
-            IUserRepository userRepository)
+            IUserRepository userRepository,
+            IMarkdownService markdownService)
         {
             _itemRepository = ItemRepository;
             _userRepository = userRepository;
+            _markdownService = markdownService;
         }
 
         public (bool Succeded, string Message) AddTag(ref ItemViewModel item)
@@ -59,7 +64,7 @@ namespace Personal_Collection_Manager.Services
             return (await _itemRepository.Edit(item)) > 0;
         }
 
-        public async Task<ItemViewModel> GetItemByIdAsNoTracking(int? id, int? collectionId)
+        public async Task<ItemViewModel> GetItemByIdAsNoTracking(int? id, int? collectionId, bool convertMarkdown)
         {
             ItemViewModel item;
             if (id == null)
@@ -73,17 +78,30 @@ namespace Personal_Collection_Manager.Services
             var author = await _userRepository.GetAuthorOfCollection(item.CollectionId);
             item.AuthorId = author.Id;
             item.AuthorEmail = author.Email;
+            if (convertMarkdown)
+                foreach (var field in item.Fields)
+                {
+                    if (field.Type == FieldType.MultyLineString)
+                    {
+                        field.Value = _markdownService.ToHtml(field.Value);
+                    }
+                }
             return item;
         }
 
-        public Task<List<ItemListViewModel>> GetAllItemsForCollection(int collectionId)
+        public Task<List<ItemListViewModel>> GetItemsOfCollection(int collectionId, int start, int length, string search)
+        {
+            return _itemRepository.GetItemsOfCollection(collectionId, start, length, search);
+        }
+
+        public Task<List<ItemListViewModel>> GetAllItemsOfCollection(int collectionId)
         {
             return _itemRepository.GetAllItemsOfCollection(collectionId);
         }
 
-        public Task<List<ItemListViewModel>> GetItemsForCollection(int collectionId, int page)
+        public IQueryable<ItemListViewModel> GetAllItemsOfCollectionAsQuery(int collectionId)
         {
-            return _itemRepository.GetItemsOfCollection(collectionId, page);
+            return _itemRepository.GetAllItemsOfCollectionAsQuery(collectionId);
         }
     }
 }

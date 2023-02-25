@@ -56,7 +56,7 @@
                                                 <input type="number" step="0.001" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
                                                 break;
                                             case FieldType.MultyLineString:
-                                                <textarea class="form-control autosize" asp-for="Fields[i].Value" value="@Model.Fields[i].Value"></textarea>
+                                                <textarea id="descriptionMark" class="form-control autosize" asp-for="Fields[i].Value" value="@Model.Fields[i].Value"></textarea>
                                                 break;
                                             case FieldType.DateTime:
                                                 <input type="datetime-local" asp-for="@Model.Fields[i].Value" class="form-control" value="@Model.Fields[i].Value">
@@ -93,6 +93,11 @@
             </div>
         </div>
     </form>
+
+    @section Scripts{
+        <script src="https://unpkg.com/easymde/dist/easymde.min.js"></script>
+        <script src="~/js/shared/markdownInit.js"></script>
+    }
 }
 else
 {

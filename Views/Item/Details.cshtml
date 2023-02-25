@@ -35,7 +35,7 @@
                                     <tr class="table-secondary">
 
                                         <td>@Model.Fields[i].Title</td>
-                                        <td class="multiline-div">@Model.Fields[i].Value</td>
+                                        <td class="multiline-div">@Html.Raw(@Model.Fields[i].Value)</td>
                                     </tr>
                                 }
                             </tbody>
@@ -76,7 +76,6 @@
             @if (await CurrentUser.IsSignedIn(User))
             {
                 <div class="row me-2">
-                    <input id="itemId" type="hidden" value="@Model.Id" />
                     <div class="form-group col-12">
                         <textarea id="commentText" class="form-control autosize" placeholder="write your comment"></textarea>
                     </div>
@@ -85,6 +84,7 @@
                     </div>
                 </div>
             }
+            <input id="itemId" type="hidden" value="@Model.Id" />
             <div id="comments"></div>
         </div>
     </div>

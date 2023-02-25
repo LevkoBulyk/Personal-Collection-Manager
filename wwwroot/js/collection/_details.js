@@ -1,7 +1,10 @@
 ﻿(function () {
     let modelId = document.getElementById('modelId').value;
-    let itemsList = [];
     let columnDefs = [
+        {
+            targets: 0,
+            name: "Title"
+        },
         {
             targets: 1,
             sortable: false
@@ -11,6 +14,13 @@
             sortable: false
         }
     ];
+    $.each(document.getElementsByClassName('itemValues'), function (key, value) {
+        columnDefs.push({
+            targets: 2 + parseInt(value.id),
+            name: value.id
+        });
+    });
+    console.log(columnDefs);
     let dataTableOptions = {
         columnDefs: columnDefs,
         createdRow: function (row, data, dataIndex) {
@@ -18,27 +28,29 @@
         },
         autoWidth: false,
         processing: true,
-        data: itemsList
-    };
-
-    $(document).ready(function () {
-        $.ajax({
+        serverSide: true,
+        ajax: {
             url: '/Item/GetAllItems',
             type: 'POST',
             async: false,
             data: {
                 collectionId: modelId
             },
-            success: function (response) {
-                $.each(response, function (key, value) {
-                    itemsList.push(mapItem(value));
-                })
-                $('#tableOfItems').DataTable(dataTableOptions);
-            },
             error: function (error) {
                 console.log(error);
+            },
+            dataSrc: function (json) {
+                let listOfItems = [];
+                $.each(json.data, function (key, value) {
+                    listOfItems.push(mapItem(value));
+                });
+                return listOfItems;
             }
-        });
+        }
+    };
+
+    $(document).ready(function () {
+        $('#tableOfItems').DataTable(dataTableOptions);
     });
 
     const mapItem = function mapItem(input) {

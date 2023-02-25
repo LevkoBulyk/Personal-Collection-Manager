@@ -7,32 +7,32 @@ namespace Personal_Collection_Manager.Services
 {
     public class CollectionService : ICollectionService
     {
-        private readonly ICollectionRepository _collection;
-        private readonly IMarkdownService _markdown;
-        private readonly IPhotoService _photo;
+        private readonly ICollectionRepository _collectionRepository;
+        private readonly IMarkdownService _markdownService;
+        private readonly IPhotoService _photoService;
 
         public CollectionService(
-            ICollectionRepository collection,
-            IMarkdownService markdown,
-            IPhotoService photo)
+            ICollectionRepository collectionRepository,
+            IMarkdownService markdownService,
+            IPhotoService photoService)
         {
-            _collection = collection;
-            _markdown = markdown;
-            _photo = photo;
+            _collectionRepository = collectionRepository;
+            _markdownService = markdownService;
+            _photoService = photoService;
         }
 
         public CollectionViewModel GetCollectionById(int? id)
         {
             var collection = id == null ?
                     new CollectionViewModel() :
-                    _collection.GetCollectionById((int)id);
+                    _collectionRepository.GetCollectionById((int)id);
             return collection;
         }
 
         public (bool Succeded, string Message) RemoveField(ref CollectionViewModel collection, int number)
         {
             int? id = collection.AdditionalFields[number].Id;
-            if (id != null && !_collection.DeleteAdditionalField((int)id))
+            if (id != null && !_collectionRepository.DeleteAdditionalField((int)id))
             {
                 return (
                     Succeded: false,
@@ -100,16 +100,16 @@ namespace Personal_Collection_Manager.Services
 
         public CollectionViewModel GetCollectionByIdAsNoTraking(int id)
         {
-            var collection = _collection.GetCollectionByIdAsNoTraking(id);
-            collection.Description = _markdown.ToHtml(collection.Description);
+            var collection = _collectionRepository.GetCollectionByIdAsNoTraking(id);
+            collection.Description = _markdownService.ToHtml(collection.Description);
             return collection;
         }
 
         public async Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator)
         {
-            var photoResult = collection.Image == null ? null : await _photo.AddPhotoAsync(collection.Image);
+            var photoResult = collection.Image == null ? null : await _photoService.AddPhotoAsync(collection.Image);
             collection.ImageUrl = photoResult == null ? string.Empty : photoResult.Url.ToString();
-            return await _collection.Create(collection, collectionCreator);
+            return await _collectionRepository.Create(collection, collectionCreator);
         }
 
         public bool Edit(CollectionViewModel collection)
@@ -126,42 +126,42 @@ namespace Personal_Collection_Manager.Services
             collection.ImageUrl = collection.ImageUrl ?? "";
             if (collectionToModify.ImageUrl.Length > 0 && collection.ImageUrl.Length == 0)
             {
-                _photo.DeletePhoto(collectionToModify.ImageUrl);
+                _photoService.DeletePhoto(collectionToModify.ImageUrl);
             }
             if (collection.Image != null)
             {
-                var uploadResult = _photo.AddPhoto(collection.Image);
+                var uploadResult = _photoService.AddPhoto(collection.Image);
                 collection.ImageUrl = uploadResult.Url.ToString();
             }
-            return _collection.Edit(collection);
+            return _collectionRepository.Edit(collection);
         }
 
         public bool Delete(int id)
         {
-            return _collection.Delete(id);
+            return _collectionRepository.Delete(id);
         }
 
         public List<string> GetTopicsWithPrefix(string prefix)
         {
-            return _collection.GetTopicsWithPrefix(prefix);
+            return _collectionRepository.GetTopicsWithPrefix(prefix);
         }
 
         public async Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user)
         {
-            var collections = await _collection.GetCollectionsOf(user);
+            var collections = await _collectionRepository.GetCollectionsOf(user);
             foreach (var collection in collections)
             {
-                collection.Description = _markdown.ToHtml(collection.Description);
+                collection.Description = _markdownService.ToHtml(collection.Description);
             }
             return collections;
         }
 
         public async Task<List<CollectionViewModel>> GetCollectionsOf(string userId)
         {
-            var collections = await _collection.GetCollectionsOf(userId);
+            var collections = await _collectionRepository.GetCollectionsOf(userId);
             foreach (var collection in collections)
             {
-                collection.Description = _markdown.ToHtml(collection.Description);
+                collection.Description = _markdownService.ToHtml(collection.Description);
             }
             return collections;
         }
