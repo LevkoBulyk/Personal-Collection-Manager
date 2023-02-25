@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using Personal_Collection_Manager.Repository.Exceptions;
@@ -32,6 +33,7 @@ namespace Personal_Collection_Manager.Controllers
             return View(collection);
         }
 
+        [Authorize]
         public IActionResult Edit(int? id)
         {
             var collection = _collectionService.GetCollectionById(id);
@@ -39,6 +41,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Edit(CollectionViewModel collection)
         {
             ModelState.Remove(nameof(collection.ImageUrl));
@@ -77,6 +80,7 @@ namespace Personal_Collection_Manager.Controllers
             return View(collection);
         }
 
+        [Authorize]
         public IActionResult Delete(int id)
         {
             _collectionService.Delete(id);
@@ -85,6 +89,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult RemoveField(CollectionViewModel collection, int number)
         {
             var result = _collectionService.RemoveField(ref collection, number);
@@ -99,6 +104,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult AddField(CollectionViewModel collection)
         {
             _collectionService.AddField(ref collection);
@@ -107,6 +113,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult MoveUp(CollectionViewModel collection, int number)
         {
             _collectionService.MoveUp(ref collection, number);
@@ -115,6 +122,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public IActionResult MoveDown(CollectionViewModel collection, int number)
         {
             _collectionService.MoveDown(ref collection, number);

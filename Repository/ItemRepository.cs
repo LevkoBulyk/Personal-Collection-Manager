@@ -49,10 +49,10 @@ namespace Personal_Collection_Manager.Repository
                 {
                     Id = i.Id,
                     CollectionId = i.CollectionId,
-                    Title = i.Title, 
+                    Title = i.Title,
                 }).AsNoTracking().SingleOrDefault();
             item.Fields = await _fieldOfItemRepository.GetFieldsOfItemAsNoTraking(id);
-            item.Tags = (from tag in (await _tagRepository.GetTagsOfItem(id))
+            item.Tags = (from tag in _tagRepository.GetTagsOfItem(id)
                          select tag.Value).ToArray();
             return item;
         }
@@ -92,6 +92,13 @@ namespace Personal_Collection_Manager.Repository
                 {
                     Id = item.Id,
                     Title = item.Title,
+                    Tags = _dbContext.ItemsTags
+                        .Where(itemTags => itemTags.ItemId == item.Id)
+                        .Join(_dbContext.Tags,
+                            itemTags => itemTags.TagId,
+                            tag => tag.Id,
+                            (itemTag, tag) => tag)
+                        .Select(tag => tag.Value).ToList(),
                     Values = _dbContext.AdditionalFieldsOfCollections
                         .Where(afoc => afoc.CollectionId == collectionId && !afoc.Deleted)
                         .GroupJoin(_dbContext.FieldsOfItems
@@ -135,6 +142,13 @@ namespace Personal_Collection_Manager.Repository
                 {
                     Id = item.Id,
                     Title = item.Title,
+                    Tags = _dbContext.ItemsTags
+                        .Where(itemTags => itemTags.ItemId == item.Id)
+                        .Join(_dbContext.Tags,
+                            itemTags => itemTags.TagId,
+                            tag => tag.Id,
+                            (itemTag, tag) => tag)
+                        .Select(tag => tag.Value).ToList(),
                     Values = _dbContext.AdditionalFieldsOfCollections
                         .Where(afoc => afoc.CollectionId == collectionId && !afoc.Deleted)
                         .GroupJoin(_dbContext.FieldsOfItems

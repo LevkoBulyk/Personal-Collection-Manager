@@ -1,0 +1,19 @@
+﻿@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
+@model (string UserId, int Id)
+
+<div class="btn-group">
+    <a asp-controller="Item" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
+        View
+    </a>
+    @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
+    {
+        <a asp-controller="Item" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
+            Edit
+        </a>
+        <a asp-controller="Item" asp-action="Delete" asp-route-id="@Model.Id" onclick="ConfirmAction('delete', 'Model', event);" class="btn btn-sm btn-outline-danger">
+            Delete
+        </a>
+    }
+</div>

@@ -53,12 +53,12 @@ namespace Personal_Collection_Manager.Repository
             return await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<List<Tag>> GetTagsOfItem(int itemId)
+        public List<Tag> GetTagsOfItem(int itemId)
         {
-            return await (from itemTags in _dbContext.ItemsTags
-                          where itemTags.ItemId == itemId
-                          join tag in _dbContext.Tags on itemTags.TagId equals tag.Id
-                          select tag).ToListAsync();
+            return (from itemTags in _dbContext.ItemsTags
+                    where itemTags.ItemId == itemId
+                    join tag in _dbContext.Tags on itemTags.TagId equals tag.Id
+                    select tag).ToList();
         }
 
         public async Task<List<Tag>> GetTagsOfItemAsNoTraking(int itemId)
@@ -74,7 +74,7 @@ namespace Personal_Collection_Manager.Repository
 
         public async Task<int> RemoveTagsOfItem(int itemId)
         {
-            var tagsToRemove = await GetTagsOfItem(itemId);
+            var tagsToRemove = GetTagsOfItem(itemId);
             var itemToTags = await (from itemToTag in _dbContext.ItemsTags
                                     where itemToTag.ItemId == itemId
                                     select itemToTag).ToListAsync();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 
@@ -15,12 +16,14 @@ namespace Personal_Collection_Manager.Controllers
             _itemService = itemService;
         }
 
+        [Authorize]
         public async Task<IActionResult> Edit(int? id, int collectionId)
         {
             var item = await _itemService.GetItemByIdAsNoTracking(id, collectionId);
             return View(item);
         }
 
+        [Authorize]
         public IActionResult AddTag(ItemViewModel item)
         {
             _itemService.AddTag(ref item);
@@ -28,17 +31,25 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetItemsList(int collectionId, int pageNumber)
+        public async Task<IActionResult> GetItemActions(string userId, int id)
         {
-            var items = await _itemService.GetItemsForCollection(collectionId, pageNumber);
-            return PartialView("_ItemListPartial", items);
+            return PartialView("_ItemActionsPartial", (userId, id));
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetItems(int collectionId, int pageNumber)
+        {
+            var items = await _itemService.GetItemsForCollection(collectionId, pageNumber);
+            return Json(items);
+        }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Edit(ItemViewModel item)
         {
             ModelState.Remove("Id");
+            ModelState.Remove("AuthorId");
+            ModelState.Remove("AuthorEmail");
             if (!ModelState.IsValid)
             {
                 TempData[_error] = "Not all required fields were filled, or some were filled with errors";
@@ -72,6 +83,7 @@ namespace Personal_Collection_Manager.Controllers
             return View(item);
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
             int collectionId = (await _itemService.GetItemByIdAsNoTracking(id, null)).CollectionId;

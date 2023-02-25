@@ -73,16 +73,18 @@
             </div>
         </div>
         <div class="album p-4 m-2 bg-light">
-            <div class="row me-2">
-                <input id="itemId" type="hidden" value="@Model.Id" />
-                <div class="form-group col-12">
-                    <textarea id="commentText" class="form-control autosize" placeholder="Write your comment"></textarea>
-                    <span class="text-danger"></span>
+            @if (await CurrentUser.IsSignedIn(User))
+            {
+                <div class="row me-2">
+                    <input id="itemId" type="hidden" value="@Model.Id" />
+                    <div class="form-group col-12">
+                        <textarea id="commentText" class="form-control autosize" placeholder="write your comment"></textarea>
+                    </div>
+                    <div class="col-12 d-flex justify-content-end">
+                        <button id="sendCommentBtn" class="btn btn-outline-primary disabled">Comment</button>
+                    </div>
                 </div>
-                <div class="col-12 d-flex justify-content-end">
-                    <button id="sendCommentBtn" class="btn btn-outline-primary disabled">Comment</button>
-                </div>
-            </div>
+            }
             <div id="comments"></div>
         </div>
     </div>

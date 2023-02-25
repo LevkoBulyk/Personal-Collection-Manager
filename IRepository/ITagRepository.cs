@@ -6,7 +6,7 @@ namespace Personal_Collection_Manager.IRepository
     {
         public Task<int> RemoveTagsOfItem(int itemId);
         public Task<int> AddTagsToItem(int itemId, List<string> tagValues);
-        public Task<List<Tag>> GetTagsOfItem(int itemId);
+        public List<Tag> GetTagsOfItem(int itemId);
         public Task<List<Tag>> GetTagsOfItemAsNoTraking(int itemId);
         public Task<int> Create(Tag tag);
         public Task<int> Update(Tag tag);

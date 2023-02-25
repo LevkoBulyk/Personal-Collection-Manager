@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IService;
 

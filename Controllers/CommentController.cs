@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IService;
@@ -20,6 +21,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<bool> Add(int itemId, string text)
         {
             var email = _userManager.GetUserAsync(HttpContext.User).Result.Email;
@@ -41,6 +43,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<int> EditComment(int commentId, string text)
         {
             var comment = new CommentViewModel()
@@ -52,6 +55,7 @@ namespace Personal_Collection_Manager.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<int> DeleteComment(int commentId)
         {
             return await _commentService.DeleteComment(commentId);
