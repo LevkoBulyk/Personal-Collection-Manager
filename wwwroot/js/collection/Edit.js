@@ -46,7 +46,6 @@
     });
 
     exampleDataList.addEventListener('input', function () {
-        console.log(exampleDataList.value);
         $.ajax({
             type: "GET",
             url: "/Collection/Topics",
@@ -64,4 +63,5 @@
             }
         });
     });
+
 })();

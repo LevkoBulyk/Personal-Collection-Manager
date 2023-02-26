@@ -33,6 +33,14 @@ namespace Personal_Collection_Manager.Controllers
             return View("Edit", item);
         }
 
+        [HttpPost]
+        [Authorize]
+        public IActionResult RemoveTag(ItemViewModel item, int index)
+        {
+            _itemService.RemoveTag(ref item, index);
+            return View("Edit", item);
+        }
+
         [HttpGet]
         public IActionResult GetItemActions(string userId, int id)
         {

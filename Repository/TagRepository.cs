@@ -72,6 +72,16 @@ namespace Personal_Collection_Manager.Repository
                           .Select(tag => tag)).ToListAsync();
         }
 
+        public Task<List<Tag>> GetTagsWithPrefix(string prefix)
+        {
+            return _dbContext.Tags
+                .Where(tag => tag.Value.StartsWith(prefix))
+                .GroupBy(tag => tag.Value)
+                .Select(group => group.First())
+                .ToListAsync();
+        }
+
+
         public async Task<int> RemoveTagsOfItem(int itemId)
         {
             var tagsToRemove = GetTagsOfItem(itemId);

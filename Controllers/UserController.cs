@@ -7,7 +7,6 @@ using Personal_Collection_Manager.Models;
 
 namespace Personal_Collection_Manager.Controllers
 {
-    [Authorize]
     public class UserController : Controller
     {
         private const string _success = "success";
@@ -26,6 +25,7 @@ namespace Personal_Collection_Manager.Controllers
             _repository = repository;
         }
 
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             var users = _repository.GetAllNotDeletedUsers();
@@ -61,6 +61,7 @@ namespace Personal_Collection_Manager.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
         public async Task<IActionResult> ChangeRole(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -79,6 +80,7 @@ namespace Personal_Collection_Manager.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -93,6 +95,7 @@ namespace Personal_Collection_Manager.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public async Task<IActionResult> Block(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -109,12 +112,14 @@ namespace Personal_Collection_Manager.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize]
         public IActionResult Deleted()
         {
             var deletedUsers = _repository.GetAllDeletedUsers(User);
             return View(deletedUsers);
         }
 
+        [Authorize]
         public IActionResult Restore(string id)
         {
             _repository.Restore(id);

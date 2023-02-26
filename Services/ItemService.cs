@@ -10,15 +10,18 @@ namespace Personal_Collection_Manager.Services
     {
         private readonly IItemRepository _itemRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ITagRepository _tagRepository;
         private readonly IMarkdownService _markdownService;
 
         public ItemService(
             IItemRepository ItemRepository,
             IUserRepository userRepository,
+            ITagRepository tagRepository,
             IMarkdownService markdownService)
         {
             _itemRepository = ItemRepository;
             _userRepository = userRepository;
+            _tagRepository = tagRepository;
             _markdownService = markdownService;
         }
 
@@ -42,6 +45,45 @@ namespace Personal_Collection_Manager.Services
             return (
                 Succeded: true,
                 Message: "Tag added"
+                );
+        }
+
+        public (bool Succeded, string Message) RemoveTag(ref ItemViewModel item, int index)
+        {
+            var count = item.Tags.Length;
+            if (count > 0)
+            {
+                if (index + 1 > count)
+                {
+                    return (
+                        Succeded: false,
+                        Message: "Bad index"
+                    );
+                }
+                var oldTags = item.Tags;
+                item.Tags = new string[count - 1];
+                for (int i = 0, j = 0; i < count; i++, j++)
+                {
+                    if (i != index)
+                    {
+                        item.Tags[j] = oldTags[i];
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+            }
+            else
+            {
+                return (
+                    Succeded: false,
+                    Message: "Item does not have tags"
+                );
+            }
+            return (
+                Succeded: true,
+                Message: "Tag removed"
                 );
         }
 
