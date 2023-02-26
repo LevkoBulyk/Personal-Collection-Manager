@@ -95,6 +95,28 @@
         });
     };
 
+    // commentHub area
+    (function () {
+        "use strict";
+        var connection = new signalR.HubConnectionBuilder().withUrl("/commentHub").build();
+        //let itemId = document.getElementById("itemId").value;
+
+        connection.on("NewComment_" + itemId, function () {
+            loadComments();
+        });
+        connection.on("DeleteComment", function (commentId) {
+            let toDelete = document.getElementById("delete_" + commentId);
+            toDelete.remove();
+        });
+        connection.on("EditComment", function (commentId, newText) {
+            console.log(document.getElementById("textOfComment_" + commentId).textContent);
+            document.getElementById("textOfComment_" + commentId).textContent = newText;
+        });
+
+        connection.start();
+
+    })();
+
 })();
 
 

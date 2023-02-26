@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.Build.Execution;
 using Microsoft.EntityFrameworkCore;
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.Helpers;
+using Personal_Collection_Manager.Hubs;
 using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Repository;
@@ -32,6 +34,7 @@ builder.Services.AddScoped<IFieldOfItemRepository, FieldOfItemRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<ILikeRepository, LikeRepository>();
 
+builder.Services.AddScoped<ICommentHubService, CommentHubService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
@@ -39,12 +42,14 @@ builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
 builder.Services.AddScoped<ICurrentUserHelper, CurrentUserHelper>();
 
-builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
 
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
+builder.Services.AddSignalR();
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -78,5 +83,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+app.MapHub<CommentHub>("/commentHub");
 
 app.Run();

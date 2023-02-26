@@ -16,7 +16,7 @@ namespace Personal_Collection_Manager.Repository
             _dbContext = dbContext;
         }
 
-        public async Task<int> AddComment(CommentViewModel comment)
+        public async Task<(int Result, int commentId)> AddComment(CommentViewModel comment)
         {
             var author = await _dbContext.Users.FirstOrDefaultAsync(user => user.Email.Equals(comment.AuthorEmail));
             if (author == null) throw new ArgumentNullException(nameof(author));
@@ -27,7 +27,7 @@ namespace Personal_Collection_Manager.Repository
                 Text = comment.Text
             };
             _dbContext.Comments.Add(commentToSave);
-            return await _dbContext.SaveChangesAsync();
+            return (await _dbContext.SaveChangesAsync(), commentToSave.Id);
         }
 
         public async Task<int> DeleteComment(int id)
