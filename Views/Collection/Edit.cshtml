@@ -9,7 +9,7 @@
     ViewData["Title"] = "Edit collection";
 }
 
-@if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
+@if (Model.Id == null || await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
 {
     <form asp-action="Edit" enctype="multipart/form-data">
         <input type="hidden" asp-for="Id" class="form-control" value="@Model.Id">

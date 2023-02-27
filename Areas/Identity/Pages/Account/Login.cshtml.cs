@@ -120,18 +120,23 @@ namespace Personal_Collection_Manager.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
+                ApplicationUser user;
+                try
+                {
+                    user = _userManager.Users.First(u => u.Email.Equals(Input.Email));
+                }
+                catch (InvalidOperationException e)
+                {
+                    ModelState.AddModelError(string.Empty, $"No user with email: \"{Input.Email}\" was found");
+                    return Page();
+                }
+                if (user.Deleted)
+                {
+                    ModelState.AddModelError(string.Empty, $"You account was deleted by admin");
+                    return Page();
+                }
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    ApplicationUser user;
-                    try
-                    {
-                        user = _userManager.Users.First(u => u.Email.Equals(Input.Email) && !u.Deleted);
-                    }
-                    catch (InvalidOperationException e)
-                    {
-                        ModelState.AddModelError(string.Empty, $"No user with email: \"{Input.Email}\" was found");
-                        return Page();
-                    }
                     if (user != null && !user.EmailConfirmed)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
