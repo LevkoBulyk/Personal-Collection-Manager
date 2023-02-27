@@ -6,7 +6,7 @@ namespace Personal_Collection_Manager.IService
     public interface ICollectionService
     {
         public Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user);
-        public Task<List<CollectionViewModel>> GetCollections(int pageNumber = 1, int countPerPage = 6);
+        public Task<List<CollectionViewModel>> GetTheBiggestCollections(int pageNumber = 1, int countPerPage = 6);
         public Task<List<CollectionViewModel>> GetCollectionsOf(string userId);
         public CollectionViewModel GetCollectionById(int? id);
         public (bool Succeded, string Message) RemoveField(ref CollectionViewModel collection, int number);

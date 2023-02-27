@@ -33,22 +33,6 @@
                 }
             </div>
         </div>
-        <div class="album py-5 bg-gray-opaque">
-            @if (Model.Collections.Count > 0)
-            {
-                <div class="container">
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                        @foreach (var collection in Model.Collections)
-                        {
-                            @await Html.PartialAsync("~/Views/Collection/_CollectionPartial.cshtml", collection)
-                        }
-                    </div>
-                </div>
-            }
-            else
-            {
-                <h4 class="text-warning">You don't have collection yet. Create your first one!</h4>
-            }
-        </div>
+        @await Html.PartialAsync("~/Views/Collection/_CollectionsPartial.cshtml", Model.Collections)
     </div>
 </div>

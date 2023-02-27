@@ -268,27 +268,28 @@ namespace Personal_Collection_Manager.Repository
             return res;
         }
 
-        public async Task<List<CollectionViewModel>> GetCollections(int pageNumber, int countPerPage)
+        public async Task<List<CollectionViewModel>> GetTheBiggestCollections(int pageNumber, int countPerPage)
         {
             return await _dbContext.Collections
-                .OrderByDescending(c => c.Id)
-                .Select(c => new CollectionViewModel()
+                .OrderByDescending(
+                    collection => _dbContext.Items
+                    .Count(item => item.CollectionId == collection.Id && !item.Deleted)
+                ).Select(collection => new CollectionViewModel()
                 {
-                    Id = c.Id,
-                    UserId = c.UserId,
+                    Id = collection.Id,
+                    UserId = collection.UserId,
                     UserName = _dbContext.Users
-                        .Where(u => u.Id.Equals(c.UserId))
+                        .Where(u => u.Id.Equals(collection.UserId))
                         .Single().UserName,
-                    Title = c.Title,
-                    Description = c.Description,
+                    Title = collection.Title,
+                    Description = collection.Description,
                     Topic = _dbContext.Topics
-                        .Where(t => t.Id == c.TopicId)
+                        .Where(t => t.Id == collection.TopicId)
                         .Single().Title,
-                    ImageUrl = c.ImageUrl
+                    ImageUrl = collection.ImageUrl
                 })
                 .Skip(countPerPage * (pageNumber - 1))
                 .Take(countPerPage).ToListAsync();
-
         }
     }
 }

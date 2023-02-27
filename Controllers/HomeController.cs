@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using System.Diagnostics;
 
@@ -7,15 +8,26 @@ namespace Personal_Collection_Manager.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly ICollectionService _collectionService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(
+            ILogger<HomeController> logger,
+            ICollectionService collectionService)
         {
             _logger = logger;
+            _collectionService = collectionService;
         }
 
         public IActionResult Index()
         {
             return View();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBiggestCollections()
+        {
+            var collections = await _collectionService.GetTheBiggestCollections();
+            return PartialView("/Views/Collection/_CollectionsPartial.cshtml", collections);
         }
 
         [HttpPost]

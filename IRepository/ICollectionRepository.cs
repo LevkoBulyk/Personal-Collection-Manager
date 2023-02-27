@@ -7,7 +7,7 @@ namespace Personal_Collection_Manager.IRepository
     {
         public Task<List<CollectionViewModel>> GetCollectionsOf(ClaimsPrincipal user);
         public Task<List<CollectionViewModel>> GetCollectionsOf(string userId);
-        public Task<List<CollectionViewModel>> GetCollections(int pageNumber, int countPerPage);
+        public Task<List<CollectionViewModel>> GetTheBiggestCollections(int pageNumber, int countPerPage);
         public Task<bool> Create(CollectionViewModel collection, ClaimsPrincipal collectionCreator);
         public bool Edit(CollectionViewModel collection);
         public CollectionViewModel GetCollectionById(int id);

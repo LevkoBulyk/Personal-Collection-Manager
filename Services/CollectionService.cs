@@ -166,9 +166,9 @@ namespace Personal_Collection_Manager.Services
             return collections;
         }
 
-        public Task<List<CollectionViewModel>> GetCollections(int pageNumber, int countPerPage)
+        public Task<List<CollectionViewModel>> GetTheBiggestCollections(int pageNumber, int countPerPage)
         {
-            throw new NotImplementedException();
+            return _collectionRepository.GetTheBiggestCollections(pageNumber, countPerPage);
         }
     }
 }
