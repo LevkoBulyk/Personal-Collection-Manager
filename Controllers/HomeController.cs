@@ -18,6 +18,15 @@ namespace Personal_Collection_Manager.Controllers
             return View();
         }
 
+        [HttpPost]
+        public IActionResult SetTheme(string theme)
+        {
+            var cookie = new CookieOptions();
+            cookie.Expires = DateTime.Now.AddMonths(1);
+            Response.Cookies.Append("theme", theme, cookie);
+            return Ok();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

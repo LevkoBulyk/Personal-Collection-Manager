@@ -14,8 +14,7 @@
             </div>
         </a>
         <div class="card-body">
-            @*<div class="card-text text-start">@Html.Raw(Model.Description)</div>*@
-            @if (await CurrentUser.HasId(Model.UserId, User))
+            @if (!(await CurrentUser.HasId(Model.UserId, User)))
             {
                 <p class="text-muted">
                     <span>Author: </span>

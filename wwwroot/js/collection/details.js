@@ -14,7 +14,7 @@
     let dataTableOptions = {
         columnDefs: columnDefs,
         createdRow: function (row, data, dataIndex) {
-            row.classList.add('table-secondary');
+            row.classList.add('bg-gray-opaque');
         },
         autoWidth: false,
         processing: true,
@@ -34,6 +34,11 @@
                     itemsList.push(mapItem(value));
                 })
                 $('#tableOfItems').DataTable(dataTableOptions);
+                let selectElement = document.querySelector('select[name="tableOfItems_length"]');
+                selectElement.classList.add('inherit-color');
+                let inputElement = document.querySelector('input[aria-controls="tableOfItems"]');
+                inputElement.classList.add('inherit-color');
+                $(selectElement).find('option').addClass('inherit-color');
             },
             error: function (error) {
                 console.log(error);

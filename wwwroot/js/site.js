@@ -6,6 +6,23 @@
 }
 
 (function () {
+    setTheme = function (theme, elem) {
+        document.querySelector('html').setAttribute('data-bs-theme', theme);
+        $(document.getElementById('themesDropdown')).find('button').removeClass('active');
+        elem.classList.add('active');
+        $.ajax({
+            type: "POST",
+            url: "/Home/SetTheme",
+            data: { theme: theme },
+            success: function (response) {
+                console.log(response);
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    };
+
     window.setTimeout(function () {
         $("#alert").fadeTo(500, 0).slideUp(500, function () {
             $(this).remove();
@@ -33,4 +50,5 @@
             $text.css('height', $text[0].scrollHeight + 'px');
         }
     };
+
 })();

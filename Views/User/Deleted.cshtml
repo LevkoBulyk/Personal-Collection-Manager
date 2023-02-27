@@ -26,12 +26,12 @@
                 {
                     @foreach (var user in Model)
                     {
-                        <tr class="table-secondary">
+                        <tr class="bg-gray-opaque">
                             <td>@user.UserName</td>
                             <td>@user.Email</td>
                             <td>
                                 <div class="btn-group">
-                                    <a asp-controller="User" asp-action="Restore" asp-route-id="@user.Id" class="btn btn-sm btn-info">
+                                    <a asp-controller="User" asp-action="Restore" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">
                                         Restore
                                     </a>
                                 </div>

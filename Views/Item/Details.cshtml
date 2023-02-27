@@ -22,7 +22,7 @@
                     </div>
                 </div>
                 <div class="col-md-9">
-                    <div class="album p-4 m-2 bg-light">
+                    <div class="album p-4 m-2 bg-gray-opaque">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -32,7 +32,7 @@
                             <tbody>
                                 @for (int i = 0; i < Model.Fields.Length; i++)
                                 {
-                                    <tr class="table-secondary">
+                                    <tr class="bg-gray-opaque">
 
                                         <td>@Model.Fields[i].Title</td>
                                         <td class="multiline-div">@Html.Raw(@Model.Fields[i].Value)</td>
@@ -72,7 +72,7 @@
                 </div>
             </div>
         </div>
-        <div class="album p-4 m-2 bg-light">
+        <div class="album p-4 m-2 bg-gray-opaque">
             @if (await CurrentUser.IsSignedIn(User))
             {
                 <div class="row me-2">
