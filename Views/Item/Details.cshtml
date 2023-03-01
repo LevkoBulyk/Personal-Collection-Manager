@@ -14,12 +14,7 @@
             <div class="row panel-body">
                 <div class="col-md-3">
                     <h4 class="pro-d-title">@Model.Title</h4>
-                    <div class="m-5">
-                        @foreach (var tag in Model.Tags)
-                        {
-                            <p>@tag</p>
-                        }
-                    </div>
+                    @await Html.PartialAsync("_TagCloudPartial")
                 </div>
                 <div class="col-md-9">
                     <div class="album p-4 m-2 bg-gray-opaque">
@@ -63,7 +58,7 @@
                     <a class="btn btn-outline-primary col" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">
                         Show collection
                     </a>
-                    @if (await CurrentUser.HasEmail(Model.AuthorEmail, User))
+                    @if (await CurrentUser.HasEmailOrIsAdmin(Model.AuthorEmail, User))
                     {
                         <a class="btn btn-outline-secondary col" asp-controller="Item" asp-action="Edit" asp-route-id="@Model.Id">
                             Edit
@@ -93,5 +88,7 @@
 @section Scripts{
     <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
     <script src="~/js/item/details.js"></script>
-    @*<script src="~/js/comment/hub.js"></script>*@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"></script>
+    <script src="~/js/shared/tagcloud.js"></script>
 }

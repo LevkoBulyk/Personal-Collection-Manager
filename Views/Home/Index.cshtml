@@ -7,6 +7,10 @@
     <div id="theBiggestCollections"></div>
 </div>
 
+<div class="text-center mt-5 mb-5">
+    @await Html.PartialAsync("_TagCloudPartial")
+</div>
+
 <div class="mb-5 mt-5">
     <h1 class="display-4">Recently added items</h1>
     <table id="tableOfRecentItems" class="table">
@@ -25,4 +29,7 @@
 
 @section Scripts{
     <script src="~/js/home/index.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqcloud/1.0.4/jqcloud-1.0.4.min.js"></script>
+    <script src="~/js/shared/tagcloud.js"></script>
 }

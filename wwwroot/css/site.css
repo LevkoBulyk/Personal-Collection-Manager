@@ -24,6 +24,10 @@ footer {
     height: 60px;
 }
 
+#tagCloud {
+    width: inherit;
+}
+
 #alert {
     max-width: 450px;
 }

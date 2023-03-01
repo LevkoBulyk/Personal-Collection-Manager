@@ -2,6 +2,7 @@
 using Personal_Collection_Manager.Data;
 using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.IRepository;
+using Personal_Collection_Manager.Models;
 
 namespace Personal_Collection_Manager.Repository
 {
@@ -101,6 +102,52 @@ namespace Personal_Collection_Manager.Repository
             tagToEdit.Value = tag.Value;
             _dbContext.Tags.Update(tagToEdit);
             return await _dbContext.SaveChangesAsync();
+        }
+
+        public Task<List<TagViewModel>> GetAllTagsForCloud()
+        {
+            return _dbContext.Tags
+                .Select(tag => new TagViewModel()
+                {
+                    Text = tag.Value,
+                    Link = "Search/Index/" + tag.Value,
+                    Uses = _dbContext.Tags
+                        .Where(t => t.Value.Equals(tag.Value))
+                        .Count()
+                }).Distinct().ToListAsync();
+        }
+
+        public Task<List<TagViewModel>> GetTagsForCloud(int? itemId)
+        {
+            if (itemId == null)
+            {
+                return _dbContext.Tags
+                    .Select(tag => new TagViewModel()
+                    {
+                        Text = tag.Value,
+                        Link = "Search/Index/" + tag.Value,
+                        Uses = _dbContext.Tags
+                            .Where(t => t.Value.Equals(tag.Value))
+                            .Count()
+                    }).Distinct().ToListAsync();
+            }
+            else
+            {
+                return _dbContext.Tags
+                    .Join(_dbContext.ItemsTags,
+                        tag => tag.Id,
+                        itemTag => itemTag.TagId,
+                        (tag, itemTag) => new { Tag = tag, itemTag.ItemId })
+                    .Where(x => x.ItemId == itemId)
+                    .Select(tag => new TagViewModel()
+                    {
+                        Text = tag.Tag.Value,
+                        Link = "Search/Index/" + tag.Tag.Value,
+                        Uses = _dbContext.Tags
+                            .Where(t => t.Value.Equals(tag.Tag.Value))
+                            .Count()
+                    }).Distinct().ToListAsync();
+            }
         }
     }
 }

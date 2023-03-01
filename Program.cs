@@ -38,6 +38,7 @@ builder.Services.AddScoped<ICommentHubService, CommentHubService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IItemService, ItemService>();
+builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
 builder.Services.AddScoped<ICurrentUserHelper, CurrentUserHelper>();
