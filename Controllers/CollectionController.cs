@@ -17,15 +17,15 @@ namespace Personal_Collection_Manager.Controllers
             _collectionService = collectionService;
         }
 
-        /*public IActionResult All(string? userId, int pageNumber)
+        public IActionResult All(string? userId, int pageNumber)
         {
             if (userId == null)
             {
-                var collections = _collectionService.GetCollections(pageNumber);
+                var collections = _collectionService.GetTheBiggestCollections(pageNumber);
                 return View();
             }
             return RedirectToAction("Index", "Dashboard", new { userId = userId });
-        }*/
+        }
 
         public IActionResult Details(int id)
         {

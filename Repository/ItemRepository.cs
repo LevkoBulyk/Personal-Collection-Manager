@@ -145,5 +145,67 @@ namespace Personal_Collection_Manager.Repository
                         .Single().UserId
                 });
         }
+
+        public IQueryable<ItemNoFieldsViewModel> GetRecentItemsAsQuery(int start, int length)
+        {
+            return _dbContext.Items
+                .Where(item => !item.Deleted)
+                .OrderByDescending(item => item.Id)
+                .Join(_dbContext.Collections,
+                    item => item.CollectionId,
+                    collection => collection.Id,
+                    (item, collection) => new { Item = item, Collection = collection })
+                .Join(_dbContext.Users,
+                    x => x.Collection.UserId,
+                    user => user.Id,
+                    (x, user) => new { x.Item, x.Collection, User = user })
+                .Select(x => new ItemNoFieldsViewModel()
+                {
+                    Id = x.Item.Id,
+                    Title = x.Item.Title,
+                    Tags = _dbContext.ItemsTags
+                        .Where(itemTags => itemTags.ItemId == x.Item.Id)
+                        .Join(_dbContext.Tags,
+                            itemTags => itemTags.TagId,
+                            tag => tag.Id,
+                            (itemTag, tag) => tag)
+                        .Select(tag => tag.Value).ToArray(),
+                    AuthorId = x.User.Id,
+                    AuthorEmail = x.User.Email,
+                    CollectionTitle = x.Collection.Title,
+                    CollectionId = x.Item.CollectionId
+                });
+        }
+
+        public async Task<List<ItemNoFieldsViewModel>> GetRecentItems(int start, int length)
+        {
+            return await _dbContext.Items
+                .Where(item => !item.Deleted)
+                .OrderByDescending(item => item.Id)
+                .Join(_dbContext.Collections,
+                    item => item.CollectionId,
+                    collection => collection.Id,
+                    (item, collection) => new { Item = item, Collection = collection })
+                .Join(_dbContext.Users,
+                    x => x.Collection.UserId,
+                    user => user.Id,
+                    (x, user) => new { x.Item, x.Collection, User = user })
+                .Select(x => new ItemNoFieldsViewModel()
+                {
+                    Id = x.Item.Id,
+                    Title = x.Item.Title,
+                    Tags = _dbContext.ItemsTags
+                        .Where(itemTags => itemTags.ItemId == x.Item.Id)
+                        .Join(_dbContext.Tags,
+                            itemTags => itemTags.TagId,
+                            tag => tag.Id,
+                            (itemTag, tag) => tag)
+                        .Select(tag => tag.Value).ToArray(),
+                    AuthorId = x.User.Id,
+                    AuthorEmail = x.User.Email,
+                    CollectionTitle = x.Collection.Title,
+                    CollectionId = x.Item.CollectionId
+                }).Skip(start).Take(length).ToListAsync();
+        }
     }
 }

@@ -2,9 +2,25 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
+<div class="text-center mb-5">
     <h1 class="display-4">The biggest collections</h1>
     <div id="theBiggestCollections"></div>
+</div>
+
+<div class="mb-5 mt-5">
+    <h1 class="display-4">Recently added items</h1>
+    <table id="tableOfRecentItems" class="table">
+        <thead>
+            <tr>
+                <td><label class="form-label">Title</label></td>
+                <td><label class="form-label">Tags</label></td>
+                <td><label class="form-label">Collection</label></td>
+                <td><label class="form-label">Owner</label></td>
+            </tr>
+        </thead>
+        <tbody id="bodyOfRecentItemsTable">
+        </tbody>
+    </table>
 </div>
 
 @section Scripts{

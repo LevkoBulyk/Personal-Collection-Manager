@@ -145,5 +145,15 @@ namespace Personal_Collection_Manager.Services
         {
             return _itemRepository.GetAllItemsOfCollectionAsQuery(collectionId);
         }
+
+        public Task<List<ItemNoFieldsViewModel>> GetRecentItems(int start, int length)
+        {
+            return _itemRepository.GetRecentItems(start, length);
+        }
+
+        public IQueryable<ItemNoFieldsViewModel> GetRecentItemsAsQuery(int start, int length)
+        {
+            return _itemRepository.GetRecentItemsAsQuery(start, length);
+        }
     }
 }
