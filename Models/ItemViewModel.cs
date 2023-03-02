@@ -25,6 +25,8 @@ namespace Personal_Collection_Manager.Models
         [DisplayName("Fields")]
         public ItemField[] Fields { get; set; }
 
+        public int QuantityOfLikes { get; set; }
+
         public string AuthorEmail { get; set; }
         public string AuthorId { get; set; }
     }

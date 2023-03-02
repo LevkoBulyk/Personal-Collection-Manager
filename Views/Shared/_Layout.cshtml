@@ -1,4 +1,9 @@
-﻿@inject IHttpContextAccessor contextAccessor
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@using Personal_Collection_Manager.Resources.Views.Shared;
+@inject IStringLocalizer<_Layout> LayoutLocalizer
+
+@inject IHttpContextAccessor contextAccessor
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="@(contextAccessor.HttpContext.Request.Cookies["theme"]??"light".ToString())">
 <head>
@@ -15,7 +20,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                <a class="navbar-brand" asp-controller="Home" asp-action="Index">@LayoutLocalizer["Collections"]</a>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <partial name="_UserArea" />
@@ -55,13 +60,13 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2023 - Personal_Collection_Manager
+            &copy; 2023 - @LayoutLocalizer["CollectionManager"]
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>    
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

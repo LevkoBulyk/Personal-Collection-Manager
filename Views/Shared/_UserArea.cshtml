@@ -1,4 +1,8 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+
+@using Microsoft.AspNetCore.Identity
 @using Personal_Collection_Manager.Data.DataBaseModels;
 @inject SignInManager<ApplicationUser> SignInManager
 
@@ -6,12 +10,16 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a class="nav-link" asp-controller="Dashboard" asp-action="Index" >Dashboard</a>
+            <a class="nav-link" asp-controller="Dashboard" asp-action="Index">
+                @SharedLocalizer["DashboardButton"]
+            </a>
         </li>
         @if (User.IsInRole(UserRole.Admin))
         {
             <li class="nav-item">
-                <a class="nav-link" asp-controller="User" asp-action="Index" >Manage users</a>
+                <a class="nav-link" asp-controller="User" asp-action="Index">
+                    @SharedLocalizer["User manager"]
+                </a>
             </li>
         }
     }

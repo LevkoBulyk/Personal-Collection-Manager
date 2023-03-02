@@ -1,4 +1,5 @@
-﻿using Personal_Collection_Manager.IRepository;
+﻿using Personal_Collection_Manager.Data.DataBaseModels;
+using Personal_Collection_Manager.IRepository;
 using Personal_Collection_Manager.IService;
 
 namespace Personal_Collection_Manager.Services
@@ -25,6 +26,11 @@ namespace Personal_Collection_Manager.Services
         public Task<int> ThumbUp(int itemId, string userId)
         {
             return _likeRepository.ThumbUp(itemId, userId);
+        }
+
+        public Task<Like?> FindLike(int itemId, string userId)
+        {
+            return _likeRepository.FindLike(itemId, userId);
         }
     }
 }

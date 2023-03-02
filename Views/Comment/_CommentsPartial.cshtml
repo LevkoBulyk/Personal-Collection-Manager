@@ -1,4 +1,34 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@*@using Personal_Collection_Manager.Helpers;
+@inject ICurrentUserHelper CurrentUser
+
+@model List<CommentViewModel>
+
+@foreach (var comment in Model)
+{
+    <div id="delete_@comment.Id" class="alert alert-light m-3@(await CurrentUser.HasEmail(comment.AuthorEmail, User) ? " col-9 ms-auto" : " col-9")">
+        <div class="row col-12">
+            <div id="textOfComment_@comment.Id" class="col-9 multiline-div pe-4">@comment.Text</div>
+            <div class="col d-flex flex-column float-end">
+                <div>@comment.AuthorEmail</div>
+                @if (await CurrentUser.HasEmailOrIsAdmin(comment.AuthorEmail, User))
+                {
+                    <div class="btn-group">
+                        <button onclick="editComment(@comment.Id);" class="btn btn-outline-primary">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button onclick="deleteComment(@comment.Id);" class="btn btn-outline-danger">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+*@
+
+@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model List<CommentViewModel>

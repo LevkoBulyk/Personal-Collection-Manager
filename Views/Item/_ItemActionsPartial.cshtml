@@ -1,19 +1,23 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model (string UserId, int Id)
 
 <div class="btn-group">
     <a asp-controller="Item" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
-        View
+        @SharedLocalizer["ViewButton"]
     </a>
     @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
     {
         <a asp-controller="Item" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
-            Edit
+            @SharedLocalizer["EditButton"]
         </a>
         <a asp-controller="Item" asp-action="Delete" asp-route-id="@Model.Id" onclick="ConfirmAction('delete', 'Model', event);" class="btn btn-sm btn-outline-danger">
-            Delete
+            @SharedLocalizer["DeleteButton"]
         </a>
     }
 </div>

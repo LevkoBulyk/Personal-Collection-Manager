@@ -45,16 +45,16 @@ namespace Personal_Collection_Manager.Helpers
             return u != null ? await _userManager.IsInRoleAsync(u, UserRole.Admin) : false;
         }
 
+        public async Task<string> GetId(ClaimsPrincipal user)
+        {
+            var u = await _userManager.GetUserAsync(user);
+            return u != null ? u.Id : "null";
+        }
+
         private async Task<string> GetEmail(ClaimsPrincipal user)
         {
             var u = await _userManager.GetUserAsync(user);
             return u != null ? u.Email : "null";
-        }
-
-        private async Task<string> GetId(ClaimsPrincipal user)
-        {
-            var u = await _userManager.GetUserAsync(user);
-            return u != null ? u.Id : "null";
         }
     }
 }

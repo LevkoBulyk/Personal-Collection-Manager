@@ -10,18 +10,18 @@ namespace Personal_Collection_Manager.Services
     {
         private readonly IItemRepository _itemRepository;
         private readonly IUserRepository _userRepository;
-        private readonly ITagRepository _tagRepository;
+        private readonly ILikeRepository _likeRepository;
         private readonly IMarkdownService _markdownService;
 
         public ItemService(
             IItemRepository ItemRepository,
             IUserRepository userRepository,
-            ITagRepository tagRepository,
+            ILikeRepository likeRepository,
             IMarkdownService markdownService)
         {
             _itemRepository = ItemRepository;
             _userRepository = userRepository;
-            _tagRepository = tagRepository;
+            _likeRepository = likeRepository;
             _markdownService = markdownService;
         }
 
@@ -116,6 +116,7 @@ namespace Personal_Collection_Manager.Services
             else
             {
                 item = await _itemRepository.GetItemByIdAsNoTracking((int)id);
+                item.QuantityOfLikes = await _likeRepository.CountLikesOfItemAsync((int)id);
             }
             var author = await _userRepository.GetAuthorOfCollection(item.CollectionId);
             item.AuthorId = author.Id;

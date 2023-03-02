@@ -1,4 +1,8 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model CollectionViewModel;
@@ -17,22 +21,22 @@
             @if (!(await CurrentUser.HasId(Model.UserId, User)))
             {
                 <p class="text-muted">
-                    <span>Author: </span>
+                    <span>@SharedLocalizer["Owner"].Value: </span>
                     <a asp-controller="Dashboard" asp-action="Index" asp-route-userId="@Model.UserId">@Model.UserName</a>
                 </p>
             }
             <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                     <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-primary">
-                        View
+                        @SharedLocalizer["ViewButton"].Value
                     </a>
                     @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                     {
                         <a asp-controller="Collection" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-sm btn-outline-secondary">
-                            Edit
+                            <span>@SharedLocalizer["EditButton"].Value</span>
                         </a>
                         <a asp-controller="Collection" asp-action="Delete" asp-route-id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-sm btn-outline-danger">
-                            Delete
+                            <span>@SharedLocalizer["DeleteButton"].Value</span>
                         </a>
                     }
                 </div>

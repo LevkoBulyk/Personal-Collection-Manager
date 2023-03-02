@@ -15,12 +15,12 @@ namespace Personal_Collection_Manager.Repository
             _dbContext = dbContext;
         }
 
-        public async Task<int> CreateFieldsForItem(int itemId, ItemField[] fields)
+        public async Task<int> CreateFieldsForItem(int itemId, Models.ItemField[] fields)
         {
-            var fieldsToCreate = new List<FieldOfItem>();
+            var fieldsToCreate = new List<Data.DataBaseModels.FieldOfItem>();
             foreach (var field in fields)
             {
-                fieldsToCreate.Add(new FieldOfItem()
+                fieldsToCreate.Add(new Data.DataBaseModels.FieldOfItem()
                 {
                     ItemId = itemId,
                     Value = field.Value,
@@ -31,12 +31,12 @@ namespace Personal_Collection_Manager.Repository
             return (await _dbContext.SaveChangesAsync());
         }
 
-        public Task<FieldOfItem> GetFieldById(int id)
+        public Task<Data.DataBaseModels.FieldOfItem> GetFieldById(int id)
         {
             return _dbContext.FieldsOfItems.FirstAsync(field => field.Id == id);
         }
 
-        public async Task<ItemField[]> GetFieldsOfItemAsNoTraking(int itemId)
+        public async Task<Models.ItemField[]> GetFieldsOfItemAsNoTraking(int itemId)
         {
             var collectionId = (await _dbContext.Items.FindAsync(itemId)).CollectionId;
             return await (_dbContext.AdditionalFieldsOfCollections
@@ -58,7 +58,7 @@ namespace Personal_Collection_Manager.Repository
                 .OrderBy(x => x.Order)).ToArrayAsync();
         }
 
-        public async Task<int> UpdateFieldsForItem(int itemId, ItemField[] fields)
+        public async Task<int> UpdateFieldsForItem(int itemId, Models.ItemField[] fields)
         {
             int res = 0;
             foreach (var field in fields)
@@ -72,7 +72,7 @@ namespace Personal_Collection_Manager.Repository
                 }
                 else
                 {
-                    var fieldToCreate = new FieldOfItem()
+                    var fieldToCreate = new Data.DataBaseModels.FieldOfItem()
                     {
                         ItemId = itemId,
                         AdditionalFieldOfCollectionId = field.AdditionalFieldOfCollectionId,

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using Personal_Collection_Manager.Data.DataBaseModels;
 using Personal_Collection_Manager.Hubs;
 using Personal_Collection_Manager.IService;
 

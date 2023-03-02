@@ -64,9 +64,9 @@ namespace Personal_Collection_Manager.Data
                     new Topic { Title = "coins"},
                     new Topic {Title="antique"},
                     new Topic {Title="cans"},
-                    new Topic { Title="Alcohol"},
-                    new Topic{Title="Books"},
-                    new Topic{Title="Vine"},
+                    new Topic { Title="alcohol"},
+                    new Topic{Title="books"},
+                    new Topic{Title="vine"},
                     new Topic{Title="stamp"}
                     };
 

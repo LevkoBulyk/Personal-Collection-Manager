@@ -24,4 +24,17 @@
     <PackageReference Include="SendGrid" Version="9.28.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Views\Comment\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Views\SharedResources.uk-UA.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Views\SharedResources.en-US.resx">
+      <Generator></Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+
 </Project>

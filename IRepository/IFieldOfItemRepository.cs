@@ -5,9 +5,9 @@ namespace Personal_Collection_Manager.IRepository
 {
     public interface IFieldOfItemRepository
     {
-        public Task<ItemField[]> GetFieldsOfItemAsNoTraking(int itemId);
-        public Task<int> CreateFieldsForItem(int itemId, ItemField[] fields);
-        public Task<int> UpdateFieldsForItem(int itemId, ItemField[] fields);
-        public Task<FieldOfItem> GetFieldById(int id);
+        public Task<Models.ItemField[]> GetFieldsOfItemAsNoTraking(int itemId);
+        public Task<int> CreateFieldsForItem(int itemId, Models.ItemField[] fields);
+        public Task<int> UpdateFieldsForItem(int itemId, Models.ItemField[] fields);
+        public Task<Data.DataBaseModels.FieldOfItem> GetFieldById(int id);
     }
 }

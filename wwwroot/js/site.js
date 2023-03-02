@@ -5,7 +5,27 @@
     }
 }
 
+let culture = "";
+
 (function () {
+    let selectLocalization = document.getElementById('selectLocalization');
+    culture = selectLocalization.value;
+    selectLocalization.addEventListener('change', function () {
+        $.ajax({
+            type: "POST",
+            url: "/Home/SetCulture",
+            data: { culture: selectLocalization.value },
+            success: function (response) {
+                culture = selectLocalization.value;
+                console.log(response);
+                location.reload();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
     setTheme = function (theme, elem) {
         document.querySelector('html').setAttribute('data-bs-theme', theme);
         $(document.getElementById('themesDropdown')).find('button').removeClass('active');

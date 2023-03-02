@@ -1,9 +1,29 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using Personal_Collection_Manager.Data.DataBaseModels;
+@using Microsoft.AspNetCore.Localization;
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
+@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views.Shared;
+@inject IStringLocalizer<_LoginPartial> LoginPartialLocalizer
+
+@using Microsoft.Extensions.Options;
+@inject IOptions<RequestLocalizationOptions> LocalizationOptions
+
+@{
+    var culture = Context.Features.Get<IRequestCultureFeature>();
+    var cultureList = LocalizationOptions.Value.SupportedUICultures
+                        .Select(culture => new SelectListItem() { Value = culture.Name, Text = culture.Name }).ToList();
+}
+
 <ul class="navbar-nav">
+    <li class="nav-item dropdown">
+        <select class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center"
+                asp-for="@culture.RequestCulture.UICulture.Name"
+                asp-items="cultureList"
+                id="selectLocalization"></select>
+    </li>
     <li class="nav-item dropdown">
         <button class="btn btn-link nav-link py-2 px-0 px-lg-2 dropdown-toggle d-flex align-items-center" id="bd-theme" type="button" aria-expanded="false" data-bs-toggle="dropdown" data-bs-display="static">
             <span><i class="bi bi-brightness-high"></i> / <i class="bi bi-moon"></i></span>
@@ -11,12 +31,12 @@
         <ul class="dropdown-menu dropdown-menu-end" id="themesDropdown" aria-labelledby="bd-theme" style="--bs-dropdown-min-width: 4rem;">
             <li>
                 <button id="btn-light" type="button" class="dropdown-item d-flex align-items-center" onclick="setTheme('light', this)">
-                    <i class="bi bi-brightness-high"> light</i>
+                    <i class="bi bi-brightness-high"> @LoginPartialLocalizer["light"]</i>
                 </button>
             </li>
             <li>
                 <button id="btn-dark" type="button" class="dropdown-item d-flex align-items-center" onclick="setTheme('dark', this)">
-                    <i class="bi bi-moon"> dark</i>
+                    <i class="bi bi-moon"> @LoginPartialLocalizer["dark"]</i>
                 </button>
             </li>
         </ul>
@@ -24,21 +44,21 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @User.Identity?.Name!</a>
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">@LoginPartialLocalizer["Hello"] @User.Identity?.Name!</a>
         </li>
         <li class="nav-item">
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-                <button type="submit" class="nav-link btn btn-link">Logout</button>
+                <button type="submit" class="nav-link btn btn-link">@LoginPartialLocalizer["Logout"]</button>
             </form>
         </li>
     }
     else
     {
         <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Register</a>
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">@LoginPartialLocalizer["Register"]</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Login</a>
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">@LoginPartialLocalizer["Login"]</a>
         </li>
     }
 </ul>

@@ -1,23 +1,30 @@
 ﻿@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
+@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views;
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@inject IStringLocalizer<Personal_Collection_Manager.Resources.Views.User.Index> UserIndexLocalizer
+@using Personal_Collection_Manager.Resources.Views.User;
+@inject IStringLocalizer<Deleted> UserDeletedLocalizer
+
 @using Personal_Collection_Manager.Data.DataBaseModels;
 @model List<ApplicationUser>
 
 @{
-    ViewData["Title"] = "Deleted users";
+    ViewData["Title"] = UserDeletedLocalizer["Deleted users"].Value;
 }
 
 @if (await CurrentUser.IsSignedInAdmin(User))
 {
     <div class="text-center">
-        <h3>Users</h3>
+        <h3>@SharedLocalizer["Users"].Value</h3>
 
         <table class="table">
             <thead>
                 <tr>
-                    <td><label class="form-label">User name</label></td>
-                    <td><label class="form-label">Email</label></td>
+                    <td><label class="form-label">@SharedLocalizer["User name"].Value</label></td>
+                    <td><label class="form-label">@SharedLocalizer["Email"].Value</label></td>
                     <td><label class="form-label"></label></td>
                 </tr>
             </thead>
@@ -32,7 +39,7 @@
                             <td>
                                 <div class="btn-group">
                                     <a asp-controller="User" asp-action="Restore" asp-route-id="@user.Id" class="btn btn-sm btn-outline-info">
-                                        Restore
+                                        @SharedLocalizer["RestoreButton"].Value
                                     </a>
                                 </div>
                             </td>

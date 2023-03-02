@@ -18,6 +18,7 @@ namespace Personal_Collection_Manager.Repository
         {
             return _dbContext.Likes
                 .Where(like => like.ItemId == itemId && like.ThumbUp)
+                .Select(like => like.ItemId)
                 .CountAsync();
         }
 
@@ -28,7 +29,14 @@ namespace Personal_Collection_Manager.Repository
 
         public Task<int> ThumbUp(int itemId, string userId)
         {
-            return GiveLike(itemId, userId, false);
+            return GiveLike(itemId, userId, true);
+        }
+
+        public Task<Like?> FindLike(int itemId, string userId)
+        {
+            return _dbContext.Likes
+                .Where(like => like.UserId.Equals(userId) && like.ItemId == itemId)
+                .SingleOrDefaultAsync();
         }
 
         private async Task<int> GiveLike(int itemId, string userId, bool thumbUp)
@@ -58,13 +66,5 @@ namespace Personal_Collection_Manager.Repository
             }
             return await _dbContext.SaveChangesAsync();
         }
-
-        private Task<Like?> FindLike(int itemId, string userId)
-        {
-            return _dbContext.Likes
-                .Where(like => like.UserId.Equals(userId) && like.ItemId == itemId)
-                .SingleOrDefaultAsync();
-        }
-
     }
 }

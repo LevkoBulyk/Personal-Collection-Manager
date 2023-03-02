@@ -11,6 +11,12 @@ using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Repository;
 using Personal_Collection_Manager.Services;
 using WebPWrecover.Services;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+using Microsoft.Extensions.Localization;
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Mvc.Localization;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,6 +48,33 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddSingleton<IMarkdownService, MarkdownService>();
 builder.Services.AddScoped<ICurrentUserHelper, CurrentUserHelper>();
+builder.Services.AddScoped<RequestLocalizationCookies>();
+
+builder.Services.AddLocalization();
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("en-US"),
+        new CultureInfo("uk-UA")
+    };
+
+    options.DefaultRequestCulture = new RequestCulture(supportedCultures[0]);
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+    options.FallBackToParentUICultures = true;
+});
+
+
+
+
+/*builder.Services.AddSingleton<IStringLocalizerFactory, ResourceManagerStringLocalizerFactory>();
+builder.Services.AddSingleton<IHtmlLocalizerFactory, HtmlLocalizerFactory>();
+builder.Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
+builder.Services.AddSingleton(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>));*/
+
+
 
 
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
@@ -49,8 +82,10 @@ builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddSignalR();
 
-builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews()/*
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)*/;
+builder.Services.AddRazorPages()/*
+    .AddViewLocalization()*/;
 
 var app = builder.Build();
 
@@ -79,6 +114,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.Services.GetService<IServiceScopeFactory>().CreateScope()
     .ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
+
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
+
+// app.UseRequestLocalization();
+
+// app.UseRequestLocalizationCookies();
 
 app.MapControllerRoute(
     name: "default",

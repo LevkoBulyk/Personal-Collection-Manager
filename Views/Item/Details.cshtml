@@ -40,19 +40,21 @@
             </div>
         </section>
         <div class="row mt-3 mb-3">
-            @if (await CurrentUser.IsSignedIn(User))
-            {
-                <div class="col">
+            <div class="col">
+                <span id="likes">Likes: @Model.QuantityOfLikes</span>
+                @if (await CurrentUser.IsSignedIn(User))
+                {
+                    <input id="userId" type="hidden" value="@await CurrentUser.GetId(User)">
                     <div class="btn-group">
-                        <button class="btn btn-outline-success">
+                        <button id="thumbUpBtn" class="btn btn-outline-success">
                             <i class="bi bi-hand-thumbs-up"></i>
                         </button>
-                        <button class="btn btn-outline-danger">
+                        <button id="thumbDownBtn" class="btn btn-outline-danger">
                             <i class="bi bi-hand-thumbs-down"></i>
                         </button>
                     </div>
-                </div>
-            }
+                }
+            </div>
             <div class="d-flex justify-content-end mb-2 col">
                 <div class="btn-group">
                     <a class="btn btn-outline-primary col" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">

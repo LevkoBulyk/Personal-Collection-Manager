@@ -2,13 +2,20 @@
 @using Personal_Collection_Manager.Data.DataBaseModels;
 @inject UserManager<ApplicationUser> _userManager
 
+@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@inject IStringLocalizer<Personal_Collection_Manager.Resources.Views.Dashboard.Index> DashboardLocalizer
+
 @using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model (List<CollectionViewModel> Collections, string UserId);
 
 @{
-    ViewData["Title"] = "My collections";
+    ViewData["Title"] = (await CurrentUser.HasId(Model.UserId, User)) ?
+        DashboardLocalizer["My collections"].Value :
+        SharedLocalizer["Collections"].Value;
     string ownerEmail = _userManager.Users.First(u => u.Id == Model.UserId).Email;
 }
 
@@ -18,17 +25,20 @@
         <div class="row">
             @if (await CurrentUser.HasId(Model.UserId, User))
             {
-                <h2 class="col">My Collections</h2>
+                <h2 class="col">@DashboardLocalizer["My collections"].Value</h2>
             }
             else
             {
-                <h2 class="col">Collections of @ownerEmail</h2>
+                <h2 class="col">
+                    @DashboardLocalizer["Collections of"].Value
+                    @ownerEmail
+                </h2>
             }
             <div class="align-items-end col">
                 @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                 {
                     <a class="btn btn-outline-primary" asp-controller="Collection" asp-action="Edit" asp-route-id="null">
-                        Create new Collection
+                        @DashboardLocalizer["newCollectionButton"].Value
                     </a>
                 }
             </div>

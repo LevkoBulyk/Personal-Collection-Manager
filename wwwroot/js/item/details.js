@@ -3,10 +3,25 @@
     let sendCommentBtn = document.getElementById('sendCommentBtn');
     let itemId = document.getElementById('itemId').value;
     let comments = document.getElementById('comments');
-
+    let thumbUpBtn = document.getElementById('thumbUpBtn');
+    let thumbDownBtn = document.getElementById('thumbDownBtn');
+    let userId = document.getElementById('userId') != null ? document.getElementById('userId').value : null;
 
     window.onload = function () {
         loadComments();
+        userGaveLike();
+
+        if (thumbDownBtn != null) {
+            thumbDownBtn.onclick = function () {
+                thumbUpOrDown(false);
+            }
+        }
+
+        if (thumbUpBtn != null) {
+            thumbUpBtn.onclick = function () {
+                thumbUpOrDown(true);
+            }
+        }
 
         if (commentText != null) {
             commentText.oninput = function () {
@@ -40,6 +55,55 @@
             };
         }
     };
+
+    const userGaveLike = function () {
+        if (userId != null) {
+            $.ajax({
+                type: "GET",
+                url: "/Item/FindLike",
+                data: {
+                    itemId: itemId,
+                    userId: userId
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response == true) {
+                        thumbUpBtn.classList.add('active');
+                        thumbDownBtn.classList.remove('active');
+                    } else if (response == false) {
+                        thumbDownBtn.classList.add('active');
+                        thumbUpBtn.classList.remove('active');
+                    } else {
+                        thumbDownBtn.classList.remove('active');
+                        thumbUpBtn.classList.remove('active');
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        }
+    }
+
+    const thumbUpOrDown = function (isUp) {
+        let urlToCall = "/Item/" + (isUp ? "ThumbUp" : "ThumbDown");
+        $.ajax({
+            type: "POST",
+            url: urlToCall,
+            async: false,
+            data: {
+                itemId: itemId,
+                userId: userId
+            },
+            success: function (response) {
+                document.getElementById('likes').innerHTML = "Likes: " + response;
+                userGaveLike();
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    }
 
     loadComments = function loadComments() {
         $.ajax({

@@ -12,10 +12,14 @@ namespace Personal_Collection_Manager.Controllers
         private const string _success = "success";
         private const string _error = "error";
         private readonly IItemService _itemService;
+        private readonly ILikeService _likeService;
 
-        public ItemController(IItemService itemService)
+        public ItemController(
+            IItemService itemService,
+            ILikeService likeService)
         {
             _itemService = itemService;
+            _likeService = likeService;
         }
 
         [Authorize]
@@ -171,6 +175,38 @@ namespace Personal_Collection_Manager.Controllers
                 return RedirectToAction("Details", "Collection", new { id = collectionId });
             }
             return RedirectToAction("Index", "Dashboard");
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ThumbUp(int itemId, string userId)
+        {
+            await _likeService.ThumbUp(itemId, userId);
+            var newQuantityOfLikes = await _likeService.CountLikesOfItemAsync(itemId);
+            return Json(newQuantityOfLikes);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public async Task<IActionResult> ThumbDown(int itemId, string userId)
+        {
+            await _likeService.ThumbDown(itemId, userId);
+            var newQuantityOfLikes = await _likeService.CountLikesOfItemAsync(itemId);
+            return Json(newQuantityOfLikes);
+        }
+
+        [Authorize]
+        public async Task<IActionResult> FindLike(int itemId, string userId)
+        {
+            var like = await _likeService.FindLike(itemId, userId);
+            if (like == null)
+            {
+                return Json(null);
+            }
+            else
+            {
+                return Json(like.ThumbUp);
+            }
         }
     }
 }

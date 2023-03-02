@@ -1,9 +1,16 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Models;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@using Personal_Collection_Manager.Resources.Views.Collection;
+@inject IStringLocalizer<Edit> EditLocalizer
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
-@using Personal_Collection_Manager.Data.DataBaseModels.Enum;
+@using Personal_Collection_Manager.Data.DataBaseModels.Enum
 
-@model CollectionViewModel;
+@model CollectionViewModel
 
 @{
     ViewData["Title"] = "Edit collection";
@@ -15,23 +22,23 @@
         <input type="hidden" asp-for="Id" class="form-control" value="@Model.Id">
         <input type="hidden" asp-for="UserId" class="form-control" value="@Model.UserId">
         <div class="form-group">
-            <label asp-for="Title">Name</label>
+            <label>@SharedLocalizer["Title"]</label>
             <input asp-for="Title" class="form-control" value="@Model.Title">
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Topic">Topic</label>
+            <label>@EditLocalizer["Topic"]</label>
             <input asp-for="Topic" class="form-control" list="datalistOptions" id="topic" autocomplete="off">
             <datalist id="datalistOptions"></datalist>
             <span asp-validation-for="Topic" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Description">Description</label>
+            <label>@EditLocalizer["Description"]</label>
             <textarea id="descriptionMark" class="form-control autosize" asp-for="Description" value="@Model.Description"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group">
-            <label asp-for="Image">Image</label>
+            <label asp-for="Image">@EditLocalizer["Image"]</label>
             <div class="col-6" id="fileDisplayArea">
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
@@ -40,14 +47,16 @@
             </div>
             <div class="btn-group mt-1">
                 <input id="fileInput" type="file" asp-for="Image" class="form-control" value="@Model.Image">
-                <button id="removeImageButton" type="button" class="btn btn-secondary">Remove</button>
+                <button id="removeImageButton" type="button" class="btn btn-secondary">
+                    @SharedLocalizer["RemoveButton"]
+                </button>
             </div>
             <input id="inputImageUrl" type="hidden" asp-for="ImageUrl" value="@Model.ImageUrl" />
             <span asp-validation-for="Image" class="text-danger"></span>
         </div>
         <div class="container mt-4">
             <div class="album p-4 m-2 bg-gray-opaque">
-                <label>Add aditional fields:</label>
+                <label>@EditLocalizer["AAF:"]</label>
                 @for (int i = 0; i < Model.AdditionalFields.Length; i++)
                 {
                     <div class="card m-3 p-4 shadow-sm">
@@ -57,12 +66,12 @@
                                 <input asp-for="@Model.AdditionalFields[i].Order" type="hidden" id="exampleInputEmail1" value="@i">
                                 <input asp-for="@Model.AdditionalFields[i].QuantityOfItems" type="hidden" value="@Model.AdditionalFields[i].QuantityOfItems">
                                 <div class="form-group">
-                                    <label asp-for="@Model.AdditionalFields[i].Name">Name</label>
+                                    <label>@SharedLocalizer["Title"]:</label>
                                     <input asp-for="@Model.AdditionalFields[i].Name" class="form-control" value="@Model.AdditionalFields[i].Name">
                                     <span asp-validation-for="@Model.AdditionalFields[i].Name" class="text-danger"></span>
                                 </div>
                                 <div class="form-group">
-                                    <label asp-for="@Model.AdditionalFields[i].Type">Type:</label>
+                                    <label>@EditLocalizer["Type"]:</label>
                                     @if (Model.AdditionalFields[i].QuantityOfItems > 0)
                                     {
                                         <input asp-for="@Model.AdditionalFields[i].Type" type="hidden" value="@Model.AdditionalFields[i].Type">
@@ -99,13 +108,17 @@
                     </div>
                 }
                 <div class="d-flex flex-row-reverse">
-                    <button asp-controller="Collection" asp-action="AddField" class="btn inherit-color"><i class="bi bi-plus-square"> add field</i></button>
+                    <button asp-controller="Collection" asp-action="AddField" class="btn inherit-color"><i class="bi bi-plus-square"> @EditLocalizer["add field"]</i></button>
                 </div>
             </div>
         </div>
         <div class="btn-group">
-            <button asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-danger">Dashboard</button>
-            <button asp-controller="Collection" asp-action="Edit" class="btn btn-outline-success">Save changes</button>
+            <button asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-danger">
+                @SharedLocalizer["DashboardButton"]
+            </button>
+            <button asp-controller="Collection" asp-action="Edit" class="btn btn-outline-success">
+                @SharedLocalizer["SaveButton"]
+            </button>
         </div>
     </form>
 
@@ -117,5 +130,5 @@
 }
 else
 {
-    @Html.Partial("_ForbidenAccessPartial", ("collection", "edit"))
+    @Html.Partial("_ForbidenAccessPartial", (SharedLocalizer["Collection"].ToString(), SharedLocalizer["EditButton"].ToString()))
 }

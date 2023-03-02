@@ -1,10 +1,17 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Models;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@using Personal_Collection_Manager.Resources.Views.Collection;
+@inject IStringLocalizer<Details> DetailsLocalizer
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model CollectionViewModel;
 
 @{
-    ViewData["Title"] = "View collection";
+    ViewData["Title"] = SharedLocalizer["Collection"];
 }
 
 <div class="container bootdey">
@@ -18,9 +25,15 @@
                     <div class="btn-group mt-3 mb-4">
                         @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                         {
-                            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">Dashboard</a>
-                            <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">Edit</a>
-                            <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-outline-danger">Delete</a>
+                            <a asp-controller="Dashboard" asp-action="Index" class="btn btn-outline-primary">
+                                @SharedLocalizer["DashboardButton"]
+                            </a>
+                            <a asp-controller="Collection" asp-action="Edit" asp-route-Id="@Model.Id" class="btn btn-outline-secondary">
+                                @SharedLocalizer["EditButton"]
+                            </a>
+                            <a asp-controller="Collection" asp-action="Delete" asp-route-Id="@Model.Id" onclick="ConfirmAction('delete', 'collection', event);" class="btn btn-outline-danger">
+                                @SharedLocalizer["DeleteButton"]
+                            </a>
                         }
                     </div>
                 </div>
@@ -30,19 +43,19 @@
                     {
                         <div class="product_meta">
                             <span class="posted_in">
-                                <strong>Author:</strong>
+                                <strong>@SharedLocalizer["Owner"]: </strong>
                                 <a asp-action="Index" asp-controller="Dashboard" asp-route-userId="@Model.UserId">@Model.UserName</a>
                             </span>
                         </div>
                     }
                     <div class="product_meta">
                         <span class="posted_in">
-                            <strong>Topic:</strong>
+                            <strong>@DetailsLocalizer["Topic:"]</strong>
                             <a rel="tag" href="#">@Model.Topic</a>
                         </span>
                     </div>
                     <div class="product_meta mt-2">
-                        <span class="posted_in"> <strong>Description:</strong> </span>
+                        <span class="posted_in"> <strong>@DetailsLocalizer["Description:"]</strong> </span>
                         <div>@Html.Raw(Model.Description)</div>
                     </div>
                 </div>
@@ -51,12 +64,12 @@
         <br />
         <div class="m-3">
             <div class="row mt-5 mb-2">
-                <h2 class="pro-d-title mb-5 col">Items:</h2>
+                <h2 class="pro-d-title mb-5 col">@DetailsLocalizer["Items:"]</h2>
                 <div class="d-flex justify-content-end mb-5 col">
                     @if (await CurrentUser.HasIdOrIsAdmin(Model.UserId, User))
                     {
                         <a class="btn btn-outline-secondary" asp-controller="Item" asp-action="Edit" asp-route-id="null" asp-route-collectionId="@(Model.Id)">
-                            <i class="bi bi-plus-square"> add item</i>
+                            <i class="bi bi-plus-square"> @DetailsLocalizer["add item"]</i>
                         </a>
                     }
                 </div>
@@ -66,8 +79,8 @@
             <table id="tableOfItems" class="table">
                 <thead>
                     <tr>
-                        <td><label class="form-label">Title</label></td>
-                        <td><label class="form-label">Tags</label></td>
+                        <td><label class="form-label">@SharedLocalizer["Title"]</label></td>
+                        <td><label class="form-label">@SharedLocalizer["Tags"]</label></td>
                         @for (int i = 0; i < Model.AdditionalFields.Length; i++)
                         {
                             <td><label id="@i" class="form-label itemValues">@Model.AdditionalFields[i].Name</label></td>

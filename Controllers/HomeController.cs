@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Personal_Collection_Manager.IService;
 using Personal_Collection_Manager.Models;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq.Expressions;
 
 namespace Personal_Collection_Manager.Controllers
@@ -34,15 +36,8 @@ namespace Personal_Collection_Manager.Controllers
             return PartialView("/Views/Collection/_CollectionsPartial.cshtml", collections);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetRecentItems()
-        {
-            var items = await _itemService.GetRecentItems();
-            return Json(items);
-        }
-
         [HttpPost]
-        public async Task<JsonResult> HereGetResentItems()
+        public async Task<JsonResult> GetResentItems()
         {
             int totalRecord = 0;
             int filterRecord = 0;
@@ -68,10 +63,6 @@ namespace Personal_Collection_Manager.Controllers
             };
 
             return Json(returnObj);
-
-            /*
-            var items = await _itemService.GetAllItemsOfCollection(collectionId);
-            return Json(items);*/
         }
 
         [HttpPost]
@@ -83,10 +74,15 @@ namespace Personal_Collection_Manager.Controllers
             return Ok();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult SetCulture(string culture)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            var cookie = new CookieOptions();
+            cookie.Expires = DateTime.Now.AddMonths(1);
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName,
+                CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
+                cookie);
+            return Ok();
         }
     }
 }

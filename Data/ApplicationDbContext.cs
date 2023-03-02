@@ -28,10 +28,8 @@ namespace Personal_Collection_Manager.Data
             base.OnModelCreating(builder);
 
             builder.Entity<Like>()
-                .HasIndex(l => new { l.UserId, l.ItemId })
+                .HasIndex(index => new { index.UserId, index.ItemId })
                 .IsUnique();
-
-            builder.Entity<Like>().HasNoKey();
 
             builder.Entity<Like>()
                 .HasOne<ApplicationUser>()

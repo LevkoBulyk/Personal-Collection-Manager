@@ -1,9 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views;
+@inject IStringLocalizer<SharedResources> sharedLocalizer
+@inject IStringLocalizer<Personal_Collection_Manager.Resources.Views.Home.Index> indexLocalizer
+
+@{
+    ViewData["Title"] = indexLocalizer["Home Page"];
 }
 
+
 <div class="text-center mb-5">
-    <h1 class="display-4">The biggest collections</h1>
+    <h1 class="display-4">@indexLocalizer["Header1"]</h1>
     <div id="theBiggestCollections"></div>
 </div>
 
@@ -12,14 +18,14 @@
 </div>
 
 <div class="mb-5 mt-5">
-    <h1 class="display-4">Recently added items</h1>
+    <h1 class="display-4">@indexLocalizer["Header2"]</h1>
     <table id="tableOfRecentItems" class="table">
         <thead>
             <tr>
-                <td><label class="form-label">Title</label></td>
-                <td><label class="form-label">Tags</label></td>
-                <td><label class="form-label">Collection</label></td>
-                <td><label class="form-label">Owner</label></td>
+                <td><label class="form-label">@sharedLocalizer["Title"]</label></td>
+                <td><label class="form-label">@sharedLocalizer["Tags"]</label></td>
+                <td><label class="form-label">@sharedLocalizer["Collection"]</label></td>
+                <td><label class="form-label">@sharedLocalizer["Owner"]</label></td>
             </tr>
         </thead>
         <tbody id="bodyOfRecentItemsTable">

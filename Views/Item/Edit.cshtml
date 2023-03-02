@@ -1,4 +1,8 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views.Item;
+@inject IStringLocalizer<Edit> loc
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @using Personal_Collection_Manager.Data.DataBaseModels.Enum;
@@ -8,6 +12,8 @@
 @{
     ViewData["Title"] = "Edit";
 }
+
+@loc["text"]
 
 @if (await CurrentUser.HasIdOrIsAdmin(Model.AuthorId, User))
 {

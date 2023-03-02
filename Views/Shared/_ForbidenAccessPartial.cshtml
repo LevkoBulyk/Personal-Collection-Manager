@@ -1,4 +1,19 @@
-﻿@model (string Item, string Action)
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@using Personal_Collection_Manager.Resources.Views.Shared;
+@inject IStringLocalizer<_ForbidenAccessPartial> PartialLocalizer
 
-<h2 class="text-danger">This is not your @Model.Item!</h2>
-<p class="text-danger">You are not allowed to @Model.Action this @Model.Item!</p>
+@model (string Item, string Action)
+
+<h2 class="text-danger">
+    @PartialLocalizer["This is not your"]
+    @Model.Item
+    !
+</h2>
+<p class="text-danger">
+    @PartialLocalizer["You are not allowed to"]
+    @Model.Action
+    @PartialLocalizer["this"]
+    @Model.Item
+    !
+</p>
