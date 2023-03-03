@@ -66,26 +66,13 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.FallBackToParentUICultures = true;
 });
 
-
-
-
-/*builder.Services.AddSingleton<IStringLocalizerFactory, ResourceManagerStringLocalizerFactory>();
-builder.Services.AddSingleton<IHtmlLocalizerFactory, HtmlLocalizerFactory>();
-builder.Services.AddSingleton(typeof(IStringLocalizer<>), typeof(StringLocalizer<>));
-builder.Services.AddSingleton(typeof(IHtmlLocalizer<>), typeof(HtmlLocalizer<>));*/
-
-
-
-
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.Configure<AuthMessageSenderOptions>(builder.Configuration);
 builder.Services.AddSignalR();
 
-builder.Services.AddControllersWithViews()/*
-    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix)*/;
-builder.Services.AddRazorPages()/*
-    .AddViewLocalization()*/;
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -116,10 +103,6 @@ app.Services.GetService<IServiceScopeFactory>().CreateScope()
     .ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
 
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
-
-// app.UseRequestLocalization();
-
-// app.UseRequestLocalizationCookies();
 
 app.MapControllerRoute(
     name: "default",

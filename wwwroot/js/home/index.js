@@ -60,28 +60,28 @@
         },
     };
 
-    const initDataTable = function () {
-        $(document).ready(function () {
-            $.ajax({
-                type: "GET",
-                url: "/Home/GetBiggestCollections",
-                success: function (responce) {
-                    theBiggestCollections.innerHTML = responce;
-                },
-                error: function (error) {
-                    console.log(error);
-                },
-            });
-
-            $("#" + tableId).DataTable(dataTableOptionsHome);
-            let selectElement = document.querySelector(
-                'select[name="' + tableId + '_length"]'
-            );
-            selectElement.classList.add("inherit-color");
-            $(selectElement)
-                .find("option")
-                .addClass("inherit-color");
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: "/Home/GetBiggestCollections",
+            success: function (responce) {
+                theBiggestCollections.innerHTML = responce;
+            },
+            error: function (error) {
+                console.log(error);
+            },
         });
+    });
+
+    const initDataTable = function () {
+        $("#" + tableId).DataTable(dataTableOptionsHome);
+        let selectElement = document.querySelector(
+            'select[name="' + tableId + '_length"]'
+        );
+        selectElement.classList.add("inherit-color");
+        $(selectElement)
+            .find("option")
+            .addClass("inherit-color");
     }
 
     if (culture == 'uk-UA') {

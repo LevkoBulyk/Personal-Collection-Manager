@@ -146,6 +146,51 @@ namespace Personal_Collection_Manager.Repository
                 });
         }
 
+        public IQueryable<ItemListViewModel> GetAllItemsWithTag(string tag)
+        {
+            return _dbContext.Items
+                .Join(_dbContext.ItemsTags,
+                    item => item.Id,
+                    itemTag => itemTag.ItemId,
+                    (item, itemTag) => new { Item = item, ItemTag = itemTag })
+                .Join(_dbContext.Tags,
+                    x => x.ItemTag.TagId,
+                    tag => tag.Id,
+                    (x, tag) => new { Item = x.Item, Tag = tag.Value })
+                .Where(x => x.Tag.Equals(tag) && !x.Item.Deleted)
+                .OrderByDescending(x => x.Item.Id)
+                .Select(x => new ItemListViewModel()
+                {
+                    Id = x.Item.Id,
+                    Title = x.Item.Title,
+                    Tags = _dbContext.ItemsTags
+                        .Where(itemTags => itemTags.ItemId == x.Item.Id)
+                        .Join(_dbContext.Tags,
+                            itemTags => itemTags.TagId,
+                            tag => tag.Id,
+                            (itemTag, tag) => tag)
+                        .Select(tag => tag.Value).ToList(),
+                    Values = _dbContext.AdditionalFieldsOfCollections
+                        .Where(afoc => afoc.CollectionId == x.Item.CollectionId && !afoc.Deleted)
+                        .GroupJoin(_dbContext.FieldsOfItems
+                                .Where(foi => foi.ItemId == x.Item.Id),
+                            afoc => afoc.Id,
+                            foi => foi.AdditionalFieldOfCollectionId,
+                            (afoc, fois) => new { AdditionalFieldOfCollection = afoc, FieldsOfItems = fois })
+                        .SelectMany(x => x.FieldsOfItems.DefaultIfEmpty(),
+                            (afoc, foi) => new
+                            {
+                                Value = foi != null ? foi.Value : "",
+                                Order = afoc.AdditionalFieldOfCollection.Order
+                            })
+                        .OrderBy(x => x.Order)
+                        .Select(x => x.Value).ToList(),
+                    UserId = _dbContext.Collections
+                        .Where(collection => collection.Id == x.Item.CollectionId)
+                        .Single().UserId
+                });
+        }
+
         public IQueryable<ItemNoFieldsViewModel> GetRecentItemsAsQuery(int start, int length)
         {
             return _dbContext.Items

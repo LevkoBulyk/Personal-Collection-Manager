@@ -1,6 +1,8 @@
 ﻿@using Microsoft.Extensions.Localization;
 @using Personal_Collection_Manager.Resources.Views.Item;
-@inject IStringLocalizer<Edit> loc
+@inject IStringLocalizer<Edit> EditLocalizer
+@using Personal_Collection_Manager.Resources.Views;
+@inject IStringLocalizer<SharedResources> SharedLocalizer
 
 @using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
@@ -13,9 +15,7 @@
     ViewData["Title"] = "Edit";
 }
 
-@loc["text"]
-
-@if (await CurrentUser.HasIdOrIsAdmin(Model.AuthorId, User))
+@if (Model.Id == null || (await CurrentUser.HasIdOrIsAdmin(Model.AuthorId, User)))
 {
     <form asp-action="Edit">
         <div class="row">
@@ -24,16 +24,16 @@
                 <input id="itemId" asp-for="Id" class="form-control" type="hidden" />
                 <input id="collectionId" asp-for="CollectionId" class="form-control" type="hidden" />
                 <div class="form-group m-3 mb-5">
-                    <label asp-for="Title" class="control-label"></label>
+                    <label class="control-label">@SharedLocalizer["Title"]</label>
                     <input id="title" asp-for="Title" class="form-control" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
                 <div class="form-group mt-2 mb-5">
                     <div class="row entry input-group mt-2 mb-3">
-                        <label asp-for="Tags" class="control-label col"></label>
+                        <label class="control-label col">@SharedLocalizer["Tags"]</label>
                         <div class="col d-flex justify-content-end">
                             <button asp-controller="Item" asp-action="AddTag" class="btn btn-outline-success">
-                                <i class="bi bi-plus-square"> add tag</i>
+                                <i class="bi bi-plus-square">@EditLocalizer["add tag"]</i>
                             </button>
                         </div>
                     </div>
@@ -43,7 +43,7 @@
                             <input class="form-control tags" asp-for="Tags[i]" type="text" id="@i" list="list_@i" value="@Model.Tags[i]" />
                             <div class="input-group-btn">
                                 <button asp-controller="Item" asp-action="RemoveTag" asp-route-index="@i" class="btn btn-outline-danger btn-remove">
-                                    <i class="bi bi-dash-square"> remove tag</i>
+                                    <i class="bi bi-dash-square">@EditLocalizer["remove tag"]</i>
                                 </button>
                             </div>
                             <datalist class="tagLists" id="list_@i"></datalist>
@@ -51,7 +51,7 @@
                     }
                 </div>
                 <div class="album p-4 m-2 bg-gray-opaque">
-                    <label>Additional fields:</label>
+                    <label>@EditLocalizer["AF:"]</label>
                     @for (int i = 0; i < Model.Fields.Length; i++)
                     {
                         <div class="card m-3 p-4 shadow-sm">
@@ -104,8 +104,8 @@
                     }
                 </div>
                 <div class="form-group">
-                    <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">Back to Collection</a>
-                    <button asp-controller="Item" asp-action="Edit" formmethod="post" class="btn btn-outline-success">Save changes</button>
+                    <a asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId" class="btn btn-outline-danger">@EditLocalizer["Back to Collection"]</a>
+                    <button asp-controller="Item" asp-action="Edit" formmethod="post" class="btn btn-outline-success">@SharedLocalizer["SaveButton"]</button>
                 </div>
             </div>
         </div>

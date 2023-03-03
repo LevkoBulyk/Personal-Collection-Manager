@@ -13,6 +13,7 @@ namespace Personal_Collection_Manager.IRepository
         public Task<List<ItemNoFieldsViewModel>> GetRecentItems(int start, int length);
         public IQueryable<ItemNoFieldsViewModel> GetRecentItemsAsQuery(int start, int length);
         public Task<List<ItemListViewModel>> GetAllItemsOfCollection(int collectionId);
+        public IQueryable<ItemListViewModel> GetAllItemsWithTag(string tag);
         public IQueryable<ItemListViewModel> GetAllItemsOfCollectionAsQuery(int collectionId);
     }
 }

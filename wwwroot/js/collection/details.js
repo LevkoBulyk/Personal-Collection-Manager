@@ -13,6 +13,7 @@
     ];
     let dataTableOptions = {
         columnDefs: columnDefs,
+        processing: true,
         createdRow: function (row, data, dataIndex) {
             row.classList.add('bg-gray-opaque');
         },
@@ -21,7 +22,7 @@
         data: itemsList
     };
 
-    $(document).ready(function () {
+    const initDataTable = function () {
         $.ajax({
             url: '/Item/GetAllItems',
             type: 'POST',
@@ -44,6 +45,19 @@
                 console.log(error);
             }
         });
+    }
+
+    $(document).ready(function () {
+        if (culture == 'uk-UA') {
+            fetch("https://cdn.datatables.net/plug-ins/1.13.3/i18n/uk.json")
+                .then((response) => response.json())
+                .then((data) => {
+                    dataTableOptions.language = data;
+                    initDataTable();
+                });
+        } else {
+            initDataTable();
+        }
     });
 
     const mapItem = function mapItem(input) {

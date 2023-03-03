@@ -14,6 +14,7 @@ namespace Personal_Collection_Manager.IService
         public Task<List<ItemListViewModel>> GetItemsOfCollection(int collectionId, int start = 0, int length = 10, string search = "");
         public Task<List<ItemNoFieldsViewModel>> GetRecentItems(int start = 0, int length = 10);
         public Task<List<ItemListViewModel>> GetAllItemsOfCollection(int collectionId);
+        public IQueryable<ItemListViewModel> GetAllItemsWithTag(string tag);
         public IQueryable<ItemListViewModel> GetAllItemsOfCollectionAsQuery(int collectionId);
         public IQueryable<ItemNoFieldsViewModel> GetRecentItemsAsQuery(int start = 0, int length = 10);
     }

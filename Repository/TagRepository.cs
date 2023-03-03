@@ -110,7 +110,7 @@ namespace Personal_Collection_Manager.Repository
                 .Select(tag => new TagViewModel()
                 {
                     Text = tag.Value,
-                    Link = "Search/Index/" + tag.Value,
+                    Link = "Search/Index?tag=" + tag.Value,
                     Uses = _dbContext.Tags
                         .Where(t => t.Value.Equals(tag.Value))
                         .Count()
@@ -125,7 +125,7 @@ namespace Personal_Collection_Manager.Repository
                     .Select(tag => new TagViewModel()
                     {
                         Text = tag.Value,
-                        Link = "Search/Index/" + tag.Value,
+                        Link = "Search/Index?tag=" + tag.Value,
                         Uses = _dbContext.Tags
                             .Where(t => t.Value.Equals(tag.Value))
                             .Count()

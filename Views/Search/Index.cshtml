@@ -1,0 +1,24 @@
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@model string
+
+<div class="mb-5 mt-5">
+    <input id="tag" type="hidden" value="@Model" />
+    <table id="tableOfItems" class="table">
+        <thead>
+            <tr>
+                <td><label class="form-label">@SharedLocalizer["Title"]</label></td>
+                <td><label class="form-label">@SharedLocalizer["Tags"]</label></td>
+                <td><label class="form-label">@SharedLocalizer["Collection"]</label></td>
+                <td><label class="form-label">@SharedLocalizer["Owner"]</label></td>
+            </tr>
+        </thead>
+        <tbody id="bodyOfRecentItemsTable">
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script src="~/js/search/tags.js"></script>
+}

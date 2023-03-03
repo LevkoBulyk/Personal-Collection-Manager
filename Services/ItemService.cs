@@ -156,5 +156,10 @@ namespace Personal_Collection_Manager.Services
         {
             return _itemRepository.GetRecentItemsAsQuery(start, length);
         }
+
+        public IQueryable<ItemListViewModel> GetAllItemsWithTag(string tag)
+        {
+            return _itemRepository.GetAllItemsWithTag(tag);
+        }
     }
 }

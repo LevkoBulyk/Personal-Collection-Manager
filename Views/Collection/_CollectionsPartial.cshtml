@@ -1,4 +1,8 @@
-﻿@model List<CollectionViewModel>;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> CollectionsLocalizer
+
+@model List<CollectionViewModel>;
 
 <div class="album py-5 bg-gray-opaque">
     @if (Model.Count > 0)
@@ -14,6 +18,6 @@
     }
     else
     {
-        <h4 class="text-warning">You don't have collection yet. Create your first one!</h4>
+        <h4 class="text-warning">@CollectionsLocalizer["noCollection"]</h4>
     }
 </div>

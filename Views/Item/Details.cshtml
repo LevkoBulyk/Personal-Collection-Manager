@@ -1,10 +1,16 @@
-﻿@using Personal_Collection_Manager.Helpers;
+﻿@using Microsoft.Extensions.Localization;
+@using Personal_Collection_Manager.Resources.Views
+@inject IStringLocalizer<SharedResources> SharedLocalizer
+@using Personal_Collection_Manager.Resources.Views.Item;
+@inject IStringLocalizer<Details> DetailsLocalizer
+
+@using Personal_Collection_Manager.Helpers;
 @inject ICurrentUserHelper CurrentUser
 
 @model ItemViewModel
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = SharedLocalizer["Details"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -21,7 +27,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <td><label class="form-label">Additional information:</label></td>
+                                    <td><label class="form-label">@DetailsLocalizer["Additional information:"]</label></td>
                                 </tr>
                             </thead>
                             <tbody>
@@ -41,7 +47,7 @@
         </section>
         <div class="row mt-3 mb-3">
             <div class="col">
-                <span id="likes">Likes: @Model.QuantityOfLikes</span>
+                <span id="likes">@DetailsLocalizer["Likes"]: @Model.QuantityOfLikes</span>
                 @if (await CurrentUser.IsSignedIn(User))
                 {
                     <input id="userId" type="hidden" value="@await CurrentUser.GetId(User)">
@@ -58,12 +64,12 @@
             <div class="d-flex justify-content-end mb-2 col">
                 <div class="btn-group">
                     <a class="btn btn-outline-primary col" asp-controller="Collection" asp-action="Details" asp-route-id="@Model.CollectionId">
-                        Show collection
+                        @DetailsLocalizer["Show collection"]
                     </a>
                     @if (await CurrentUser.HasEmailOrIsAdmin(Model.AuthorEmail, User))
                     {
                         <a class="btn btn-outline-secondary col" asp-controller="Item" asp-action="Edit" asp-route-id="@Model.Id">
-                            Edit
+                            @SharedLocalizer["EditButton"]
                         </a>
                     }
                 </div>
@@ -77,7 +83,9 @@
                         <textarea id="commentText" class="form-control autosize" placeholder="write your comment"></textarea>
                     </div>
                     <div class="col-12 d-flex justify-content-end">
-                        <button id="sendCommentBtn" class="btn btn-outline-primary disabled">Comment</button>
+                        <button id="sendCommentBtn" class="btn btn-outline-primary disabled">
+                            @DetailsLocalizer["Comment"]
+                        </button>
                     </div>
                 </div>
             }
